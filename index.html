@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Letras Cloud</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary: #1DB954; /* Verde tipo Spotify */
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 { color: var(--primary); text-align: center; }
+        .input-group {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #282828;
+            color: white;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:active { transform: scale(0.98); }
+        .cancion {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        .cancion h3 { margin: 0; color: var(--primary); }
+        .cancion p { white-space: pre-wrap; margin-top: 10px; color: #bbb; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>☁️ Mis Letras</h1>
+        
+        <div class="input-group">
+            <input type="text" id="titulo" placeholder="Nombre de la canción..." autocomplete="off">
+            <textarea id="letra" rows="6" placeholder="Escribe la letra aquí..."></textarea>
+            <button onclick="guardarLetra()">GUARDAR EN LA NUBE</button>
+        </div>
+
+        <div id="lista-canciones">
+            </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN DE TU FIREBASE
+        const firebaseConfig = {
+            databaseURL: "https://letras-bb844-default-rtdb.firebaseio.com/"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // FUNCIÓN PARA GUARDAR
+        function guardarLetra() {
+            const titulo = document.getElementById('titulo').value;
+            const letra = document.getElementById('letra').value;
+
+            if (titulo && letra) {
+                const nuevaCancionRef = database.ref('canciones').push();
+                nuevaCancionRef.set({
+                    titulo: titulo,
+                    letra: letra,
+                    fecha: Date.now()
+                }).then(() => {
+                    document.getElementById('titulo').value = '';
+                    document.getElementById('letra').value = '';
+                    alert("¡Guardado con éxito! ✨");
+                });
+            } else {
+                alert("Por favor rellena ambos campos");
+            }
+        }
+
+        // FUNCIÓN PARA LEER EN TIEMPO REAL
+        database.ref('canciones').on('value', (snapshot) => {
+            const listaDiv = document.getElementById('lista-canciones');
+            listaDiv.innerHTML = ''; // Limpiar lista
+            
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                const html = `
+                    <div class="cancion">
+                        <h3>${data.titulo}</h3>
+                        <p>${data.letra}</p>
+                    </div>
+                `;
+                listaDiv.insertAdjacentHTML('afterbegin', html);
+            });
+        });
+    </script>
+</body>
+</html>
