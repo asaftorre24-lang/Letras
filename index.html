@@ -10,8 +10,12 @@
     <style>
         :root {
             --primary: #4285F4; 
-            --bg-base: #1e1e1e; 
-            --card-bg: rgba(30, 30, 30, 0.95);
+            /* --- NUEVO FONDO MUSICAL --- */
+            /* Reemplazamos el negro sólido por una imagen de fondo sutil */
+            --bg-base: #121212; /* Base oscura */
+            --bg-music-pattern: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="30" font-family="serif" font-size="20" fill="rgba(255,255,255,0.03)">♩</text><text x="50" y="20" font-family="serif" font-size="25" fill="rgba(255,255,255,0.03)">♪</text><text x="80" y="40" font-family="serif" font-size="18" fill="rgba(255,255,255,0.03)">♫</text><text x="30" y="60" font-family="serif" font-size="22" fill="rgba(255,255,255,0.03)">♬</text><text x="70" y="70" font-family="serif" font-size="28" fill="rgba(255,255,255,0.03)">𝄞</text><text x="20" y="90" font-family="serif" font-size="16" fill="rgba(255,255,255,0.03)">♭</text><text x="60" y="95" font-family="serif" font-size="24" fill="rgba(255,255,255,0.03)">♯</text></svg>');
+            
+            --card-bg: #1e1e1e;
             --text-main: #ffffff;
             --text-muted: #b3b3b3;
             --border: #333333;
@@ -20,23 +24,21 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            /* Aplicamos el fondo base y el patrón musical sutil */
             background-color: var(--bg-base);
-            color: var(--text-main);
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-image: var(--bg-music-pattern);
+            background-repeat: repeat;
+            background-attachment: fixed; /* Mantiene el fondo quieto al hacer scroll */
+            color: var(--text-main); 
+            margin: 0; padding: 0; 
+            display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; 
         }
 
-        .music-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, #121212, #000000); }
-        .music-note { position: absolute; color: rgba(255, 255, 255, 0.05); font-family: serif; user-select: none; }
-        
-        .container { width: 100%; max-width: 600px; padding: 20px; z-index: 1; }
-
-        header { width: 100%; text-align: center; padding: 20px 0; background: #000; position: relative; }
-        .google-logo { font-size: 40px; font-weight: bold; }
+        header { width: 100%; text-align: center; padding: 25px 0; background: rgba(0,0,0,0.8); position: relative; border-bottom: 1px solid var(--border); backdrop-filter: blur(5px); }
+        .google-logo { font-size: 35px; font-weight: bold; }
         .google-logo span:nth-child(1) { color: #4285F4; }
         .google-logo span:nth-child(2) { color: #DB4437; }
         .google-logo span:nth-child(3) { color: #F4B400; }
@@ -46,41 +48,39 @@
 
         .admin-trigger { position: absolute; right: 15px; top: 25px; background: none; border: 1px solid #333; color: #555; border-radius: 5px; padding: 5px; font-size: 10px; cursor: pointer; }
 
-        #admin-panel { display: none; background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 30px; border: 2px solid var(--secondary); }
-        input, textarea, select { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: #2a2a2a; color: white; font-size: 16px; }
-        
-        button.btn-save { width: 100%; padding: 16px; background-color: var(--secondary); border: none; border-radius: 12px; color: black; text-transform: uppercase; font-weight: bold; cursor: pointer; }
-        
-        /* BUSCADOR */
-        .search-box { width: 100%; margin: 10px 0 25px 0; position: relative; display: flex; align-items: center; }
-        .search-box input { padding-left: 45px; border-radius: 30px; border: 1px solid #555; background: #222; margin-bottom: 0; flex: 1; }
-        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; font-size: 18px; opacity: 0.5; z-index: 2; }
+        .container { width: 100%; max-width: 600px; padding: 20px; }
 
-        .filtros { display: flex; gap: 12px; margin-bottom: 25px; justify-content: center; }
-        .filter-btn { padding: 10px 25px; border-radius: 25px; border: 1px solid var(--border); background: var(--card-bg); color: white; cursor: pointer; font-weight: bold; }
+        /* BUSCADOR ESTILO GOOGLE */
+        .search-box { width: 100%; margin-bottom: 20px; position: relative; }
+        .search-box input { width: 100%; padding: 15px 15px 15px 45px; border-radius: 30px; border: 1px solid #555; background: #222; color: white; font-size: 16px; outline: none; transition: 0.3s; }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(66, 133, 244, 0.3); }
+        .search-box::before { content: '🔍'; position: absolute; left: 18px; top: 15px; font-size: 18px; opacity: 0.5; }
+
+        .filtros { display: flex; gap: 10px; margin-bottom: 25px; justify-content: center; }
+        .filter-btn { padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border); background: #222; color: white; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
         .filter-btn.active { background: var(--primary); border-color: var(--primary); }
 
-        .tono-group { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 15px; overflow: hidden; background: rgba(24, 24, 24, 0.8); }
-        .tono-header { padding: 18px; display: flex; justify-content: space-between; background: #252525; color: var(--secondary); font-weight: bold; cursor: pointer; }
-        .tono-content { display: none; padding: 12px; background: #0f0f0f; }
+        /* LISTADO POR TONOS */
+        .tono-group { margin-bottom: 12px; border-radius: 15px; overflow: hidden; background: rgba(26, 26, 26, 0.9); border: 1px solid var(--border); }
+        .tono-header { padding: 15px 20px; display: flex; justify-content: space-between; background: #252525; color: var(--secondary); font-weight: bold; cursor: pointer; }
+        .tono-content { display: none; padding: 10px; background: rgba(0,0,0,0.8); }
         .tono-group.open .tono-content { display: block; }
 
-        .cancion-item { background: #1e1e1e; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--primary); overflow: hidden; }
-        .cancion-header { padding: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .cancion-item { background: #1e1e1e; margin-bottom: 8px; border-radius: 10px; border-left: 4px solid var(--primary); overflow: hidden; }
+        .cancion-header { padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 15px; }
         
-        .tabs-cancion { display: flex; background: #121212; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #222; color: var(--text-muted); cursor: pointer; font-weight: bold; }
+        .tabs-cancion { display: flex; border-top: 1px solid #333; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: #111; color: var(--text-muted); cursor: pointer; font-size: 13px; font-weight: bold; }
         .tab-btn.active { background: var(--secondary); color: black; }
         
-        .cancion-body { display: none; padding: 20px; white-space: pre-wrap; font-family: 'Courier New', monospace; color: #fff; background: #000; font-size: 16px; line-height: 1.5; }
+        .cancion-body { display: none; padding: 15px; white-space: pre-wrap; font-family: 'Courier New', monospace; color: #fff; background: #000; font-size: 15px; line-height: 1.4; }
         .cancion-item.open .cancion-body.visible { display: block; }
 
-        .btn-del { display: none; color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #admin-panel { display: none; background: #222; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--secondary); }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #444; background: #333; color: white; }
     </style>
 </head>
 <body>
-
-    <div class="music-bg" id="bg-music"></div>
 
     <header>
         <div class="google-logo"><span>L</span><span>e</span><span>t</span><span>r</span><span>a</span><span>s</span></div>
@@ -90,28 +90,18 @@
     <div class="container">
         
         <div id="admin-panel">
-            <h3 style="color: var(--secondary); margin-top: 0; text-align: center;">MODO EDITOR ACTIVO ✨</h3>
             <input type="text" id="titulo" placeholder="Nombre de la canción...">
-            <div style="display: flex; gap: 10px;">
-                <select id="ritmo" style="flex:1;">
-                    <option value="rapida">🔥 Rápida</option>
-                    <option value="lenta">❄️ Lenta</option>
-                </select>
-                <select id="tonalidad" style="flex:1;">
-                    <option value="C">Do (C)</option><option value="D">Re (D)</option>
-                    <option value="E">Mi (E)</option><option value="F">Fa (F)</option>
-                    <option value="G">Sol (G)</option><option value="A">La (A)</option>
-                    <option value="B">Si (B)</option>
-                </select>
+            <div style="display:flex; gap:10px;">
+                <select id="ritmo" style="flex:1;"><option value="rapida">🔥 Rápida</option><option value="lenta">❄️ Lenta</option></select>
+                <select id="tonalidad" style="flex:1;"><option value="C">Do (C)</option><option value="D">Re (D)</option><option value="E">Mi (E)</option><option value="F">Fa (F)</option><option value="G">Sol (G)</option><option value="A">La (A)</option><option value="B">Si (B)</option></select>
             </div>
-            <textarea id="letraVoces" rows="5" placeholder="Letra Voces..."></textarea>
-            <textarea id="letraNotas" rows="5" placeholder="Letra Notas..."></textarea>
-            <button class="btn-save" onclick="guardarLetra()">GUARDAR ☁️</button>
-            <button style="width:100%; margin-top:10px; background:none; border:none; color:gray;" onclick="location.reload()">Cerrar</button>
+            <textarea id="letraVoces" rows="4" placeholder="Letra Voces..."></textarea>
+            <textarea id="letraNotas" rows="4" placeholder="Letra Notas..."></textarea>
+            <button onclick="guardarLetra()" style="width:100%; padding:15px; background:var(--secondary); border:none; border-radius:10px; font-weight:bold;">GUARDAR ☁️</button>
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" oninput="renderizarLista()" placeholder="Busca en todo tu repertorio...">
+            <input type="text" id="searchInput" oninput="renderizarLista()" placeholder="Busca una canción...">
         </div>
 
         <div class="filtros">
@@ -124,9 +114,9 @@
 
     <script>
         const CLAVE_MAESTRA = "1234"; 
-        let modoAdmin = false;
         let todasLasCanciones = [];
         let ritmoActual = ''; 
+        let modoAdmin = false;
 
         const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
@@ -135,8 +125,11 @@
         function organizarTexto(t) { return t.split('\n').map(l => l.trim()).filter(l => l !== "").join('\n'); }
 
         function loginAdmin() {
-            const pass = prompt("Clave:");
-            if(pass === CLAVE_MAESTRA) { modoAdmin = true; document.getElementById('admin-panel').style.display = 'block'; renderizarLista(); }
+            if(prompt("Clave:") === CLAVE_MAESTRA) { 
+                modoAdmin = true; 
+                document.getElementById('admin-panel').style.display = 'block'; 
+                renderizarLista();
+            }
         }
 
         function guardarLetra() {
@@ -145,9 +138,9 @@
             const ton = document.getElementById('tonalidad').value;
             const v = organizarTexto(document.getElementById('letraVoces').value);
             const n = organizarTexto(document.getElementById('letraNotas').value);
-            if (t && (v || n)) {
+            if (t) {
                 database.ref('canciones').push({ id: Date.now(), titulo: t, ritmo: r, tonalidad: ton, letraVoces: v, letraNotas: n })
-                .then(() => { alert("¡Guardada!"); location.reload(); });
+                .then(() => { alert("Guardado"); location.reload(); });
             }
         }
 
@@ -160,10 +153,8 @@
         function cargarCanciones() {
             database.ref('canciones').on('value', (snapshot) => {
                 todasLasCanciones = [];
-                snapshot.forEach(child => {
-                    const data = child.val();
-                    data.firebaseKey = child.key;
-                    todasLasCanciones.push(data);
+                snapshot.forEach(child => { 
+                    const d = child.val(); d.fKey = child.key; todasLasCanciones.push(d); 
                 });
                 renderizarLista();
             });
@@ -171,36 +162,33 @@
 
         function renderizarLista() {
             const listaDiv = document.getElementById('lista-tonos');
-            const busqueda = document.getElementById('searchInput').value.toLowerCase().trim();
+            const buscar = document.getElementById('searchInput').value.toLowerCase().trim();
             listaDiv.innerHTML = '';
 
             const filtradas = todasLasCanciones.filter(c => {
-                const coincideNombre = c.titulo.toLowerCase().includes(busqueda);
-                const coincideRitmo = ritmoActual === '' ? true : c.ritmo === ritmoActual;
-                return coincideNombre && coincideRitmo;
+                const matchNombre = c.titulo.toLowerCase().includes(buscar);
+                const matchRitmo = ritmoActual === '' ? true : c.ritmo === ritmoActual;
+                return matchNombre && matchRitmo;
             });
 
             const grupos = {};
-            filtradas.forEach(c => {
-                if(!grupos[c.tonalidad]) grupos[c.tonalidad] = [];
-                grupos[c.tonalidad].push(c);
-            });
+            filtradas.forEach(c => { if(!grupos[c.tonalidad]) grupos[c.tonalidad] = []; grupos[c.tonalidad].push(c); });
 
             Object.keys(grupos).sort().forEach(tono => {
                 const tonoDiv = document.createElement('div');
-                tonoDiv.className = 'tono-group open'; // Se abren automáticamente al buscar
+                const isOpen = buscar !== "" ? "open" : "";
+                tonoDiv.className = `tono-group ${isOpen}`;
                 tonoDiv.innerHTML = `<div class="tono-header" onclick="this.parentElement.classList.toggle('open')"><span>Tono: ${tono}</span><span>${grupos[tono].length} ▾</span></div><div class="tono-content"></div>`;
                 const content = tonoDiv.querySelector('.tono-content');
 
-                grupos[tono].sort((a,b)=>a.titulo.localeCompare(b.titulo)).forEach(can => {
+                grupos[tono].forEach(can => {
                     const canDiv = document.createElement('div');
                     canDiv.className = 'cancion-item';
-                    const displayDel = modoAdmin ? 'block' : 'none';
                     canDiv.innerHTML = `
-                        <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')"><span>${can.titulo}</span><button class="btn-del" style="display:${displayDel}" onclick="event.stopPropagation(); eliminar('${can.firebaseKey}')">✕</button></div>
-                        <div class="tabs-cancion"><button id="btn-v-${can.id}" class="tab-btn active" onclick="tab('${can.id}','v')">Voces</button><button id="btn-n-${can.id}" class="tab-btn" onclick="tab('${can.id}','n')">Nota</button></div>
-                        <div id="v-${can.id}" class="cancion-body visible">${can.letraVoces || ''}</div>
-                        <div id="n-${can.id}" class="cancion-body">${can.letraNotas || ''}</div>`;
+                        <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')"><span>${can.titulo}</span>${modoAdmin ? `<button onclick="event.stopPropagation(); eliminar('${can.fKey}')" style="color:red; background:none; border:none;">✕</button>` : ''}</div>
+                        <div class="tabs-cancion"><button id="bv-${can.id}" class="tab-btn active" onclick="tab('${can.id}','v')">Voces</button><button id="bn-${can.id}" class="tab-btn" onclick="tab('${can.id}','n')">Nota</button></div>
+                        <div id="v-${can.id}" class="cancion-body visible Courier New, monospace">${can.letraVoces || ''}</div>
+                        <div id="n-${can.id}" class="cancion-body Courier New, monospace">${can.letraNotas || ''}</div>`;
                     content.appendChild(canDiv);
                 });
                 listaDiv.appendChild(tonoDiv);
@@ -209,24 +197,13 @@
 
         function tab(id, t) {
             const v = document.getElementById('v-'+id); const n = document.getElementById('n-'+id);
-            const bv = document.getElementById('btn-v-'+id); const bn = document.getElementById('btn-n-'+id);
+            const bv = document.getElementById('bv-'+id); const bn = document.getElementById('bn-'+id);
             if(t==='v'){ v.classList.add('visible'); n.classList.remove('visible'); bv.classList.add('active'); bn.classList.remove('active'); }
             else { v.classList.remove('visible'); n.classList.add('visible'); bv.classList.remove('active'); bn.classList.add('active'); }
         }
 
-        function eliminar(key) { if(confirm("¿Borrar?")) database.ref('canciones/'+key).remove(); }
-        function crearNotas() {
-            const bg = document.getElementById('bg-music');
-            const figs = ['♩', '♪', '♫', '♬', '♭', '♯', '𝄞'];
-            for (let i = 0; i < 40; i++) {
-                const s = document.createElement('span'); s.className = 'music-note';
-                s.innerText = figs[Math.floor(Math.random()*figs.length)];
-                s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
-                s.style.fontSize = Math.random()*20+20+'px'; s.style.opacity = Math.random()*0.1+0.05;
-                bg.appendChild(s);
-            }
-        }
-        crearNotas();
+        function eliminar(k) { if(confirm("¿Eliminar?")) database.ref('canciones/'+k).remove(); }
+        
         cargarCanciones();
     </script>
 </body>
