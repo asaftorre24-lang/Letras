@@ -2,237 +2,123 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mis Letras Pro ☁️</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-
+    <title>Consola de Guía Vocal</title>
     <style>
-        :root {
-            --primary: #1DB954; /* VERDE PURO */
-            --bg-base: #0b0b0b;
-            --card-bg: rgba(25, 25, 25, 0.95);
-            --text-main: #ffffff;
-            --text-muted: #b3b3b3;
-            --border: #282828;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-color: #121212;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
         }
 
-        /* --- FONDO CON TODAS LAS FIGURAS MUSICALES --- */
-        .music-bg {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-            background: linear-gradient(to bottom, #121212, #000000);
+        #indicador-estado {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #1e1e1e;
+            transition: color 0.5s ease;
         }
 
-        .music-note {
-            position: absolute;
-            color: rgba(29, 185, 84, 0.1); /* NOTAS EN VERDE MUY SUTIL */
-            font-family: serif;
-            user-select: none;
+        .contenedor-columnas {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
         }
 
-        .container { width: 100%; max-width: 600px; padding: 20px; z-index: 1; }
-
-        header { 
-            width: 100%; text-align: center; padding: 20px 0; 
-            border-bottom: 2px solid var(--primary); 
-            background: #000;
-        }
-        header h1 { font-size: 24px; color: var(--primary); margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-
-        .input-group {
-            background: var(--card-bg);
-            padding: 20px; border-radius: 15px; margin-bottom: 25px;
-            border: 1px solid var(--border);
+        .columna {
+            flex: 1;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #333;
         }
 
-        input, textarea, select {
-            width: 100%; padding: 14px; margin-bottom: 12px;
-            border-radius: 10px; border: 1px solid var(--border);
-            background: #181818; color: white; font-size: 16px;
+        h2 {
+            font-size: 16px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #444;
         }
 
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
-
-        button.btn-save {
-            width: 100%; padding: 16px; background: var(--primary);
-            border: none; border-radius: 10px; font-weight: bold;
-            cursor: pointer; color: black; font-size: 16px;
-            text-transform: uppercase;
+        pre {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Mantiene el formato pero ajusta al ancho */
         }
 
-        .filtros { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-        .filter-btn {
-            padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border);
-            background: #181818; color: white; cursor: pointer; font-weight: bold;
+        /* Colores específicos */
+        .voces-titulo { color: #ffffff; }
+        .notas-titulo { color: #90CAF9; }
+        .notas-texto { color: #90CAF9; }
+
+        .controles {
+            margin-top: 30px;
+            text-align: center;
         }
-        .filter-btn.active { background: var(--primary); color: black; border-color: var(--primary); }
 
-        /* ACORDEONES POR TONO */
-        .tono-group { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .tono-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; background: #181818; color: var(--primary); font-weight: bold; font-size: 18px; border-bottom: 1px solid var(--border); }
-        .tono-content { display: none; padding: 10px; background: #0f0f0f; }
-        .tono-group.open .tono-content { display: block; }
-
-        /* CANCIONES */
-        .cancion-item { background: #1e1e1e; margin-bottom: 8px; border-radius: 8px; border-left: 5px solid var(--primary); position: relative; }
-        .cancion-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .cancion-titulo { font-weight: bold; font-size: 16px; }
-        
-        .cancion-body { 
-            display: none; padding: 20px; border-top: 1px solid var(--border); 
-            white-space: pre-wrap; font-family: 'Courier New', monospace; 
-            color: #fff; font-size: 16px; line-height: 1.5;
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
         }
-        .cancion-item.open .cancion-body { display: block; }
-
-        .btn-del { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; padding: 5px 10px; }
     </style>
 </head>
 <body>
 
-    <div class="music-bg" id="bg-music"></div>
+    <div id="indicador-estado">ESPERANDO VALOR...</div>
 
-    <header><h1>REPERTORIO VERDE 🎵</h1></header>
-
-    <div class="container">
-        <div class="input-group">
-            <input type="text" id="titulo" placeholder="Nombre de la canción..." autocomplete="off">
-            <div style="display:flex; gap:10px;">
-                <select id="ritmo">
-                    <option value="rapida">🔥 Rápida</option>
-                    <option value="lenta">❄️ Lenta</option>
-                </select>
-                <select id="tonalidad">
-                    <option value="C">Do (C)</option><option value="Cm">Do m (Cm)</option>
-                    <option value="D">Re (D)</option><option value="Dm">Re m (Dm)</option>
-                    <option value="E">Mi (E)</option><option value="Em">Mi m (Em)</option>
-                    <option value="F">Fa (F)</option><option value="Fm">Fa m (Fm)</option>
-                    <option value="G">Sol (G)</option><option value="Gm">Sol m (Gm)</option>
-                    <option value="A">La (A)</option><option value="Am">La m (Am)</option>
-                    <option value="B">Si (B)</option><option value="Bm">Si m (Bm)</option>
-                </select>
-            </div>
-            <textarea id="letra" rows="6" placeholder="Letra y acordes aquí..."></textarea>
-            <button class="btn-save" onclick="guardarLetra()">GUARDAR EN LA NUBE ✨</button>
+    <div class="contenedor-columnas">
+        <div class="columna">
+            <h2 class="voces-titulo">LETRA PARA VOCES</h2>
+            <pre id="contenido-voces">
+Quiero que sepas que mi amor no se acaba...
+Sigo esperando que vuelvas a mi lado.
+            </pre>
         </div>
 
-        <div class="filtros">
-            <button class="filter-btn active" onclick="cambiarRitmo('rapida', this)">🔥 Rápidas</button>
-            <button class="filter-btn" onclick="cambiarRitmo('lenta', this)">❄️ Lentas</button>
+        <div class="columna">
+            <h2 class="notas-titulo">LETRA CON NOTAS ORIGINALES</h2>
+            <pre id="contenido-notas" class="notas-texto">
+[RE] Quiero que sepas que mi [LA] amor no se acaba...
+[SOL] Sigo esperando que [LA] vuelvas a mi [RE] lado.
+            </pre>
         </div>
+    </div>
 
-        <div id="lista-tonos"></div>
+    <div class="controles">
+        <input type="number" id="valor-entrada" value="85" style="padding: 10px; width: 60px;">
+        <button onclick="actualizarEstado()">Actualizar Estado</button>
     </div>
 
     <script>
-        // GENERADOR DE FIGURAS MUSICALES (Claves, corcheas, silencios, etc.)
-        function crearNotasFondo() {
-            const bg = document.getElementById('bg-music');
-            const figuras = ['♩', '♪', '♫', '♬', '♭', '♮', '♯', '∮', '𝄞', '𝄢', '𝄤', '𝄥', '𝄦', '𝄧', '𝄨'];
-            
-            for (let i = 0; i < 50; i++) {
-                const span = document.createElement('span');
-                span.className = 'music-note';
-                span.innerText = figuras[Math.floor(Math.random() * figuras.length)];
-                span.style.left = Math.random() * 100 + '%';
-                span.style.top = Math.random() * 100 + '%';
-                span.style.fontSize = Math.random() * (50 - 15) + 15 + 'px';
-                span.style.opacity = Math.random() * (0.2 - 0.05) + 0.05;
-                bg.appendChild(span);
-            }
-        }
-        crearNotasFondo();
+        function actualizarEstado() {
+            const valor = document.getElementById('valor-entrada').value;
+            const indicador = document.getElementById('indicador-estado');
 
-        // FIREBASE
-        const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        let ritmoActual = 'rapida';
-
-        function guardarLetra() {
-            const titulo = document.getElementById('titulo').value.trim();
-            const ritmo = document.getElementById('ritmo').value;
-            const tonalidad = document.getElementById('tonalidad').value;
-            const letra = document.getElementById('letra').value.trim();
-
-            if (titulo && letra) {
-                const nuevaRef = database.ref('canciones').push();
-                nuevaRef.set({ id: nuevaRef.key, titulo, ritmo, tonalidad, letra, fecha: Date.now() })
-                .then(() => {
-                    document.getElementById('titulo').value = '';
-                    document.getElementById('letra').value = '';
-                    alert("¡Canción guardada correctamente! ✌️");
-                });
+            // Lógica de colores corregida (Verde primero para prioridad)
+            if (valor >= 80) {
+                indicador.innerText = "ESTADO: ÓPTIMO (VERDE)";
+                indicador.style.color = "#00FF00";
+            } else if (valor >= 50) {
+                indicador.innerText = "ESTADO: ADVERTENCIA (AMARILLO)";
+                indicador.style.color = "#FFFF00";
+            } else {
+                indicador.innerText = "ESTADO: CRÍTICO (ROJO)";
+                indicador.style.color = "#FF0000";
             }
         }
 
-        function eliminarCancion(id) {
-            if (confirm("¿Seguro que quieres borrarla?")) {
-                database.ref('canciones/' + id).remove();
-            }
-        }
-
-        function cambiarRitmo(ritmo, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            ritmoActual = ritmo;
-            cargarCanciones();
-        }
-
-        function cargarCanciones() {
-            database.ref('canciones').on('value', (snapshot) => {
-                const listaDiv = document.getElementById('lista-tonos');
-                listaDiv.innerHTML = '';
-                const datos = [];
-                snapshot.forEach(child => { datos.push(child.val()); });
-
-                const grupos = {};
-                datos.filter(d => d.ritmo === ritmoActual).forEach(c => {
-                    if (!grupos[c.tonalidad]) grupos[c.tonalidad] = [];
-                    grupos[c.tonalidad].push(c);
-                });
-
-                Object.keys(grupos).sort().forEach(tono => {
-                    const tonoDiv = document.createElement('div');
-                    tonoDiv.className = 'tono-group';
-                    tonoDiv.innerHTML = `
-                        <div class="tono-header" onclick="this.parentElement.classList.toggle('open')">
-                            <span>Tono: ${tono}</span>
-                            <span>${grupos[tono].length} cancs</span>
-                        </div>
-                        <div class="tono-content">
-                            ${grupos[tono].map(can => `
-                                <div class="cancion-item">
-                                    <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
-                                        <span class="cancion-titulo">${can.titulo}</span>
-                                        <button class="btn-del" onclick="event.stopPropagation(); eliminarCancion('${can.id}')">✕</button>
-                                    </div>
-                                    <div class="cancion-body">${can.letra}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    listaDiv.appendChild(tonoDiv);
-                });
-            });
-        }
-        cargarCanciones();
+        // Ejecutar al cargar
+        window.onload = actualizarEstado;
     </script>
 </body>
 </html>
+
