@@ -10,132 +10,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
 
     <style>
-        :root { 
-            --blue: #4285F4; 
-            --green: #34A853; 
-            --bg: #000; 
-            --card: #1a1a1a; 
-            --text: #eee;
-        }
-        
+        :root { --blue: #4285F4; --green: #34A853; --bg: #000; --card: #1a1a1a; --text: #eee; }
         body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); 
-            /* Fondo con patrón de notas musicales sutil */
+            font-family: 'Segoe UI', sans-serif; background: var(--bg); 
             background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 60px 60px, 40px 40px;
-            color: var(--text); 
-            margin: 0; padding: 0; 
-            display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh;
+            background-size: 60px 60px, 40px 40px; color: var(--text); margin: 0; padding: 0; 
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-
-        header { 
-            width: 100%; text-align: center; padding: 25px 0; 
-            background: rgba(0,0,0,0.85); position: relative; border-bottom: 1px solid #222;
-            backdrop-filter: blur(8px); z-index: 10;
-        }
-
-        .logo { 
-            font-family: 'Major Mono Display', monospace; 
-            font-size: 38px; 
-            font-weight: bold; 
-            letter-spacing: 3px;
-            background: linear-gradient(to right, var(--blue), var(--green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(66, 133, 244, 0.3);
-        }
-
-        .admin-btn { 
-            position: absolute; right: 15px; top: 25px; 
-            background: rgba(255,255,255,0.05); color: #666; 
-            border: 1px solid #333; padding: 7px 14px; border-radius: 8px; 
-            font-size: 11px; cursor: pointer;
-        }
-        
+        header { width: 100%; text-align: center; padding: 25px 0; background: rgba(0,0,0,0.85); position: relative; border-bottom: 1px solid #222; backdrop-filter: blur(8px); z-index: 10; }
+        .logo { font-family: 'Major Mono Display', monospace; font-size: 38px; font-weight: bold; letter-spacing: 3px; background: linear-gradient(to right, var(--blue), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 15px rgba(66, 133, 244, 0.3); }
+        .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
-        
-        #admin-panel { 
-            display: none; border: 2px solid var(--green); 
-            border-radius: 20px; padding: 20px; 
-            margin-bottom: 25px; background: rgba(10,10,10,0.98);
-            box-shadow: 0 10px 40px rgba(0,0,0,1);
-        }
-
-        input, textarea, select { 
-            width: 100%; margin-bottom: 12px; padding: 14px; 
-            border-radius: 12px; border: 1px solid #333; 
-            background: #111; color: white; font-size: 16px;
-            box-sizing: border-box;
-        }
-        
-        .filter-group { 
-            display: flex; gap: 15px; margin-bottom: 35px; 
-            justify-content: center;
-        }
-
-        .f-btn { 
-            flex: 1; padding: 18px; border-radius: 22px; 
-            border: 1px solid #333; background: rgba(34,34,34,0.6); 
-            color: white; cursor: pointer; font-weight: bold; 
-            font-size: 16px; transition: 0.3s ease;
-        }
-
-        .f-btn.active { 
-            background: var(--blue);
-            border-color: var(--blue);
-            box-shadow: 0 0 25px rgba(66, 133, 244, 0.4);
-            transform: scale(1.02);
-        }
-
-        .tono-box { 
-            background: rgba(26,26,26,0.8); border-radius: 18px; 
-            margin-bottom: 15px; overflow: hidden; 
-            border: 1px solid #222; backdrop-filter: blur(10px);
-        }
-
-        .tono-title { 
-            padding: 20px; color: var(--green); 
-            font-weight: bold; display: flex; justify-content: space-between; 
-            cursor: pointer; font-size: 18px;
-        }
-
+        #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.98); box-shadow: 0 10px 40px rgba(0,0,0,1); }
+        input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #111; color: white; font-size: 16px; box-sizing: border-box; }
+        .filter-group { display: flex; gap: 15px; margin-bottom: 35px; justify-content: center; }
+        .f-btn { flex: 1; padding: 18px; border-radius: 22px; border: 1px solid #333; background: rgba(34,34,34,0.6); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s ease; }
+        .f-btn.active { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 25px rgba(66, 133, 244, 0.4); transform: scale(1.02); }
+        .tono-box { background: rgba(26,26,26,0.8); border-radius: 18px; margin-bottom: 15px; overflow: hidden; border: 1px solid #222; backdrop-filter: blur(10px); }
+        .tono-title { padding: 20px; color: var(--green); font-weight: bold; display: flex; justify-content: space-between; cursor: pointer; font-size: 18px; }
         .cancion-list { display: none; padding: 12px; background: rgba(0,0,0,0.4); }
         .tono-box.open .cancion-list { display: block; }
-
-        .item { 
-            background: rgba(40,40,40,0.9); margin-bottom: 12px; 
-            border-radius: 12px; border-left: 5px solid var(--blue); 
-        }
-
+        .item { background: rgba(40,40,40,0.9); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); }
         .item-head { padding: 18px; cursor: pointer; }
-        
         .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; }
         .item.open .item-content { display: block; }
-        
         .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
         .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
         .t-btn.active { background: var(--green); color: black; }
-        
-        .text-area { 
-            white-space: pre-wrap; font-family: monospace; 
-            font-size: 18px; line-height: 1.6; display: none; 
-            padding: 10px; color: #fff;
-        }
+        .text-area { white-space: pre-wrap; font-family: monospace; font-size: 18px; line-height: 1.6; display: none; padding: 10px; color: #fff; }
         .text-area.active { display: block; }
-
-        .btn-save { 
-            width: 100%; padding: 18px; background: var(--green); 
-            border: none; color: white; font-weight: bold; 
-            border-radius: 15px; cursor: pointer;
-        }
-
-        /* Mensaje de bienvenida cuando no hay filtro */
-        .empty-state {
-            text-align: center; color: #444; margin-top: 50px;
-            font-style: italic; font-size: 14px;
-        }
+        .btn-save { width: 100%; padding: 18px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 15px; cursor: pointer; }
+        .empty-state { text-align: center; color: #444; margin-top: 50px; font-style: italic; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -154,13 +59,14 @@
                 <option value="lenta">🐢 Lenta</option>
             </select>
             <select id="ton">
-                <option value="C">Do (C)</option><option value="C#">Do# (C#)</option>
-                <option value="Db">Reb (Db)</option><option value="D">Re (D)</option><option value="D#">Re# (D#)</option>
-                <option value="Eb">Mib (Eb)</option><option value="E">Mi (E)</option>
-                <option value="F">Fa (F)</option><option value="F#">Fa# (F#)</option>
-                <option value="Gb">Solb (Gb)</option><option value="G">Sol (G)</option><option value="G#">Sol# (G#)</option>
-                <option value="Ab">Lab (Ab)</option><option value="A">La (A)</option><option value="A#">La# (A#)</option>
-                <option value="Bb">Sib (Bb)</option><option value="B">Si (B)</option>
+                <option value="C Mayor">Do Mayor (C)</option><option value="C Menor">Do Menor (Cm)</option>
+                <option value="D Mayor">Re Mayor (D)</option><option value="D Menor">Re Menor (Dm)</option>
+                <option value="E Mayor">Mi Mayor (E)</option><option value="E Menor">Mi Menor (Em)</option>
+                <option value="F Mayor">Fa Mayor (F)</option><option value="F Menor">Fa Menor (Fm)</option>
+                <option value="G Mayor">Sol Mayor (G)</option><option value="G Menor">Sol Menor (Gm)</option>
+                <option value="A Mayor">La Mayor (A)</option><option value="A Menor">La Menor (Am)</option>
+                <option value="Bb Mayor">Si bemol Mayor (Bb)</option><option value="Bb Menor">Si bemol Menor (Bbm)</option>
+                <option value="B Mayor">Si Mayor (B)</option><option value="B Menor">Si Menor (Bm)</option>
             </select>
         </div>
         <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
@@ -181,10 +87,8 @@
     const db = firebase.database();
     let data = [];
     let filterR = '';
-    const ordenMusical = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"];
 
     function load() {
-        // En esta versión no cargamos el filtro de LocalStorage al inicio para que empiece libre
         db.ref('canciones').on('value', s => {
             data = [];
             s.forEach(c => { data.push({ ...c.val(), key: c.key }); });
@@ -193,7 +97,6 @@
     }
 
     function setR(r) {
-        // Si presionas el mismo botón, se desactiva y queda libre
         filterR = (filterR === r) ? '' : r;
         draw();
     }
@@ -201,36 +104,26 @@
     function draw() {
         const list = document.getElementById('main-list');
         list.innerHTML = '';
-
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
 
-        // REGLA: Si no hay filtro seleccionado, no mostrar nada
         if (filterR === '') {
             list.innerHTML = '<div class="empty-state">Selecciona un ritmo para ver el repertorio...</div>';
             return;
         }
 
         const filtered = data.filter(c => c.ritmo === filterR);
-
         const groups = filtered.reduce((acc, c) => {
-            let t = c.tonalidad || "C";
+            let t = c.tonalidad || "C Mayor";
             acc[t] = acc[t] || [];
             acc[t].push(c);
             return acc;
         }, {});
 
-        const tonosOrdenados = Object.keys(groups).sort((a, b) => ordenMusical.indexOf(a) - ordenMusical.indexOf(b));
-
-        tonosOrdenados.forEach(ton => {
+        Object.keys(groups).sort().forEach(ton => {
             const div = document.createElement('div');
             div.className = 'tono-box';
-            div.innerHTML = `
-                <div class="tono-title" onclick="this.parentElement.classList.toggle('open')">
-                    <span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span>
-                </div>
-                <div class="cancion-list"></div>`;
-            
+            div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span></div><div class="cancion-list"></div>`;
             const cList = div.querySelector('.cancion-list');
             groups[ton].forEach(c => {
                 const item = document.createElement('div');
@@ -238,12 +131,9 @@
                 item.innerHTML = `
                     <div class="item-head" onclick="this.parentElement.classList.toggle('open')">🎵 ${c.titulo}</div>
                     <div class="item-content">
-                        <div class="tabs">
-                            <button class="t-btn active" onclick="shTab(this,'v')">Voces</button>
-                            <button class="t-btn" onclick="shTab(this,'n')">Notas</button>
-                        </div>
-                        <div class="text-area active v">${c.letraVoces || ''}</div>
-                        <div class="text-area n">${c.letraNotas || ''}</div>
+                        <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
+                        <div class="text-area active v">${c.letraVoces || 'Sin letra.'}</div>
+                        <div class="text-area n">${c.letraNotas || 'Sin notas.'}</div>
                     </div>`;
                 cList.appendChild(item);
             });
@@ -261,14 +151,20 @@
 
     function save() {
         const t = document.getElementById('t').value.trim();
+        const r = document.getElementById('r').value;
+        const ton = document.getElementById('ton').value; // Ahora coincide con el ID del select
+        const lv = document.getElementById('lv').value;
+        const ln = document.getElementById('ln').value;
+
         if(!t) return alert("Escribe un título");
         db.ref('canciones').push({
-            titulo: t, ritmo: document.getElementById('r').value,
-            tonalidad: document.getElementById('tonalidad').value,
-            letraVoces: document.getElementById('lv').value,
-            letraNotas: document.getElementById('ln').value
+            titulo: t, ritmo: r, tonalidad: ton,
+            letraVoces: lv, letraNotas: ln
         }).then(() => {
             alert("¡Guardado!");
+            document.getElementById('t').value = '';
+            document.getElementById('lv').value = '';
+            document.getElementById('ln').value = '';
             document.getElementById('admin-panel').style.display = 'none';
         });
     }
