@@ -20,127 +20,122 @@
         
         body { 
             font-family: 'Segoe UI', sans-serif; 
-            /* Fondo Negro Sólido */
             background: var(--bg); 
             /* Fondo con patrón de notas musicales sutil */
-            background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.01) 1px, transparent 1px);
-            background-size: 50px 50px, 30px 30px;
-            background-position: 0 0, 15px 15px;
+            background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px, 40px 40px;
             color: var(--text); 
             margin: 0; padding: 0; 
             display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh;
         }
 
         header { 
             width: 100%; text-align: center; padding: 25px 0; 
-            background: rgba(0,0,0,0.8); position: relative; border-bottom: 1px solid #222;
-            backdrop-filter: blur(5px); z-index: 10;
+            background: rgba(0,0,0,0.85); position: relative; border-bottom: 1px solid #222;
+            backdrop-filter: blur(8px); z-index: 10;
         }
 
-        /* Título Estilizado como notas musicales */
         .logo { 
-            font-family: 'Major Mono Display', monospace; /* Tipografía más rítmica y estilizada */
-            font-size: 36px; 
+            font-family: 'Major Mono Display', monospace; 
+            font-size: 38px; 
             font-weight: bold; 
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(66, 133, 244, 0.4);
-            /* Degradado de azul a verde para el título completo */
+            letter-spacing: 3px;
             background: linear-gradient(to right, var(--blue), var(--green));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(66, 133, 244, 0.3);
         }
 
         .admin-btn { 
             position: absolute; right: 15px; top: 25px; 
-            background: rgba(255,255,255,0.02); color: #555; 
+            background: rgba(255,255,255,0.05); color: #666; 
             border: 1px solid #333; padding: 7px 14px; border-radius: 8px; 
-            font-size: 11px; cursor: pointer; transition: 0.3s;
+            font-size: 11px; cursor: pointer;
         }
-        .admin-btn:hover { color: #fff; background: rgba(255,255,255,0.1); border-color: #555; }
         
-        .container { width: 92%; max-width: 500px; padding: 20px 0; position: relative; z-index: 5; }
+        .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
         
         #admin-panel { 
             display: none; border: 2px solid var(--green); 
             border-radius: 20px; padding: 20px; 
-            margin-bottom: 25px; background: rgba(10,10,10,0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            margin-bottom: 25px; background: rgba(10,10,10,0.98);
+            box-shadow: 0 10px 40px rgba(0,0,0,1);
         }
 
         input, textarea, select { 
             width: 100%; margin-bottom: 12px; padding: 14px; 
             border-radius: 12px; border: 1px solid #333; 
             background: #111; color: white; font-size: 16px;
-            box-sizing: border-box; transition: 0.3s;
+            box-sizing: border-box;
         }
-        input:focus, textarea:focus { border-color: var(--blue); background: #000; }
         
         .filter-group { 
-            display: flex; gap: 15px; margin-bottom: 30px; 
+            display: flex; gap: 15px; margin-bottom: 35px; 
             justify-content: center;
         }
 
         .f-btn { 
-            flex: 1; padding: 15px; border-radius: 20px; 
-            border: 1px solid #333; background: rgba(34,34,34,0.5); 
+            flex: 1; padding: 18px; border-radius: 22px; 
+            border: 1px solid #333; background: rgba(34,34,34,0.6); 
             color: white; cursor: pointer; font-weight: bold; 
-            font-size: 16px; transition: 0.3s;
+            font-size: 16px; transition: 0.3s ease;
         }
-        .f-btn:hover { background: #333; border-color: #555; }
 
         .f-btn.active { 
             background: var(--blue);
             border-color: var(--blue);
-            box-shadow: 0 0 20px rgba(66, 133, 244, 0.3);
+            box-shadow: 0 0 25px rgba(66, 133, 244, 0.4);
+            transform: scale(1.02);
         }
 
         .tono-box { 
-            background: rgba(26,26,26,0.7); border-radius: 18px; 
+            background: rgba(26,26,26,0.8); border-radius: 18px; 
             margin-bottom: 15px; overflow: hidden; 
-            border: 1px solid #222; backdrop-filter: blur(5px);
-            transition: 0.3s;
+            border: 1px solid #222; backdrop-filter: blur(10px);
         }
-        .tono-box:hover { border-color: #444; }
 
         .tono-title { 
-            padding: 20px; background: rgba(26,26,26,0.9); color: var(--green); 
+            padding: 20px; color: var(--green); 
             font-weight: bold; display: flex; justify-content: space-between; 
             cursor: pointer; font-size: 18px;
         }
 
-        .cancion-list { display: none; padding: 12px; background: rgba(17,17,17,0.5); }
+        .cancion-list { display: none; padding: 12px; background: rgba(0,0,0,0.4); }
         .tono-box.open .cancion-list { display: block; }
 
         .item { 
-            background: rgba(34,34,34,0.8); margin-bottom: 12px; 
+            background: rgba(40,40,40,0.9); margin-bottom: 12px; 
             border-radius: 12px; border-left: 5px solid var(--blue); 
-            transition: 0.2s;
         }
-        .item:hover { background: #222; transform: translateX(3px); }
 
-        .item-head { padding: 18px; cursor: pointer; font-size: 16px; }
+        .item-head { padding: 18px; cursor: pointer; }
         
-        .item-content { display: none; padding: 15px; background: rgba(0,0,0,0.8); border-top: 1px solid #333; }
+        .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; }
         .item.open .item-content { display: block; }
         
-        .tabs { display: flex; margin-bottom: 15px; border-radius: 8px; overflow: hidden; background: #333; }
-        .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #999; cursor: pointer; font-weight: bold; }
+        .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
+        .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
         .t-btn.active { background: var(--green); color: black; }
         
         .text-area { 
             white-space: pre-wrap; font-family: monospace; 
             font-size: 18px; line-height: 1.6; display: none; 
-            padding: 10px; color: #eee;
+            padding: 10px; color: #fff;
         }
         .text-area.active { display: block; }
 
         .btn-save { 
             width: 100%; padding: 18px; background: var(--green); 
             border: none; color: white; font-weight: bold; 
-            border-radius: 15px; cursor: pointer; font-size: 16px; transition: 0.3s;
+            border-radius: 15px; cursor: pointer;
         }
-        .btn-save:hover { background: #2c8c4c; box-shadow: 0 0 20px rgba(52, 168, 83, 0.3); }
+
+        /* Mensaje de bienvenida cuando no hay filtro */
+        .empty-state {
+            text-align: center; color: #444; margin-top: 50px;
+            font-style: italic; font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -182,21 +177,14 @@
 </div>
 
 <script>
-    // Tu configuración de Firebase
     const app = firebase.initializeApp({ databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" });
     const db = firebase.database();
     let data = [];
     let filterR = '';
-    // Orden musical cromático completo
-    const ordenMusical = [
-        "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"
-    ];
+    const ordenMusical = ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"];
 
     function load() {
-        // Recuperar filtro guardado (Memoria)
-        const savedFilter = localStorage.getItem('filtroRitmo_Letras');
-        if (savedFilter) { filterR = savedFilter; }
-
+        // En esta versión no cargamos el filtro de LocalStorage al inicio para que empiece libre
         db.ref('canciones').on('value', s => {
             data = [];
             s.forEach(c => { data.push({ ...c.val(), key: c.key }); });
@@ -205,13 +193,8 @@
     }
 
     function setR(r) {
-        if (filterR === r) {
-            filterR = '';
-            localStorage.removeItem('filtroRitmo_Letras');
-        } else {
-            filterR = r;
-            localStorage.setItem('filtroRitmo_Letras', r);
-        }
+        // Si presionas el mismo botón, se desactiva y queda libre
+        filterR = (filterR === r) ? '' : r;
         draw();
     }
 
@@ -222,26 +205,26 @@
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
 
-        const filtered = data.filter(c => {
-            return (filterR === '' || c.ritmo === filterR);
-        });
+        // REGLA: Si no hay filtro seleccionado, no mostrar nada
+        if (filterR === '') {
+            list.innerHTML = '<div class="empty-state">Selecciona un ritmo para ver el repertorio...</div>';
+            return;
+        }
+
+        const filtered = data.filter(c => c.ritmo === filterR);
 
         const groups = filtered.reduce((acc, c) => {
             let t = c.tonalidad || "C";
-            if(t === "undefined") t = "C"; 
             acc[t] = acc[t] || [];
             acc[t].push(c);
             return acc;
         }, {});
 
-        // Ordenar tonos musicalmente
-        const tonosOrdenados = Object.keys(groups).sort((a, b) => {
-            return ordenMusical.indexOf(a) - ordenMusical.indexOf(b);
-        });
+        const tonosOrdenados = Object.keys(groups).sort((a, b) => ordenMusical.indexOf(a) - ordenMusical.indexOf(b));
 
         tonosOrdenados.forEach(ton => {
             const div = document.createElement('div');
-            div.className = 'tono-box'; // Cerrado por defecto
+            div.className = 'tono-box';
             div.innerHTML = `
                 <div class="tono-title" onclick="this.parentElement.classList.toggle('open')">
                     <span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span>
@@ -259,8 +242,8 @@
                             <button class="t-btn active" onclick="shTab(this,'v')">Voces</button>
                             <button class="t-btn" onclick="shTab(this,'n')">Notas</button>
                         </div>
-                        <div class="text-area active v">${c.letraVoces || 'Sin letra'}</div>
-                        <div class="text-area n">${c.letraNotas || 'Sin notas'}</div>
+                        <div class="text-area active v">${c.letraVoces || ''}</div>
+                        <div class="text-area n">${c.letraNotas || ''}</div>
                     </div>`;
                 cList.appendChild(item);
             });
@@ -280,17 +263,13 @@
         const t = document.getElementById('t').value.trim();
         if(!t) return alert("Escribe un título");
         db.ref('canciones').push({
-            titulo: t, 
-            ritmo: document.getElementById('r').value,
+            titulo: t, ritmo: document.getElementById('r').value,
             tonalidad: document.getElementById('ton').value,
             letraVoces: document.getElementById('lv').value,
             letraNotas: document.getElementById('ln').value
         }).then(() => {
-            alert("¡Canción guardada!");
+            alert("¡Guardado!");
             document.getElementById('admin-panel').style.display = 'none';
-            document.getElementById('t').value = '';
-            document.getElementById('lv').value = '';
-            document.getElementById('ln').value = '';
         });
     }
 
