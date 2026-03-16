@@ -30,6 +30,7 @@
             overflow-x: hidden;
         }
 
+        /* FONDO MUSICAL */
         .music-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, #121212, #000000); }
         .music-note { position: absolute; color: rgba(255, 255, 255, 0.05); font-family: serif; user-select: none; }
         
@@ -46,23 +47,22 @@
 
         .admin-trigger { position: absolute; right: 15px; top: 25px; background: none; border: 1px solid #333; color: #555; border-radius: 5px; padding: 5px; font-size: 10px; cursor: pointer; }
 
+        /* PANEL ADMIN */
         #admin-panel { display: none; background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 30px; border: 2px solid var(--secondary); }
-        
         input, textarea, select { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: #2a2a2a; color: white; font-size: 16px; }
-        .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
-        .form-row select { flex: 1; }
         
-        button.btn-save { width: 100%; padding: 16px; background-color: var(--secondary); border: none; border-radius: 12px; color: black; text-transform: uppercase; font-weight: bold; }
+        button.btn-save { width: 100%; padding: 16px; background-color: var(--secondary); border: none; border-radius: 12px; color: black; text-transform: uppercase; font-weight: bold; cursor: pointer; }
         
-        /* BUSCADOR ESTILO GOOGLE */
-        .search-box { width: 100%; margin-bottom: 20px; position: relative; }
-        .search-box input { padding-left: 45px; border-radius: 30px; border: 1px solid #555; background: #222; }
-        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; font-size: 18px; opacity: 0.5; }
+        /* BUSCADOR ESTILO GOOGLE (NUEVO) */
+        .search-box { width: 100%; margin: 10px 0 25px 0; position: relative; }
+        .search-box input { padding-left: 45px; border-radius: 30px; border: 1px solid #555; background: #222; margin-bottom: 0; }
+        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; font-size: 18px; opacity: 0.5; z-index: 2; }
 
         .filtros { display: flex; gap: 12px; margin-bottom: 25px; justify-content: center; }
         .filter-btn { padding: 10px 25px; border-radius: 25px; border: 1px solid var(--border); background: var(--card-bg); color: white; cursor: pointer; font-weight: bold; }
         .filter-btn.active { background: var(--primary); border-color: var(--primary); }
 
+        /* LISTADO */
         .tono-group { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 15px; overflow: hidden; background: rgba(24, 24, 24, 0.8); }
         .tono-header { padding: 18px; display: flex; justify-content: space-between; background: #252525; color: var(--secondary); font-weight: bold; cursor: pointer; }
         .tono-content { display: none; padding: 12px; background: #0f0f0f; }
@@ -70,11 +70,12 @@
 
         .cancion-item { background: #1e1e1e; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--primary); overflow: hidden; }
         .cancion-header { padding: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        
         .tabs-cancion { display: flex; background: #121212; }
         .tab-btn { flex: 1; padding: 12px; border: none; background: #222; color: var(--text-muted); cursor: pointer; font-weight: bold; }
         .tab-btn.active { background: var(--secondary); color: black; }
         
-        .cancion-body { display: none; padding: 20px; white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; color: #fff; background: #000; font-size: 16px; line-height: 1.5; }
+        .cancion-body { display: none; padding: 20px; white-space: pre-wrap; font-family: 'Courier New', monospace; color: #fff; background: #000; font-size: 16px; line-height: 1.5; }
         .cancion-item.open .cancion-body.visible { display: block; }
 
         .btn-del { display: none; color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
@@ -92,30 +93,30 @@
     <div class="container">
         
         <div id="admin-panel">
-            <h3 style="color: var(--secondary); margin-top: 0; text-align: center;">MODO EDITOR ✨</h3>
+            <h3 style="color: var(--secondary); margin-top: 0; text-align: center;">MODO EDITOR ACTIVO ✨</h3>
             <input type="text" id="titulo" placeholder="Nombre de la canción...">
-            <div class="form-row">
-                <select id="ritmo">
+            <div style="display: flex; gap: 10px;">
+                <select id="ritmo" style="flex:1;">
                     <option value="rapida">🔥 Rápida</option>
                     <option value="lenta">❄️ Lenta</option>
                 </select>
-                <select id="tonalidad">
+                <select id="tonalidad" style="flex:1;">
                     <option value="C">Do (C)</option><option value="D">Re (D)</option>
                     <option value="E">Mi (E)</option><option value="F">Fa (F)</option>
                     <option value="G">Sol (G)</option><option value="A">La (A)</option>
                     <option value="B">Si (B)</option>
                 </select>
             </div>
-            <p style="margin: 0 0 5px 0; font-size: 13px; color: var(--secondary); font-weight: bold;">VOCES (SOLO LETRA)</p>
+            <p style="margin: 5px 0; font-size: 13px; color: var(--secondary); font-weight: bold;">VOCES (SOLO LETRA)</p>
             <textarea id="letraVoces" rows="5" placeholder="Pega la letra aquí..."></textarea>
-            <p style="margin: 0 0 5px 0; font-size: 13px; color: var(--secondary); font-weight: bold;">NOTA ORIGINAL</p>
+            <p style="margin: 5px 0; font-size: 13px; color: var(--secondary); font-weight: bold;">NOTA ORIGINAL</p>
             <textarea id="letraNotas" rows="5" placeholder="Pega las notas aquí..."></textarea>
-            <button class="btn-save" onclick="guardarLetra()">GUARDAR EN LA NUBE ☁️</button>
+            <button class="btn-save" onclick="guardarLetra()">GUARDAR REPERTORIO ☁️</button>
             <button style="width:100%; margin-top:10px; background:none; border:none; color:gray; cursor:pointer;" onclick="location.reload()">Cerrar Sesión</button>
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" onkeyup="filtrarPorNombre()" placeholder="Buscar canción por nombre...">
+            <input type="text" id="searchInput" onkeyup="renderizarLista()" placeholder="Busca una canción en tu repertorio...">
         </div>
 
         <div class="filtros">
@@ -129,30 +130,24 @@
     <script>
         const CLAVE_MAESTRA = "1234"; 
         let modoAdmin = false;
-        let todasLasCanciones = []; 
+        let todasLasCanciones = [];
+        let ritmoActual = 'rapida';
 
         const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        let ritmoActual = 'rapida';
 
-        // --- ORGANIZAR TEXTO AUTOMÁTICAMENTE ---
-        function limpiarTexto(texto) {
-            return texto.split('\n')
-                        .map(linea => linea.trim())
-                        .filter(linea => linea !== "")
-                        .join('\n');
+        // ORGANIZACIÓN AUTOMÁTICA
+        function organizarTexto(t) {
+            return t.split('\n').map(l => l.trim()).filter(l => l !== "").join('\n');
         }
 
         function loginAdmin() {
-            const pass = prompt("Introduce la clave para editar:");
+            const pass = prompt("Clave de acceso:");
             if(pass === CLAVE_MAESTRA) {
                 modoAdmin = true;
                 document.getElementById('admin-panel').style.display = 'block';
-                renderizarLista(); 
-                alert("Modo editor activado.");
-            } else {
-                alert("Clave incorrecta.");
+                renderizarLista();
             }
         }
 
@@ -160,37 +155,35 @@
             const titulo = document.getElementById('titulo').value.trim();
             const ritmo = document.getElementById('ritmo').value;
             const tonalidad = document.getElementById('tonalidad').value;
-            // Limpiamos la letra antes de guardar
-            const letraVoces = limpiarTexto(document.getElementById('letraVoces').value);
-            const letraNotas = limpiarTexto(document.getElementById('letraNotas').value);
+            const v = organizarTexto(document.getElementById('letraVoces').value);
+            const n = organizarTexto(document.getElementById('letraNotas').value);
 
-            if (titulo && (letraVoces || letraNotas)) {
-                const nuevaRef = database.ref('canciones').push();
-                nuevaRef.set({ id: nuevaRef.key, titulo, ritmo, tonalidad, letraVoces, letraNotas, fecha: Date.now() })
+            if (titulo && (v || n)) {
+                database.ref('canciones').push({ id: Date.now(), titulo, ritmo, tonalidad, letraVoces: v, letraNotas: n })
                 .then(() => {
+                    alert("¡Guardada!");
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNotas').value = '';
-                    alert("¡Guardada y organizada!");
                 });
             }
         }
 
-        function cambiarRitmo(ritmo, btn) { 
+        function cambiarRitmo(r, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active'); 
-            ritmoActual = ritmo; 
-            renderizarLista(); 
-        }
-
-        function filtrarPorNombre() {
+            btn.classList.add('active');
+            ritmoActual = r;
             renderizarLista();
         }
 
         function cargarCanciones() {
             database.ref('canciones').on('value', (snapshot) => {
                 todasLasCanciones = [];
-                snapshot.forEach(c => { todasLasCanciones.push(c.val()); });
+                snapshot.forEach(child => {
+                    const data = child.val();
+                    data.firebaseKey = child.key; // Guardamos la llave para poder borrar
+                    todasLasCanciones.push(data);
+                });
                 renderizarLista();
             });
         }
@@ -200,11 +193,10 @@
             const busqueda = document.getElementById('searchInput').value.toLowerCase();
             listaDiv.innerHTML = '';
 
-            const filtradas = todasLasCanciones.filter(c => {
-                const coincideRitmo = c.ritmo === ritmoActual;
-                const coincideNombre = c.titulo.toLowerCase().includes(busqueda);
-                return coincideRitmo && coincideNombre;
-            });
+            // Filtrar por ritmo Y por nombre al mismo tiempo
+            const filtradas = todasLasCanciones.filter(c => 
+                c.ritmo === ritmoActual && c.titulo.toLowerCase().includes(busqueda)
+            );
 
             const grupos = {};
             filtradas.forEach(c => {
@@ -225,42 +217,42 @@
                     canDiv.innerHTML = `
                         <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
                             <span>${can.titulo}</span>
-                            <button class="btn-del" style="display:${displayDel}" onclick="event.stopPropagation(); eliminarCancion('${can.id}')">✕</button>
+                            <button class="btn-del" style="display:${displayDel}" onclick="event.stopPropagation(); eliminar('${can.firebaseKey}')">✕</button>
                         </div>
-                        <div class="tabs-cancion"><button id="btn-voces-${can.id}" class="tab-btn active" onclick="switchTab('${can.id}','voces')">Voces</button><button id="btn-notas-${can.id}" class="tab-btn" onclick="switchTab('${can.id}','notas')">Nota</button></div>
-                        <div id="voces-${can.id}" class="cancion-body visible">${can.letraVoces || ''}</div>
-                        <div id="notas-${can.id}" class="cancion-body">${can.letraNotas || ''}</div>`;
+                        <div class="tabs-cancion">
+                            <button id="btn-v-${can.id}" class="tab-btn active" onclick="tab('${can.id}','v')">Voces</button>
+                            <button id="btn-n-${can.id}" class="tab-btn" onclick="tab('${can.id}','n')">Nota</button>
+                        </div>
+                        <div id="v-${can.id}" class="cancion-body visible">${can.letraVoces || ''}</div>
+                        <div id="n-${can.id}" class="cancion-body">${can.letraNotas || ''}</div>`;
                     content.appendChild(canDiv);
                 });
                 listaDiv.appendChild(tonoDiv);
             });
         }
 
-        function switchTab(id, tab) {
-            const v = document.getElementById('voces-'+id); const n = document.getElementById('notas-'+id);
-            const bv = document.getElementById('btn-voces-'+id); const bn = document.getElementById('btn-notas-'+id);
-            if(tab==='voces'){ v.classList.add('visible'); n.classList.remove('visible'); bv.classList.add('active'); bn.classList.remove('active'); }
+        function tab(id, t) {
+            const v = document.getElementById('v-'+id); const n = document.getElementById('n-'+id);
+            const bv = document.getElementById('btn-v-'+id); const bn = document.getElementById('btn-n-'+id);
+            if(t==='v'){ v.classList.add('visible'); n.classList.remove('visible'); bv.classList.add('active'); bn.classList.remove('active'); }
             else { v.classList.remove('visible'); n.classList.add('visible'); bv.classList.remove('active'); bn.classList.add('active'); }
         }
 
-        function eliminarCancion(id) { if(confirm("¿Borrar?")) database.ref('canciones/'+id).remove(); }
+        function eliminar(key) { if(confirm("¿Borrar?")) database.ref('canciones/'+key).remove(); }
 
-        function crearNotasFondo() {
+        function crearNotas() {
             const bg = document.getElementById('bg-music');
-            const figuras = ['♩', '♪', '♫', '♬', '♭', '♯', '𝄞', '𝄢', '𝄥'];
+            const figs = ['♩', '♪', '♫', '♬', '♭', '♯', '𝄞'];
             for (let i = 0; i < 40; i++) {
-                const span = document.createElement('span');
-                span.className = 'music-note';
-                span.innerText = figuras[Math.floor(Math.random() * figuras.length)];
-                span.style.left = Math.random() * 100 + '%';
-                span.style.top = Math.random() * 100 + '%';
-                span.style.fontSize = Math.random() * 20 + 20 + 'px';
-                span.style.opacity = Math.random() * 0.1 + 0.05;
-                bg.appendChild(span);
+                const s = document.createElement('span'); s.className = 'music-note';
+                s.innerText = figs[Math.floor(Math.random()*figs.length)];
+                s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
+                s.style.fontSize = Math.random()*20+20+'px'; s.style.opacity = Math.random()*0.1+0.05;
+                bg.appendChild(s);
             }
         }
 
-        crearNotasFondo();
+        crearNotas();
         cargarCanciones();
     </script>
 </body>
