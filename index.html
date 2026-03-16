@@ -9,268 +9,95 @@
 
     <style>
         :root {
-            /* --- VARIABLES DE COLOR ACTUALIZADAS (Inspiradas en tu imagen) --- */
-            --primary: #FFD700; /* Dorado brillante de las estrellas */
-            
-            /* Un degradado oscuro de fondo para máxima legibilidad, recreando la base de tu foto */
-            --bg-base: #121212; /* Base negra */
-            --bg-accent: #1e1e30; /* Un azul noche profundo en la parte superior */
-            
-            --card-bg: rgba(30, 30, 30, 0.85); /* Tarjetas semi-transparentes */
-            --input-bg: rgba(42, 42, 42, 0.9);
+            --primary: #1DB954; 
+            --bg-base: #121212;
+            --card-bg: rgba(30, 30, 30, 0.9);
             --text-main: #ffffff;
-            --text-muted: #e0e0e0; /* Un blanco más claro para las letras */
-            --border: #444444; /* Un borde un poco más visible */
+            --text-muted: #b3b3b3;
+            --border: #333333;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            
-            /* --- NUEVO FONDO: Degradado y Estrellas Recreadas --- */
-            /* Primero, el degradado de fondo (oscuro para legibilidad) */
-            background-image: 
-                radial-gradient(circle at top right, rgba(255, 215, 0, 0.1), transparent 40%), /* Reflejo dorado arriba */
-                radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent 30%), /* Reflejo blanco arriba */
-                linear-gradient(to bottom, var(--bg-accent), var(--bg-base)); /* Degradado principal */
-            
-            /* Añadimos un pseudo-elemento para simular las estrellas y siluetas sin usar la imagen real */
-            /* (Esto es para asegurar compatibilidad y estabilidad) */
-            background-attachment: fixed; /* Mantiene el fondo quieto al hacer scroll */
-
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-base);
             color: var(--text-main);
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
-        
-        /* Simulación de las siluetas musicales abajo (súper sutil) */
-        body::after {
-            content: '';
+
+        /* --- FONDO CON NOTAS MUSICALES --- */
+        .music-bg {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 20%;
-            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
-            pointer-events: none; /* No interfiere con toques */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #1e1e30, #121212);
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            padding-bottom: 100px;
+        .music-note {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.04); /* Súper sutil para no cansar la vista */
+            font-family: serif;
+            user-select: none;
         }
 
-        /* --- CABECERA (Header) --- */
-        header {
-            width: 100%;
-            text-align: center;
-            padding: 25px 0;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            /* Un pequeño brillo dorado sutil detrás del título */
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); 
-        }
+        .container { width: 100%; max-width: 600px; padding: 20px; z-index: 1; }
 
-        header h1 {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--primary); /* El dorado brillante */
-            margin: 0;
-            letter-spacing: -1px;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-        }
+        header { width: 100%; text-align: center; padding: 25px 0; border-bottom: 1px solid var(--border); background: rgba(18, 18, 18, 0.8); }
+        header h1 { font-size: 24px; color: var(--primary); margin: 0; }
 
-        header p {
-            color: var(--text-muted);
-            margin: 8px 0 0 0;
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        /* --- ZONA DE ENTRADA (Formulario) --- */
         .input-group {
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 30px;
+            padding: 20px; border-radius: 15px; margin-bottom: 25px;
             border: 1px solid var(--border);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); /* Sombra más pronunciada */
-            backdrop-filter: blur(5px); /* Efecto de cristal esmerilado */
+            backdrop-filter: blur(8px);
         }
 
         input, textarea, select {
-            width: 100%; padding: 16px; margin-bottom: 15px;
-            border-radius: 14px; border: 1px solid var(--border);
-            background-color: var(--input-bg);
-            color: var(--text-main); font-size: 17px;
-            transition: 0.3s;
+            width: 100%; padding: 14px; margin-bottom: 12px;
+            border-radius: 10px; border: 1px solid var(--border);
+            background: #2a2a2a; color: white; font-size: 16px;
         }
 
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background-color: #333;
+        button.btn-save {
+            width: 100%; padding: 16px; background: var(--primary);
+            border: none; border-radius: 10px; font-weight: bold;
+            cursor: pointer; color: black; font-size: 16px;
         }
 
-        textarea { resize: none; line-height: 1.6; font-family: 'Courier New', monospace; }
-
-        /* --- BOTÓN PREMIUM (Dorado y Negro) --- */
-        button {
-            width: 100%; padding: 20px;
-            background-color: var(--primary); /* Dorado brillante */
-            border: none; border-radius: 14px;
-            color: #000; /* Texto en negro para contraste */
-            font-weight: 800; font-size: 17px;
-            text-transform: uppercase; letter-spacing: 1.5px;
-            cursor: pointer; transition: 0.3s;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
-        }
-
-        button:hover { background-color: #f7ca18; transform: translateY(-3px); }
-        button:active { transform: translateY(1px) scale(0.99); }
-
-        /* --- FILTROS (Dorado y Oscuro) --- */
-        .filtros {
-            display: flex; gap: 12px;
-            margin-bottom: 25px;
-            justify-content: center;
-        }
-
+        .filtros { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
         .filter-btn {
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: 1px solid var(--border);
-            background: var(--card-bg);
-            color: white;
-            cursor: pointer;
-            font-size: 15px; font-weight: 600;
-            backdrop-filter: blur(5px);
-            transition: 0.3s;
+            padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border);
+            background: var(--card-bg); color: white; cursor: pointer;
         }
+        .filter-btn.active { background: var(--primary); color: black; border-color: var(--primary); }
 
-        .filter-btn.active {
-            background: var(--primary); /* Dorado */
-            color: black;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-        }
-
-        /* --- LISTA DE TONOS (Acordeón) --- */
-        .tono-group {
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-            transition: 0.3s;
-        }
-        
-        .tono-group:hover { border-color: rgba(255, 215, 0, 0.5); }
-
-        .tono-header {
-            padding: 18px 22px;
-            cursor: pointer;
-            display: flex; justify-content: space-between; align-items: center;
-            font-weight: 700;
-            background: rgba(37, 37, 37, 0.9);
-            color: var(--primary); /* Dorado */
-            font-size: 17px;
-        }
-
-        .tono-header:active { background: rgba(50, 50, 50, 0.9); }
-
-        .icono-tono { font-weight: 800; font-size: 1.2em; color: rgba(255, 215, 0, 0.6); }
-
-        .tono-content {
-            display: none;
-            padding: 12px;
-            background: rgba(24, 24, 24, 0.95);
-        }
-        
+        .tono-group { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: rgba(24, 24, 24, 0.8); }
+        .tono-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; background: #252525; color: var(--primary); font-weight: bold; }
+        .tono-content { display: none; padding: 10px; }
         .tono-group.open .tono-content { display: block; }
 
-        /* CANCIONES DENTRO DEL TONO */
-        .cancion-item {
-            background: rgba(30, 30, 30, 0.9);
-            margin-bottom: 10px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
-        }
-        
-        .cancion-item:hover { border-color: rgba(255, 215, 0, 0.3); }
-
-        .cancion-item::before {
-            content: '';
-            position: absolute; left: 0; top: 0;
-            height: 100%; width: 4px;
-            background-color: var(--primary); /* Borde dorado */
-            border-radius: 4px 0 0 4px;
-        }
-
-        .cancion-header {
-            padding: 16px 20px;
-            cursor: pointer;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .cancion-titulo { font-size: 17px; font-weight: 700; color: #fff; }
-
-        .arrow {
-            width: 10px; height: 10px;
-            border-right: 2px solid rgba(255, 215, 0, 0.6);
-            border-bottom: 2px solid rgba(255, 215, 0, 0.6);
-            transform: rotate(45deg);
-            transition: 0.3s;
-        }
-
-        .cancion-body {
-            display: none;
-            padding: 25px;
-            border-top: 1px solid var(--border);
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-            color: var(--text-muted);
-            font-size: 16px; /* Letra un poco más grande */
-            line-height: 1.7;
-            background: rgba(17, 17, 17, 0.98);
-        }
-
+        .cancion-item { background: #1e1e1e; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid var(--primary); position: relative; }
+        .cancion-header { padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .cancion-body { display: none; padding: 15px; border-top: 1px solid var(--border); white-space: pre-wrap; font-family: 'Courier New', monospace; color: var(--text-muted); font-size: 15px; }
         .cancion-item.open .cancion-body { display: block; }
-        .cancion-item.open .arrow { transform: rotate(-135deg); border-color: var(--primary); }
 
-        /* BOTÓN ELIMINAR (Súper sutil) */
-        .btn-del {
-            position: absolute; right: 20px; top: 16px;
-            color: #ff4d4d;
-            background: none; border: none; padding: 0; margin: 0;
-            font-size: 18px; font-weight: 800; width: auto; box-shadow: none;
-            cursor: pointer; opacity: 0.2;
-            transition: 0.3s;
-            display: none; /* Oculto por defecto */
-        }
-        
-        .cancion-item:hover .btn-del { display: block; opacity: 0.5; }
-        .btn-del:hover { opacity: 1 !important; transform: none; }
-
+        .btn-del { color: #ff4d4d; background: none; border: none; font-weight: bold; cursor: pointer; padding: 5px 10px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1><span>✨</span> Mi Repertorio Musical <span>✨</span></h1>
-        <p>Inspiración dorada para tu música</p>
-    </header>
+    <div class="music-bg" id="bg-music"></div>
+
+    <header><h1>🎵 Mi Repertorio Pro</h1></header>
 
     <div class="container">
-        
         <div class="input-group">
             <input type="text" id="titulo" placeholder="Título de la canción..." autocomplete="off">
             <div style="display:flex; gap:10px;">
@@ -288,8 +115,8 @@
                     <option value="B">Si (B)</option><option value="Bm">Si m (Bm)</option>
                 </select>
             </div>
-            <textarea id="letra" rows="8" placeholder="Escribe la letra y los acordes..."></textarea>
-            <button class="btn-save" onclick="guardarLetra()">Guardar Canción ✨</button>
+            <textarea id="letra" rows="6" placeholder="Letra y acordes..."></textarea>
+            <button class="btn-save" onclick="guardarLetra()">GUARDAR CANCIÓN</button>
         </div>
 
         <div class="filtros">
@@ -297,160 +124,102 @@
             <button class="filter-btn" onclick="cambiarRitmo('lenta', this)">❄️ Lentas</button>
         </div>
 
-        <div id="lista-tonos">
-            </div>
+        <div id="lista-tonos"></div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE TU FIREBASE (Revisa que sea tu URL correcta) ---
-        const firebaseConfig = {
-            databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" // <--- TU URL AQUÍ
-        };
+        // --- GENERADOR DE NOTAS DE FONDO ---
+        function crearNotasFondo() {
+            const bg = document.getElementById('bg-music');
+            const notas = ['♩', '♪', '♫', '♬', '♭', '♮', '♯', '∮', '𝄀', '𝄁', '𝄂', '𝄃', '𝄄', '𝄅', '𝄆', '𝄇', '𝄈', '𝄉', '𝄊', '𝄋', '𝄌', '𝄍', '𝄎', '𝄏', '𝄐', '𝄑', '𝄒', '𝄓', '𝄔', '𝄕', '𝄖', '𝄗', '𝄘', '𝄙', '𝄚', '𝄛', '𝄜', '𝄝', '𝄞', '𝄟', '𝄠', '𝄡', '𝄢', '𝄣', '𝄤', '𝄥', '𝄦', '𝄧', '𝄨', '𝄩', '𝄪', '𝄫', '𝄬', '𝄭', '𝄮', '𝄯', '𝄰', '𝄱', '𝄲', '𝄳'];
+            
+            for (let i = 0; i < 40; i++) {
+                const span = document.createElement('span');
+                span.className = 'music-note';
+                span.innerText = notas[Math.floor(Math.random() * notas.length)];
+                span.style.left = Math.random() * 100 + '%';
+                span.style.top = Math.random() * 100 + '%';
+                span.style.fontSize = Math.random() * (60 - 20) + 20 + 'px';
+                span.style.transform = `rotate(${Math.random() * 45}deg)`;
+                bg.appendChild(span);
+            }
+        }
+        crearNotasFondo();
 
-        // Inicializar Firebase
+        // --- LÓGICA DE FIREBASE ---
+        const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        let ritmoActual = 'rapida'; // Estado para saber qué filtro usar
+        let ritmoActual = 'rapida';
 
-        // --- FUNCIÓN PARA GUARDAR ---
         function guardarLetra() {
-            const tituloInput = document.getElementById('titulo');
-            const ritmoInput = document.getElementById('ritmo');
-            const tonalidadInput = document.getElementById('tonalidad');
-            const letraInput = document.getElementById('letra');
-
-            const titulo = tituloInput.value.trim();
-            const ritmo = ritmoInput.value;
-            const tonalidad = tonalidadInput.value;
-            const letra = letraInput.value.trim();
+            const titulo = document.getElementById('titulo').value.trim();
+            const ritmo = document.getElementById('ritmo').value;
+            const tonalidad = document.getElementById('tonalidad').value;
+            const letra = document.getElementById('letra').value.trim();
 
             if (titulo && letra) {
-                // Crear una nueva referencia con un ID único
-                const nuevaCancionRef = database.ref('canciones').push();
-                
-                // Guardar los datos
-                nuevaCancionRef.set({
-                    id: nuevaCancionRef.key, // Guardamos el ID para poder borrarla luego
-                    titulo: titulo,
-                    ritmo: ritmo,
-                    tonalidad: tonalidad,
-                    letra: letra,
-                    fecha: Date.now() // Guardamos la fecha para ordenar
-                }).then(() => {
-                    // Limpiar campos y feedback
-                    tituloInput.value = '';
-                    letraInput.value = '';
-                    alert("¡Canción guardada con éxito! ✨");
-                    tituloInput.focus(); // Volver a enfocar el título
-                }).catch((error) => {
-                    console.error("Error al guardar:", error);
-                    alert("Hubo un error al guardar. Revisa las reglas de Firebase.");
+                const nuevaRef = database.ref('canciones').push();
+                nuevaRef.set({ id: nuevaRef.key, titulo, ritmo, tonalidad, letra, fecha: Date.now() })
+                .then(() => {
+                    document.getElementById('titulo').value = '';
+                    document.getElementById('letra').value = '';
+                    alert("¡Guardada! ✨");
                 });
-            } else {
-                alert("Por favor, rellena tanto el título como la letra.");
             }
         }
 
-        // --- FUNCIÓN PARA ELIMINAR UNA CANCIÓN ---
         function eliminarCancion(id) {
-            if (confirm("¿Estás seguro de que quieres eliminar esta canción?")) {
-                database.ref('canciones/' + id).remove().then(() => {
-                    alert("Canción eliminada. 👋");
-                }).catch((error) => {
-                    console.error("Error al eliminar:", error);
-                    alert("No se pudo eliminar la canción.");
-                });
+            if (confirm("¿Eliminar canción?")) {
+                database.ref('canciones/' + id).remove();
             }
         }
 
-        // --- FUNCIÓN PARA CAMBIAR EL FILTRO DE RITMO ---
         function cambiarRitmo(ritmo, btn) {
-            // Cambiar estilo de botones
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
             ritmoActual = ritmo;
-            cargarCanciones(); // Recargar la lista con el nuevo filtro
+            cargarCanciones();
         }
 
-        // --- FUNCIÓN PARA LEER EN TIEMPO REAL Y RENDERIZAR LA ESTRUCTURA DE TONOS ---
         function cargarCanciones() {
             database.ref('canciones').on('value', (snapshot) => {
                 const listaDiv = document.getElementById('lista-tonos');
-                listaDiv.innerHTML = ''; // Limpiar lista antes de recargar
-                
-                if (!snapshot.exists()) {
-                    listaDiv.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;">No hay canciones de este tipo guardadas aún.</p>';
-                    return;
-                }
-
+                listaDiv.innerHTML = '';
                 const datos = [];
-                snapshot.forEach((childSnapshot) => {
-                    datos.push(childSnapshot.val());
-                });
+                snapshot.forEach(child => { datos.push(child.val()); });
 
-                // Agrupar las canciones por tonalidad, pero solo las que coinciden con el ritmo actual
-                const gruposPorTono = {};
+                const grupos = {};
                 datos.filter(d => d.ritmo === ritmoActual).forEach(c => {
-                    if (!gruposPorTono[c.tonalidad]) {
-                        gruposPorTono[c.tonalidad] = [];
-                    }
-                    gruposPorTono[c.tonalidad].push(c);
+                    if (!grupos[c.tonalidad]) grupos[c.tonalidad] = [];
+                    grupos[c.tonalidad].push(c);
                 });
 
-                // Obtener las tonalidades y ordenarlas alfabéticamente (C, D, E, F...)
-                const tonalidadesOrdenadas = Object.keys(gruposPorTono).sort();
-
-                if (tonalidadesOrdenadas.length === 0) {
-                    listaDiv.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;">No hay canciones en este ritmo.</p>';
-                    return;
-                }
-
-                // Crear los acordeones de tonalidades (Columnas)
-                tonalidadesOrdenadas.forEach((tono) => {
+                Object.keys(grupos).sort().forEach(tono => {
                     const tonoDiv = document.createElement('div');
                     tonoDiv.className = 'tono-group';
-                    
-                    const numCanciones = gruposPorTono[tono].length;
-
                     tonoDiv.innerHTML = `
                         <div class="tono-header" onclick="this.parentElement.classList.toggle('open')">
-                            <span>Tono: <span style="color:var(--primary);">${tono}</span></span>
-                            <span>${numCanciones} ${numCanciones === 1 ? 'canción' : 'canciones'}</span>
+                            <span>Tono: ${tono}</span>
+                            <span>${grupos[tono].length}</span>
                         </div>
                         <div class="tono-content">
-                            </div>
-                    `;
-                    
-                    const contentDiv = tonoDiv.querySelector('.tono-content');
-                    
-                    // Ordenar las canciones dentro del tono alfabéticamente por título
-                    const cancionesOrdenadas = gruposPorTono[tono].sort((a,b) => a.titulo.localeCompare(b.titulo));
-
-                    cancionesOrdenadas.forEach((can) => {
-                        const canDiv = document.createElement('div');
-                        canDiv.className = 'cancion-item';
-                        canDiv.innerHTML = `
-                            <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
-                                <span class="cancion-titulo">${can.titulo}</span>
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <button class="btn-del" onclick="event.stopPropagation(); eliminarCancion('${can.id}')">✕</button>
-                                    <div class="arrow"></div>
+                            ${grupos[tono].map(can => `
+                                <div class="cancion-item">
+                                    <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
+                                        <span>${can.titulo}</span>
+                                        <button class="btn-del" onclick="event.stopPropagation(); eliminarCancion('${can.id}')">✕</button>
+                                    </div>
+                                    <div class="cancion-body">${can.letra}</div>
                                 </div>
-                            </div>
-                            <div class="cancion-body">${can.letra}</div>
-                        `;
-                        contentDiv.appendChild(canDiv);
-                    });
-                    
+                            `).join('')}
+                        </div>
+                    `;
                     listaDiv.appendChild(tonoDiv);
                 });
             });
         }
-
-        // Carga inicial al abrir la página
         cargarCanciones();
-
     </script>
 </body>
 </html>
