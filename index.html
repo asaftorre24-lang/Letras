@@ -13,8 +13,6 @@
             --bg-base: #1e1e1e; 
             --card-bg: rgba(30, 30, 30, 0.95);
             --text-main: #ffffff;
-            --text-muted: #b3b3b3;
-            --border: #333333;
             --secondary: #34A853; 
         }
 
@@ -47,25 +45,26 @@
         .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; font-size: 18px; opacity: 0.5; }
 
         .filtros { display: flex; gap: 12px; margin-bottom: 25px; justify-content: center; }
-        .filter-btn { padding: 10px 25px; border-radius: 25px; border: 1px solid var(--border); background: var(--card-bg); color: white; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .filter-btn { padding: 10px 25px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; cursor: pointer; font-weight: bold; }
         .filter-btn.active { background: var(--primary); border-color: var(--primary); }
 
-        .tono-group { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 15px; overflow: hidden; background: rgba(24, 24, 24, 0.8); }
+        .tono-group { margin-bottom: 15px; border: 1px solid #333; border-radius: 15px; overflow: hidden; background: rgba(24, 24, 24, 0.8); }
         .tono-header { padding: 18px; display: flex; justify-content: space-between; background: #252525; color: var(--secondary); font-weight: bold; cursor: pointer; }
         .tono-content { display: none; padding: 12px; background: #0f0f0f; }
         .tono-group.open .tono-content { display: block; }
 
-        .cancion-item { background: #1e1e1e; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--primary); overflow: hidden; }
-        .cancion-header { padding: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .cancion-item { background: #1e1e1e; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--primary); }
+        .cancion-header { padding: 16px; display: flex; justify-content: space-between; cursor: pointer; }
         
         .tabs-cancion { display: flex; background: #121212; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #222; color: var(--text-muted); cursor: pointer; font-weight: bold; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #222; color: #888; cursor: pointer; font-weight: bold; }
         .tab-btn.active { background: var(--secondary); color: black; }
         
-        .cancion-body { display: none; padding: 20px; white-space: pre-wrap; font-family: 'Courier New', monospace; color: #fff; background: #000; font-size: 16px; line-height: 1.5; }
+        .cancion-body { display: none; padding: 20px; white-space: pre-wrap; font-family: 'Courier New', monospace; color: #fff; background: #000; font-size: 16px; }
         .cancion-item.open .cancion-body.visible { display: block; }
 
-        #admin-panel { display: none; background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 30px; border: 2px solid var(--secondary); }
+        #admin-panel { display: none; background: #111; padding: 20px; border-radius: 20px; margin-bottom: 30px; border: 2px solid var(--secondary); }
+        #admin-panel input, #admin-panel select, #admin-panel textarea { width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 8px; background: #222; color: white; border: 1px solid #444; }
     </style>
 </head>
 <body>
@@ -77,18 +76,18 @@
 
     <div class="container">
         <div id="admin-panel">
-            <input type="text" id="titulo" placeholder="Nombre de la canción..." style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; background:#2a2a2a; color:white; border:1px solid #444;">
-            <div style="display: flex; gap: 10px;">
-                <select id="ritmo" style="flex:1; padding:10px; border-radius:10px; background:#2a2a2a; color:white;"><option value="rapida">🔥 Rápida</option><option value="lenta">❄️ Lenta</option></select>
-                <select id="tonalidad" style="flex:1; padding:10px; border-radius:10px; background:#2a2a2a; color:white;"><option value="C">Do (C)</option><option value="D">Re (D)</option><option value="E">Mi (E)</option><option value="F">Fa (F)</option><option value="G">Sol (G)</option><option value="A">La (A)</option><option value="B">Si (B)</option></select>
+            <input type="text" id="titulo" placeholder="Nombre de la canción...">
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <select id="ritmo"><option value="rapida">🔥 Rápida</option><option value="lenta">❄️ Lenta</option></select>
+                <select id="tonalidad"><option value="C">Do (C)</option><option value="D">Re (D)</option><option value="E">Mi (E)</option><option value="F">Fa (F)</option><option value="G">Sol (G)</option><option value="A">La (A)</option><option value="B">Si (B)</option></select>
             </div>
-            <textarea id="letraVoces" rows="5" placeholder="Letra Voces..." style="width:100%; margin:10px 0; border-radius:10px; padding:10px; background:#2a2a2a; color:white; border:1px solid #444;"></textarea>
-            <textarea id="letraNotas" rows="5" placeholder="Letra Notas..." style="width:100%; margin:10px 0; border-radius:10px; padding:10px; background:#2a2a2a; color:white; border:1px solid #444;"></textarea>
-            <button onclick="guardarLetra()" style="width:100%; padding:15px; background:var(--secondary); border:none; border-radius:10px; font-weight:bold; color:white; cursor:pointer;">GUARDAR ☁️</button>
+            <textarea id="letraVoces" rows="4" placeholder="Letra Voces..."></textarea>
+            <textarea id="letraNotas" rows="4" placeholder="Letra Notas..."></textarea>
+            <button onclick="guardarLetra()" style="width:100%; padding:15px; background:var(--secondary); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">GUARDAR Y VOLVER 🏠</button>
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" oninput="renderizarLista()" placeholder="Busca una canción...">
+            <input type="text" id="searchInput" oninput="renderizarLista()" placeholder="Busca en tu repertorio...">
         </div>
 
         <div class="filtros">
@@ -100,7 +99,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE TU BASE DE DATOS
         const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -108,14 +106,11 @@
         let todasLasCanciones = [];
         let ritmoActual = ''; 
 
-        // CARGA Y ACTUALIZACIÓN AUTOMÁTICA
         function cargarCanciones() {
             database.ref('canciones').on('value', (snapshot) => {
                 todasLasCanciones = [];
                 snapshot.forEach(child => { 
-                    const d = child.val(); 
-                    d.fKey = child.key; 
-                    todasLasCanciones.push(d); 
+                    const d = child.val(); d.fKey = child.key; todasLasCanciones.push(d); 
                 });
                 renderizarLista();
             });
@@ -123,11 +118,7 @@
 
         function cambiarRitmo(r, btn) {
             if (ritmoActual === r) { ritmoActual = ''; btn.classList.remove('active'); }
-            else { 
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
-                btn.classList.add('active'); 
-                ritmoActual = r; 
-            }
+            else { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); ritmoActual = r; }
             renderizarLista();
         }
 
@@ -136,7 +127,6 @@
             const buscar = document.getElementById('searchInput').value.toLowerCase().trim();
             listaDiv.innerHTML = '';
 
-            // Lógica de filtrado mejorada
             const filtradas = todasLasCanciones.filter(c => {
                 const matchNombre = c.titulo.toLowerCase().includes(buscar);
                 const matchRitmo = ritmoActual === '' ? true : c.ritmo === ritmoActual;
@@ -148,7 +138,6 @@
 
             Object.keys(grupos).sort().forEach(tono => {
                 const tonoDiv = document.createElement('div');
-                // Si estás buscando o filtrando, se abren solas
                 const isOpen = (buscar !== "" || ritmoActual !== "") ? "open" : "";
                 tonoDiv.className = `tono-group ${isOpen}`;
                 tonoDiv.innerHTML = `<div class="tono-header" onclick="this.parentElement.classList.toggle('open')"><span>Tono: ${tono}</span><span>${grupos[tono].length} ▾</span></div><div class="tono-content"></div>`;
@@ -184,26 +173,19 @@
             
             if (t) {
                 database.ref('canciones').push({ 
-                    id: Date.now(), 
-                    titulo: t, 
-                    ritmo: r, 
-                    tonalidad: ton, 
-                    letraVoces: v, 
-                    letraNotas: n 
+                    id: Date.now(), titulo: t, ritmo: r, tonalidad: ton, letraVoces: v, letraNotas: n 
                 }).then(() => { 
-                    alert("¡Guardado con éxito!");
-                    // Limpiar campos
+                    alert("¡Guardado correctamente!");
+                    // RESET TOTAL: Cierra admin, limpia filtros y recarga la lista
+                    document.getElementById('admin-panel').style.display = 'none';
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNotas').value = '';
-                    // Mostrar todo en el inicio inmediatamente
                     ritmoActual = '';
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     renderizarLista(); 
                 });
-            } else {
-                alert("Ponle un título a la canción");
-            }
+            } else { alert("Por favor, escribe el título."); }
         }
 
         function loginAdmin() { if(prompt("Clave:") === "1234") document.getElementById('admin-panel').style.display = 'block'; }
