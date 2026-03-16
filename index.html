@@ -54,7 +54,15 @@
         <input type="text" id="t" placeholder="Nombre de la canción...">
         <div style="display:flex; gap:10px;">
             <select id="r"><option value="rapida">🔥 Rápida</option><option value="lenta">❄️ Lenta</option></select>
-            <select id="ton"><option value="C">Do (C)</option><option value="D">Re (D)</option><option value="E">Mi (E)</option><option value="F">Fa (F)</option><option value="G">Sol (G)</option><option value="A">La (A)</option><option value="B">Si (B)</option></select>
+            <select id="ton">
+                <option value="C">Do (C)</option><option value="C#">Do# (C#)</option>
+                <option value="Db">Reb (Db)</option><option value="D">Re (D)</option><option value="D#">Re# (D#)</option>
+                <option value="Eb">Mib (Eb)</option><option value="E">Mi (E)</option>
+                <option value="F">Fa (F)</option><option value="F#">Fa# (F#)</option>
+                <option value="Gb">Solb (Gb)</option><option value="G">Sol (G)</option><option value="G#">Sol# (G#)</option>
+                <option value="Ab">Lab (Ab)</option><option value="A">La (A)</option><option value="A#">La# (A#)</option>
+                <option value="Bb">Sib (Bb)</option><option value="B">Si (B)</option>
+            </select>
         </div>
         <textarea id="lv" rows="4" placeholder="Letra Voces..."></textarea>
         <textarea id="ln" rows="4" placeholder="Letra Notas..."></textarea>
@@ -74,10 +82,13 @@
     const db = firebase.database();
     let data = [];
     let filterR = '';
-    const ordenMusical = ["C", "D", "E", "F", "G", "A", "B"];
+    
+    // ORDEN MUSICAL ACTUALIZADO CON SOSTENIDOS Y BEMOLES
+    const ordenMusical = [
+        "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"
+    ];
 
     function load() {
-        // Recuperar filtro guardado
         const savedFilter = localStorage.getItem('filtroRitmo_Letras');
         if (savedFilter) { filterR = savedFilter; }
 
@@ -118,7 +129,6 @@
             return acc;
         }, {});
 
-        // Orden musical C, D, E, F, G, A, B
         const tonosOrdenados = Object.keys(groups).sort((a, b) => {
             return ordenMusical.indexOf(a) - ordenMusical.indexOf(b);
         });
@@ -182,4 +192,3 @@
 </script>
 </body>
 </html>
-
