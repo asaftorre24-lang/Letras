@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Jarvis Pro</title>
+    <title>Mis Letras Cloud - Desplegable</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
@@ -23,7 +23,6 @@
             margin: 0; padding: 0;
         }
         
-        /* Navegación */
         .tabs {
             display: flex;
             background: #000;
@@ -44,7 +43,7 @@
         }
         .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
-        .container { max-width: 1400px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
         .content-section { display: none; }
         .content-section.active { display: block; }
 
@@ -53,7 +52,7 @@
             background: var(--card);
             padding: 25px;
             border-radius: 15px;
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto 30px auto;
             border: 1px solid #333;
         }
@@ -68,57 +67,66 @@
             cursor: pointer; font-size: 16px; margin-top: 10px;
         }
 
-        /* Estructura de Visualización Doble Columna */
+        /* Acordeón de Canciones */
+        .acordeon-item {
+            background: var(--card);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            border-left: 4px solid var(--primary);
+        }
+        .acordeon-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            transition: 0.3s;
+        }
+        .acordeon-header:hover { background: rgba(255,255,255,0.05); }
+        .acordeon-titulo { margin: 0; font-size: 1.1em; color: var(--primary); }
+        .badge { background: #444; color: var(--primary); padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+
+        .acordeon-contenido {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background: rgba(0,0,0,0.2);
+        }
+        .acordeon-item.open .acordeon-contenido {
+            max-height: 2000px; /* Suficiente para letras largas */
+            padding-bottom: 20px;
+        }
+
+        /* Columnas internas */
         .view-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 20px;
+            padding: 20px;
         }
-        .view-column {
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 15px;
-            min-height: 80vh;
-        }
-        .column-header {
-            text-align: center;
+        .column-label {
             color: var(--primary);
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 2px;
             font-weight: bold;
-            margin-bottom: 20px;
-            padding: 10px;
-            border-bottom: 1px solid var(--primary);
-        }
-
-        /* Tarjetas pequeñas para las columnas */
-        .mini-card {
-            background: var(--card);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-top: 3px solid var(--primary);
-        }
-        .mini-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 10px;
+            display: block;
         }
-        .mini-card-title { color: var(--primary); margin: 0; font-size: 1.1em; }
-        .badge { background: #444; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
-        .letra-content {
+        .letra-box {
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #ccc;
-            line-height: 1.4;
+            font-size: 14px;
+            color: #ddd;
+            line-height: 1.5;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
         }
 
-        @media (max-width: 1000px) {
-            .view-grid { grid-template-columns: 1fr; }
-            .form-grid { grid-template-columns: 1fr; }
+        @media (max-width: 800px) {
+            .view-grid, .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -134,7 +142,7 @@
         
         <section id="nuevo" class="content-section active">
             <div class="input-group">
-                <h2 style="color:var(--primary); margin:0 0 20px 0; text-align:center;">Registrar Canción</h2>
+                <h2 style="color:var(--primary); text-align:center; margin-top:0;">Registrar Canción</h2>
                 <div class="form-grid">
                     <input type="text" id="titulo" placeholder="Título...">
                     <select id="velocidad">
@@ -153,43 +161,25 @@
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <textarea id="letraVoces" rows="12" placeholder="Escribe la letra para voces..."></textarea>
-                    <textarea id="letraNota" rows="12" placeholder="Letra con notas musicales..."></textarea>
+                    <textarea id="letraVoces" rows="12" placeholder="Letra Voces..."></textarea>
+                    <textarea id="letraNota" rows="12" placeholder="Letra con Notas..."></textarea>
                 </div>
-                <button class="btn-save" onclick="guardarLetra()">GUARDAR EN LA NUBE</button>
+                <button class="btn-save" onclick="guardarLetra()">GUARDAR CANCIÓN</button>
             </div>
         </section>
 
         <section id="lentas" class="content-section">
-            <div class="view-grid">
-                <div class="view-column">
-                    <div class="column-header">🎙️ Letra Voces</div>
-                    <div id="voces-lentas"></div>
-                </div>
-                <div class="view-column">
-                    <div class="column-header">🎸 Letra con Notas</div>
-                    <div id="notas-lentas"></div>
-                </div>
-            </div>
+            <div id="lista-lentas"></div>
         </section>
 
         <section id="rapidas" class="content-section">
-            <div class="view-grid">
-                <div class="view-column">
-                    <div class="column-header">🎙️ Letra Voces</div>
-                    <div id="voces-rapidas"></div>
-                </div>
-                <div class="view-column">
-                    <div class="column-header">🎸 Letra con Notas</div>
-                    <div id="notas-rapidas"></div>
-                </div>
-            </div>
+            <div id="lista-rapidas"></div>
         </section>
 
     </div>
 
     <script>
-        // Configuración de tu base de datos
+        // URL de tu base de datos confirmada en la imagen
         const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -202,6 +192,10 @@
             for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
             document.getElementById(sectionName).className += " active";
             evt.currentTarget.className += " active";
+        }
+
+        function toggleAcordeon(elemento) {
+            elemento.parentElement.classList.toggle('open');
         }
 
         function guardarLetra() {
@@ -221,46 +215,40 @@
                     tono: `${nota} ${tipo}`,
                     timestamp: Date.now()
                 }).then(() => {
-                    alert("¡Guardada!");
+                    alert("¡Canción guardada!");
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNota').value = '';
                 });
-            } else { alert("Falta el título"); }
+            } else { alert("Escribe el título."); }
         }
 
         database.ref('canciones').on('value', (snapshot) => {
-            const vLentas = document.getElementById('voces-lentas');
-            const nLentas = document.getElementById('notas-lentas');
-            const vRapidas = document.getElementById('voces-rapidas');
-            const nRapidas = document.getElementById('notas-rapidas');
-
-            // Limpiar todo
-            [vLentas, nLentas, vRapidas, nRapidas].forEach(el => el.innerHTML = '');
+            const lLentas = document.getElementById('lista-lentas');
+            const lRapidas = document.getElementById('lista-rapidas');
+            lLentas.innerHTML = ''; lRapidas.innerHTML = '';
             
             let canciones = [];
             snapshot.forEach(child => { canciones.push(child.val()); });
             canciones.reverse();
 
             canciones.forEach(item => {
-                // Función para crear el HTML de la mini tarjeta
-                const crearCard = (letra) => `
-                    <div class="mini-card">
-                        <div class="mini-card-header">
-                            <h4 class="mini-card-title">${item.nombre}</h4>
+                const html = `
+                    <div class="acordeon-item">
+                        <div class="acordeon-header" onclick="toggleAcordeon(this)">
+                            <h3 class="acordeon-titulo">${item.nombre}</h3>
                             <span class="badge">${item.tono}</span>
                         </div>
-                        <div class="letra-content">${letra}</div>
+                        <div class="acordeon-contenido">
+                            <div class="view-grid">
+                                ${item.letraVoces ? `<div><span class="column-label">🎙️ Voces</span><div class="letra-box">${item.letraVoces}</div></div>` : ''}
+                                ${item.letraNota ? `<div><span class="column-label">🎸 Notas</span><div class="letra-box">${item.letraNota}</div></div>` : ''}
+                            </div>
+                        </div>
                     </div>
                 `;
-
-                if (item.velocidad === 'lenta') {
-                    if (item.letraVoces) vLentas.insertAdjacentHTML('beforeend', crearCard(item.letraVoces));
-                    if (item.letraNota) nLentas.insertAdjacentHTML('beforeend', crearCard(item.letraNota));
-                } else {
-                    if (item.letraVoces) vRapidas.insertAdjacentHTML('beforeend', crearCard(item.letraVoces));
-                    if (item.letraNota) nRapidas.insertAdjacentHTML('beforeend', crearCard(item.letraNota));
-                }
+                if (item.velocidad === 'rapida') lRapidas.insertAdjacentHTML('beforeend', html);
+                else lLentas.insertAdjacentHTML('beforeend', html);
             });
         });
     </script>
