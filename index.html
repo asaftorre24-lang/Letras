@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Separado</title>
+    <title>Mis Letras Cloud - Pantalla Dividida</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
@@ -12,18 +12,14 @@
             --bg: #121212;
             --card: rgba(30, 30, 30, 0.98);
             --text: #ffffff;
-            --accent: #b3b3b3;
         }
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg);
-            background-image: linear-gradient(rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.9)), 
-                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM1NTUiIGZpbGwtb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNMCAwaDIwdjIwaC0yMFYwem0yMCAyMGgyMHYyMGgtMjBWMjB6TTAgMjBoMjB2MjBoLTIwVjIwem0yMCAwaDIwdjIwaC0yMFYwek0wIDBoMTB2MTBIMFYwek0xMCAxMGgxMHYxMEgxMFYxMHpNMjAgMjBoMTB2MTBIMjBWMjB6TTMwIDMwaDEwdjEwSDMwVjMwek0wIDIwaDEwdjEwSDBWMjB6TTEwIDMwaDEwdjEwSDEwVjMwek0yMCAwIGgxMHYxMEgyMFYwek0zMCAxMGgxMHYxMEgzMFYxMHpNMzAgMjB2NWg1VjIwSDMwRHpNMzAgMzBoNXY1SDMwVjMwek0zNSAyNWg1djVISDM1VjI1eiIvPjwvZz48L2c+PC9zdmc+');
             color: var(--text);
             margin: 0; padding: 0;
         }
         
-        /* Navegación */
         .tabs {
             display: flex;
             background: #000;
@@ -40,20 +36,19 @@
             color: white;
             cursor: pointer;
             font-weight: bold;
-            font-size: 13px;
         }
         .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 100%; margin: 10px auto; padding: 0 10px; }
         .content-section { display: none; }
         .content-section.active { display: block; }
 
-        /* Formulario */
+        /* Formulario de Registro */
         .input-group {
             background: var(--card);
-            padding: 25px;
+            padding: 20px;
             border-radius: 15px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto 30px auto;
             border: 1px solid #333;
         }
@@ -64,48 +59,44 @@
         }
         .btn-save {
             background: var(--primary); color: black; font-weight: bold;
-            padding: 18px; border: none; border-radius: 8px; width: 100%;
-            cursor: pointer; font-size: 16px; margin-top: 10px;
+            padding: 15px; border: none; border-radius: 8px; width: 100%;
+            cursor: pointer; font-size: 16px;
         }
 
-        /* Acordeón */
+        /* ACORDEÓN ESTRUCTURA LADO A LADO */
         .acordeon-item {
             background: var(--card);
-            margin-bottom: 12px;
-            border-radius: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
             overflow: hidden;
             border-left: 5px solid var(--primary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .acordeon-header {
-            padding: 18px 25px;
+            padding: 15px 20px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255,255,255,0.03);
         }
-        .acordeon-titulo { margin: 0; font-size: 1.15em; color: var(--primary); font-weight: bold; }
-        .badge { background: #444; color: var(--primary); padding: 3px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; }
+        .acordeon-titulo { margin: 0; font-size: 1.2em; color: var(--primary); }
+        .badge { background: #444; color: var(--primary); padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
 
         .acordeon-contenido {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.4s ease-in-out;
-            background: rgba(0,0,0,0.25);
+            transition: max-height 0.3s ease-out;
         }
         .acordeon-item.open .acordeon-contenido {
-            max-height: 5000px; /* Suficiente para letras largas */
-            padding-bottom: 25px;
+            max-height: 5000px;
         }
 
-        /* DISEÑO DE COLUMNAS SEPARADAS */
+        /* ESTA ES LA PARTE CLAVE: EL GRID DE DOS COLUMNAS */
         .view-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            padding: 20px;
-            border-top: 1px solid rgba(29, 185, 84, 0.2);
+            grid-template-columns: 1fr 1fr; /* Mitad y mitad */
+            gap: 10px;
+            padding: 10px;
+            border-top: 1px solid #333;
         }
         
         .column-section {
@@ -114,35 +105,33 @@
         }
 
         .column-header-info {
-            background: rgba(29, 185, 84, 0.1);
+            background: rgba(29, 185, 84, 0.15);
             color: var(--primary);
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 12px;
+            padding: 6px;
+            font-size: 11px;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
             text-align: center;
+            border-radius: 4px 4px 0 0;
             border: 1px solid rgba(29, 185, 84, 0.3);
+            border-bottom: none;
         }
 
         .letra-box {
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
-            font-size: 15px;
+            font-size: 14px;
             color: #eee;
-            line-height: 1.6;
-            background: #1a1a1a;
-            padding: 20px;
-            border-radius: 10px;
+            line-height: 1.4;
+            background: #000;
+            padding: 12px;
+            border-radius: 0 0 4px 4px;
             border: 1px solid #333;
-            min-height: 100px;
+            min-height: 200px;
         }
 
-        /* Estilo para celulares */
-        @media (max-width: 850px) {
-            .view-grid { grid-template-columns: 1fr; gap: 30px; }
+        /* Responsive: Si el celular es muy angosto, se ponen uno abajo de otro */
+        @media (max-width: 600px) {
+            .view-grid { grid-template-columns: 1fr; }
             .form-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -159,9 +148,9 @@
         
         <section id="nuevo" class="content-section active">
             <div class="input-group">
-                <h2 style="color:var(--primary); text-align:center; margin-top:0;">Nuevo Registro</h2>
+                <h2 style="color:var(--primary); text-align:center; margin:0 0 15px 0;">Nueva Canción</h2>
                 <div class="form-grid">
-                    <input type="text" id="titulo" placeholder="Nombre de la canción...">
+                    <input type="text" id="titulo" placeholder="Título...">
                     <select id="velocidad">
                         <option value="lenta">Ritmo: Lenta</option>
                         <option value="rapida">Ritmo: Rápida</option>
@@ -177,11 +166,11 @@
                         <option value="Menor">Menor</option>
                     </select>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <textarea id="letraVoces" rows="12" placeholder="Pegar solo letra para VOCES..."></textarea>
-                    <textarea id="letraNota" rows="12" placeholder="Pegar LETRA CON ACORDES..."></textarea>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <textarea id="letraVoces" rows="10" placeholder="LADO IZQUIERDO: Letra Voces..."></textarea>
+                    <textarea id="letraNota" rows="10" placeholder="LADO DERECHO: Letra con Acordes..."></textarea>
                 </div>
-                <button class="btn-save" onclick="guardarLetra()">GUARDAR EN NUBE</button>
+                <button class="btn-save" style="margin-top:15px;" onclick="guardarLetra()">GUARDAR REPERTORIO</button>
             </div>
         </section>
 
@@ -211,7 +200,6 @@
         }
 
         function toggleAcordeon(elemento) {
-            // Cerrar otros para que no se amontonen (opcional)
             const items = document.getElementsByClassName("acordeon-item");
             for(let item of items) {
                 if(item !== elemento.parentElement) item.classList.remove('open');
@@ -221,71 +209,12 @@
 
         function guardarLetra() {
             const t = document.getElementById('titulo').value.trim();
-            const lv = document.getElementById('letraVoces').value.trim();
-            const ln = document.getElementById('letraNota').value.trim();
+            const lv = document.getElementById('letraVoces').value;
+            const ln = document.getElementById('letraNota').value;
             const v = document.getElementById('velocidad').value;
             const nota = document.getElementById('nota').value;
             const tipo = document.getElementById('tipoTono').value;
 
             if (t) {
                 database.ref('canciones').push().set({
-                    nombre: t,
-                    letraVoces: lv || "",
-                    letraNota: ln || "",
-                    velocidad: v,
-                    tono: `${nota} ${tipo}`,
-                    timestamp: Date.now()
-                }).then(() => {
-                    alert("¡Canción registrada!");
-                    document.getElementById('titulo').value = '';
-                    document.getElementById('letraVoces').value = '';
-                    document.getElementById('letraNota').value = '';
-                });
-            } else { alert("Escribe el nombre de la canción."); }
-        }
-
-        database.ref('canciones').on('value', (snapshot) => {
-            const lLentas = document.getElementById('lista-lentas');
-            const lRapidas = document.getElementById('lista-rapidas');
-            lLentas.innerHTML = ''; lRapidas.innerHTML = '';
-            
-            if (!snapshot.exists()) return;
-
-            let canciones = [];
-            snapshot.forEach(child => { 
-                let d = child.val();
-                if(d) canciones.push(d); 
-            });
-            canciones.reverse();
-
-            canciones.forEach(item => {
-                const html = `
-                    <div class="acordeon-item">
-                        <div class="acordeon-header" onclick="toggleAcordeon(this)">
-                            <h3 class="acordeon-titulo">${item.nombre}</h3>
-                            <span class="badge">${item.tono || "Sin Tono"}</span>
-                        </div>
-                        <div class="acordeon-contenido">
-                            <div class="view-grid">
-                                
-                                <div class="column-section">
-                                    <div class="column-header-info">🎙️ Solo Letra / Voces</div>
-                                    <div class="letra-box">${item.letraVoces || "No hay letra de voces registrada."}</div>
-                                </div>
-
-                                <div class="column-section">
-                                    <div class="column-header-info">🎸 Letra con Acordes</div>
-                                    <div class="letra-box">${item.letraNota || "No hay notas musicales registradas."}</div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                `;
-                if (item.velocidad === 'rapida') lRapidas.insertAdjacentHTML('beforeend', html);
-                else lLentas.insertAdjacentHTML('beforeend', html);
-            });
-        });
-    </script>
-</body>
-</html>
+                    nombre: t
