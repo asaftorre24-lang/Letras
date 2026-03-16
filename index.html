@@ -9,12 +9,12 @@
 
     <style>
         :root {
-            --primary: #1DB954; 
-            --bg-base: #121212;
-            --card-bg: rgba(30, 30, 30, 0.9);
+            --primary: #1DB954; /* VERDE PURO */
+            --bg-base: #0b0b0b;
+            --card-bg: rgba(25, 25, 25, 0.95);
             --text-main: #ffffff;
             --text-muted: #b3b3b3;
-            --border: #333333;
+            --border: #282828;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -29,77 +29,90 @@
             overflow-x: hidden;
         }
 
-        /* --- FONDO CON NOTAS MUSICALES --- */
+        /* --- FONDO CON TODAS LAS FIGURAS MUSICALES --- */
         .music-bg {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: -1;
             pointer-events: none;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #1e1e30, #121212);
+            background: linear-gradient(to bottom, #121212, #000000);
         }
 
         .music-note {
             position: absolute;
-            color: rgba(255, 255, 255, 0.04); /* Súper sutil para no cansar la vista */
+            color: rgba(29, 185, 84, 0.1); /* NOTAS EN VERDE MUY SUTIL */
             font-family: serif;
             user-select: none;
         }
 
         .container { width: 100%; max-width: 600px; padding: 20px; z-index: 1; }
 
-        header { width: 100%; text-align: center; padding: 25px 0; border-bottom: 1px solid var(--border); background: rgba(18, 18, 18, 0.8); }
-        header h1 { font-size: 24px; color: var(--primary); margin: 0; }
+        header { 
+            width: 100%; text-align: center; padding: 20px 0; 
+            border-bottom: 2px solid var(--primary); 
+            background: #000;
+        }
+        header h1 { font-size: 24px; color: var(--primary); margin: 0; text-transform: uppercase; letter-spacing: 2px; }
 
         .input-group {
             background: var(--card-bg);
             padding: 20px; border-radius: 15px; margin-bottom: 25px;
             border: 1px solid var(--border);
-            backdrop-filter: blur(8px);
         }
 
         input, textarea, select {
             width: 100%; padding: 14px; margin-bottom: 12px;
             border-radius: 10px; border: 1px solid var(--border);
-            background: #2a2a2a; color: white; font-size: 16px;
+            background: #181818; color: white; font-size: 16px;
         }
+
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
 
         button.btn-save {
             width: 100%; padding: 16px; background: var(--primary);
             border: none; border-radius: 10px; font-weight: bold;
             cursor: pointer; color: black; font-size: 16px;
+            text-transform: uppercase;
         }
 
         .filtros { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
         .filter-btn {
             padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border);
-            background: var(--card-bg); color: white; cursor: pointer;
+            background: #181818; color: white; cursor: pointer; font-weight: bold;
         }
         .filter-btn.active { background: var(--primary); color: black; border-color: var(--primary); }
 
-        .tono-group { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: rgba(24, 24, 24, 0.8); }
-        .tono-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; background: #252525; color: var(--primary); font-weight: bold; }
-        .tono-content { display: none; padding: 10px; }
+        /* ACORDEONES POR TONO */
+        .tono-group { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .tono-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; background: #181818; color: var(--primary); font-weight: bold; font-size: 18px; border-bottom: 1px solid var(--border); }
+        .tono-content { display: none; padding: 10px; background: #0f0f0f; }
         .tono-group.open .tono-content { display: block; }
 
-        .cancion-item { background: #1e1e1e; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid var(--primary); position: relative; }
-        .cancion-header { padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .cancion-body { display: none; padding: 15px; border-top: 1px solid var(--border); white-space: pre-wrap; font-family: 'Courier New', monospace; color: var(--text-muted); font-size: 15px; }
+        /* CANCIONES */
+        .cancion-item { background: #1e1e1e; margin-bottom: 8px; border-radius: 8px; border-left: 5px solid var(--primary); position: relative; }
+        .cancion-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .cancion-titulo { font-weight: bold; font-size: 16px; }
+        
+        .cancion-body { 
+            display: none; padding: 20px; border-top: 1px solid var(--border); 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; 
+            color: #fff; font-size: 16px; line-height: 1.5;
+        }
         .cancion-item.open .cancion-body { display: block; }
 
-        .btn-del { color: #ff4d4d; background: none; border: none; font-weight: bold; cursor: pointer; padding: 5px 10px; }
+        .btn-del { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; padding: 5px 10px; }
     </style>
 </head>
 <body>
 
     <div class="music-bg" id="bg-music"></div>
 
-    <header><h1>🎵 Mi Repertorio Pro</h1></header>
+    <header><h1>REPERTORIO VERDE 🎵</h1></header>
 
     <div class="container">
         <div class="input-group">
-            <input type="text" id="titulo" placeholder="Título de la canción..." autocomplete="off">
+            <input type="text" id="titulo" placeholder="Nombre de la canción..." autocomplete="off">
             <div style="display:flex; gap:10px;">
                 <select id="ritmo">
                     <option value="rapida">🔥 Rápida</option>
@@ -115,8 +128,8 @@
                     <option value="B">Si (B)</option><option value="Bm">Si m (Bm)</option>
                 </select>
             </div>
-            <textarea id="letra" rows="6" placeholder="Letra y acordes..."></textarea>
-            <button class="btn-save" onclick="guardarLetra()">GUARDAR CANCIÓN</button>
+            <textarea id="letra" rows="6" placeholder="Letra y acordes aquí..."></textarea>
+            <button class="btn-save" onclick="guardarLetra()">GUARDAR EN LA NUBE ✨</button>
         </div>
 
         <div class="filtros">
@@ -128,25 +141,25 @@
     </div>
 
     <script>
-        // --- GENERADOR DE NOTAS DE FONDO ---
+        // GENERADOR DE FIGURAS MUSICALES (Claves, corcheas, silencios, etc.)
         function crearNotasFondo() {
             const bg = document.getElementById('bg-music');
-            const notas = ['♩', '♪', '♫', '♬', '♭', '♮', '♯', '∮', '𝄀', '𝄁', '𝄂', '𝄃', '𝄄', '𝄅', '𝄆', '𝄇', '𝄈', '𝄉', '𝄊', '𝄋', '𝄌', '𝄍', '𝄎', '𝄏', '𝄐', '𝄑', '𝄒', '𝄓', '𝄔', '𝄕', '𝄖', '𝄗', '𝄘', '𝄙', '𝄚', '𝄛', '𝄜', '𝄝', '𝄞', '𝄟', '𝄠', '𝄡', '𝄢', '𝄣', '𝄤', '𝄥', '𝄦', '𝄧', '𝄨', '𝄩', '𝄪', '𝄫', '𝄬', '𝄭', '𝄮', '𝄯', '𝄰', '𝄱', '𝄲', '𝄳'];
+            const figuras = ['♩', '♪', '♫', '♬', '♭', '♮', '♯', '∮', '𝄞', '𝄢', '𝄤', '𝄥', '𝄦', '𝄧', '𝄨'];
             
-            for (let i = 0; i < 40; i++) {
+            for (let i = 0; i < 50; i++) {
                 const span = document.createElement('span');
                 span.className = 'music-note';
-                span.innerText = notas[Math.floor(Math.random() * notas.length)];
+                span.innerText = figuras[Math.floor(Math.random() * figuras.length)];
                 span.style.left = Math.random() * 100 + '%';
                 span.style.top = Math.random() * 100 + '%';
-                span.style.fontSize = Math.random() * (60 - 20) + 20 + 'px';
-                span.style.transform = `rotate(${Math.random() * 45}deg)`;
+                span.style.fontSize = Math.random() * (50 - 15) + 15 + 'px';
+                span.style.opacity = Math.random() * (0.2 - 0.05) + 0.05;
                 bg.appendChild(span);
             }
         }
         crearNotasFondo();
 
-        // --- LÓGICA DE FIREBASE ---
+        // FIREBASE
         const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -164,13 +177,13 @@
                 .then(() => {
                     document.getElementById('titulo').value = '';
                     document.getElementById('letra').value = '';
-                    alert("¡Guardada! ✨");
+                    alert("¡Canción guardada correctamente! ✌️");
                 });
             }
         }
 
         function eliminarCancion(id) {
-            if (confirm("¿Eliminar canción?")) {
+            if (confirm("¿Seguro que quieres borrarla?")) {
                 database.ref('canciones/' + id).remove();
             }
         }
@@ -201,13 +214,13 @@
                     tonoDiv.innerHTML = `
                         <div class="tono-header" onclick="this.parentElement.classList.toggle('open')">
                             <span>Tono: ${tono}</span>
-                            <span>${grupos[tono].length}</span>
+                            <span>${grupos[tono].length} cancs</span>
                         </div>
                         <div class="tono-content">
                             ${grupos[tono].map(can => `
                                 <div class="cancion-item">
                                     <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
-                                        <span>${can.titulo}</span>
+                                        <span class="cancion-titulo">${can.titulo}</span>
                                         <button class="btn-del" onclick="event.stopPropagation(); eliminarCancion('${can.id}')">✕</button>
                                     </div>
                                     <div class="cancion-body">${can.letra}</div>
