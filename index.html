@@ -3,182 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Jarvis Edition</title>
+    <title>Mis Letras Cloud - Repertorio Profesional</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
         :root {
             --primary: #1DB954;
             --bg: #121212;
-            --card: rgba(30, 30, 30, 0.95);
+            --card: rgba(30, 30, 30, 0.98);
             --text: #ffffff;
             --accent: #b3b3b3;
         }
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg);
-            background-image: 
-                linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)),
+            background-image: linear-gradient(rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.9)), 
                 url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM1NTUiIGZpbGwtb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNMCAwaDIwdjIwaC0yMFYwem0yMCAyMGgyMHYyMGgtMjBWMjB6TTAgMjBoMjB2MjBoLTIwVjIwem0yMCAwaDIwdjIwaC0yMFYwek0wIDBoMTB2MTBIMFYwek0xMCAxMGgxMHYxMEgxMFYxMHpNMjAgMjBoMTB2MTBIMjBWMjB6TTMwIDMwaDEwdjEwSDMwVjMwek0wIDIwaDEwdjEwSDBWMjB6TTEwIDMwaDEwdjEwSDEwVjMwek0yMCAwIGgxMHYxMEgyMFYwek0zMCAxMGgxMHYxMEgzMFYxMHpNMzAgMjB2NWg1VjIwSDMwRHpNMzAgMzBoNXY1SDMwVjMwek0zNSAyNWg1djVISDM1VjI1eiIvPjwvZz48L2c+PC9zdmc+');
             color: var(--text);
-            margin: 0;
-            padding: 20px;
+            margin: 0; padding: 0;
         }
-        .container { width: 100%; max-width: 1200px; margin: auto; }
-        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: var(--accent); margin-bottom: 25px; font-size: 0.9em; }
+        
+        /* Navegación por Pestañas */
+        .tabs {
+            display: flex;
+            background: #000;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            justify-content: center;
+            border-bottom: 2px solid var(--primary);
+        }
+        .tab-btn {
+            padding: 15px 25px;
+            border: none;
+            background: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
-        /* Formulario de Entrada */
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        /* Estilos del Formulario */
         .input-group {
             background: var(--card);
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
-            margin-bottom: 30px;
-            border: 1px solid #333;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .form-top { display: flex; gap: 10px; margin-bottom: 10px; }
-        select { background: #282828; color: white; border-radius: 8px; padding: 10px; border: 1px solid #444; cursor: pointer; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: rgba(0,0,0,0.3); color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; transition: 0.3s; }
-        button:hover { background: #1ed760; transform: translateY(-2px); }
-
-        /* Columnas de Clasificación */
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .section-title { 
-            text-align: center; 
-            padding: 12px; 
-            background: rgba(29, 185, 84, 0.1); 
-            border-radius: 8px; 
-            color: var(--primary);
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-bottom: 20px;
-            border: 1px solid var(--primary);
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        select, input, textarea {
+            background: #282828; color: white; border: 1px solid #444;
+            padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box;
+        }
+        textarea { resize: vertical; margin-top: 10px; }
+        .btn-save {
+            background: var(--primary); color: black; font-weight: bold;
+            padding: 18px; border: none; border-radius: 8px; width: 100%;
+            cursor: pointer; font-size: 16px; margin-top: 20px;
         }
 
-        /* Tarjetas de Canciones */
+        /* Listas de canciones */
         .cancion-card {
             background: var(--card);
             border-radius: 12px;
+            padding: 20px;
             margin-bottom: 25px;
-            padding: 15px;
-            border-left: 5px solid var(--primary);
+            border-left: 6px solid var(--primary);
         }
-        .cancion-titulo { font-size: 1.3em; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .columnas-view { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .col { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; }
-        .col-label { font-size: 0.7em; color: var(--primary); font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
-        .letra-box { white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; color: #ddd; }
+        .cancion-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .badge { background: #444; padding: 4px 10px; border-radius: 20px; font-size: 11px; color: var(--primary); }
+        
+        .columnas-view { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .letra-box { 
+            white-space: pre-wrap; font-family: 'Courier New', monospace; 
+            font-size: 13px; color: #ccc; line-height: 1.6;
+            background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px;
+        }
+        .label-col { font-size: 10px; text-transform: uppercase; color: var(--primary); margin-bottom: 5px; font-weight: bold;}
 
-        @media (max-width: 900px) { .main-grid, .form-row { grid-template-columns: 1fr; } }
+        @media (max-width: 700px) { .form-grid, .columnas-view { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🎵 Mis Letras Cloud</h1>
-        <div class="subtitle">Conexión directa: canciones-56abc</div>
-        
-        <div class="input-group">
-            <div class="form-top">
-                <input type="text" id="titulo" placeholder="Nombre de la canción..." style="flex: 3;">
-                <select id="velocidad" style="flex: 1;">
-                    <option value="lenta">🐢 Lenta</option>
-                    <option value="rapida">⚡ Rápida</option>
-                </select>
-            </div>
-            <div class="form-row">
-                <textarea id="letraVoces" rows="8" placeholder="Escribe la Letra Voces aquí..."></textarea>
-                <textarea id="letraNota" rows="8" placeholder="Escribe la Letra con Nota Original..."></textarea>
-            </div>
-            <button onclick="guardarLetra()">GUARDAR EN MI NUBE</button>
-        </div>
+    <nav class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'nuevo')">➕ GUARDAR NUEVA</button>
+        <button class="tab-btn" onclick="openTab(event, 'lentas')">🐢 LENTAS</button>
+        <button class="tab-btn" onclick="openTab(event, 'rapidas')">⚡ RÁPIDAS</button>
+    </nav>
 
-        <div class="main-grid">
-            <div>
-                <div class="section-title">Canciones Lentas</div>
-                <div id="lista-lentas"></div>
+    <div class="container">
+        
+        <section id="nuevo" class="content-section active">
+            <div class="input-group">
+                <h2 style="color:var(--primary); margin-top:0;">Agregar al Repertorio</h2>
+                <div class="form-grid">
+                    <input type="text" id="titulo" placeholder="Título de la canción...">
+                    <select id="velocidad">
+                        <option value="lenta">Ritmo: Lenta</option>
+                        <option value="rapida">Ritmo: Rápida</option>
+                    </select>
+                    <select id="tonalidad">
+                        <option value="Mayor">Tono: Mayor</option>
+                        <option value="Menor">Tono: Menor</option>
+                    </select>
+                </div>
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                    <textarea id="letraVoces" rows="10" placeholder="Letra Voces..."></textarea>
+                    <textarea id="letraNota" rows="10" placeholder="Letra con Nota Original..."></textarea>
+                </div>
+                <button class="btn-save" onclick="guardarLetra()">GUARDAR CANCIÓN</button>
             </div>
-            <div>
-                <div class="section-title">Canciones Rápidas</div>
-                <div id="lista-rapidas"></div>
-            </div>
-        </div>
+        </section>
+
+        <section id="lentas" class="content-section">
+            <h2 style="text-align:center; color:var(--accent);">🐢 REPERTORIO LENTAS</h2>
+            <div id="lista-lentas"></div>
+        </section>
+
+        <section id="rapidas" class="content-section">
+            <h2 style="text-align:center; color:var(--accent);">⚡ REPERTORIO RÁPIDAS</h2>
+            <div id="lista-rapidas"></div>
+        </section>
+
     </div>
 
     <script>
-        // CONFIGURACIÓN CORREGIDA SEGÚN TU IMAGEN
-        const firebaseConfig = {
-            databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/"
-        };
-
+        const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // FUNCIÓN GUARDAR
+        function openTab(evt, sectionName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("content-section");
+            for (i = 0; i < tabcontent.length; i++) { tabcontent[i].className = tabcontent[i].className.replace(" active", ""); }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+            document.getElementById(sectionName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+
         function guardarLetra() {
             const t = document.getElementById('titulo').value;
             const lv = document.getElementById('letraVoces').value;
             const ln = document.getElementById('letraNota').value;
-            const vel = document.getElementById('velocidad').value;
+            const v = document.getElementById('velocidad').value;
+            const ton = document.getElementById('tonalidad').value;
 
             if (t && (lv || ln)) {
                 database.ref('canciones').push().set({
                     nombre: t,
                     letraVoces: lv,
                     letraNota: ln,
-                    velocidad: vel,
+                    velocidad: v,
+                    tonoTipo: ton,
                     timestamp: Date.now()
                 }).then(() => {
+                    alert("¡Canción guardada! ✨ Revisa la pestaña de su ritmo.");
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNota').value = '';
-                    alert("¡Guardado con éxito! ✨");
-                }).catch(e => alert("Error: " + e.message));
-            } else {
-                alert("Escribe al menos el título de la canción.");
-            }
+                });
+            } else { alert("Completa al menos el título."); }
         }
 
-        // LEER DATOS EN TIEMPO REAL
         database.ref('canciones').on('value', (snapshot) => {
-            const listaLentas = document.getElementById('lista-lentas');
-            const listaRapidas = document.getElementById('lista-rapidas');
-            listaLentas.innerHTML = '';
-            listaRapidas.innerHTML = '';
+            const listLentas = document.getElementById('lista-lentas');
+            const listRapidas = document.getElementById('lista-rapidas');
+            listLentas.innerHTML = ''; listRapidas.innerHTML = '';
             
             let canciones = [];
-            snapshot.forEach(child => {
-                let data = child.val();
-                data.id = child.key; // Guardamos el ID por si luego quieres borrar
-                canciones.push(data);
-            });
-            canciones.reverse(); // Mostrar las últimas agregadas primero
+            snapshot.forEach(child => { canciones.push(child.val()); });
+            canciones.reverse();
 
             canciones.forEach(item => {
-                const card = `
+                const html = `
                     <div class="cancion-card">
-                        <div class="cancion-titulo">${item.nombre}</div>
+                        <div class="cancion-header">
+                            <h3 style="margin:0; color:var(--primary);">${item.nombre}</h3>
+                            <span class="badge">${item.tonoTipo}</span>
+                        </div>
                         <div class="columnas-view">
-                            <div class="col">
-                                <div class="col-label">Voces</div>
+                            <div>
+                                <div class="label-col">Letra Voces</div>
                                 <div class="letra-box">${item.letraVoces || '---'}</div>
                             </div>
-                            <div class="col">
-                                <div class="col-label">Nota Original</div>
+                            <div>
+                                <div class="label-col">Letra Nota Original</div>
                                 <div class="letra-box">${item.letraNota || '---'}</div>
                             </div>
                         </div>
                     </div>
                 `;
-
-                if (item.velocidad === 'rapida') {
-                    listaRapidas.insertAdjacentHTML('beforeend', card);
-                } else {
-                    listaLentas.insertAdjacentHTML('beforeend', card);
-                }
+                if (item.velocidad === 'rapida') { listRapidas.insertAdjacentHTML('beforeend', html); }
+                else { listLentas.insertAdjacentHTML('beforeend', html); }
             });
         });
     </script>
