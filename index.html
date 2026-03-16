@@ -159,13 +159,10 @@
 </div>
 
 <script>
-    // Configuración Firebase original
     const app = firebase.initializeApp({ databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" });
     const db = firebase.database();
     let data = [];
     let filterR = '';
-
-    // ORDEN MUSICAL REQUERIDO
     const ordenMusical = ["C", "D", "E", "F", "G", "A", "B"];
 
     function load() {
@@ -177,6 +174,7 @@
     }
 
     function setR(r) {
+        // Lógica de activar y desmarcar
         filterR = (filterR === r) ? '' : r;
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
@@ -188,12 +186,14 @@
         const query = document.getElementById('search').value.toLowerCase();
         list.innerHTML = '';
 
+        // FILTRO CORREGIDO: Ahora sí reconoce el ritmo
         const filtered = data.filter(c => {
             const matchesR = (filterR === '' || c.ritmo === filterR);
             const matchesQ = c.titulo.toLowerCase().includes(query);
             return (matchesR && matchesQ);
         });
 
+        // Agrupar por tono
         const groups = filtered.reduce((acc, c) => {
             let t = c.tonalidad || "C";
             if(t === "undefined") t = "C"; 
@@ -202,14 +202,14 @@
             return acc;
         }, {});
 
-        // Lógica de ordenamiento por notas
+        // Ordenar tonos
         const tonosOrdenados = Object.keys(groups).sort((a, b) => {
             return ordenMusical.indexOf(a) - ordenMusical.indexOf(b);
         });
 
         tonosOrdenados.forEach(ton => {
             const div = document.createElement('div');
-            div.className = 'tono-box'; // Cerrado por defecto
+            div.className = 'tono-box';
             div.innerHTML = `
                 <div class="tono-title" onclick="this.parentElement.classList.toggle('open')">
                     <span>Tono: ${ton}</span> <span>${groups[ton].length} ▾</span>
