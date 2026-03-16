@@ -44,10 +44,8 @@
         .google-logo span:nth-child(5) { color: #34A853; }
         .google-logo span:nth-child(6) { color: #DB4437; }
 
-        /* Botón Admin Discreto */
         .admin-trigger { position: absolute; right: 15px; top: 25px; background: none; border: 1px solid #333; color: #555; border-radius: 5px; padding: 5px; font-size: 10px; cursor: pointer; }
 
-        /* --- PANEL DE EDICIÓN (Oculto por defecto) --- */
         #admin-panel { display: none; background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 30px; border: 2px solid var(--secondary); }
         
         input, textarea, select { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: #2a2a2a; color: white; font-size: 16px; }
@@ -56,6 +54,11 @@
         
         button.btn-save { width: 100%; padding: 16px; background-color: var(--secondary); border: none; border-radius: 12px; color: black; text-transform: uppercase; font-weight: bold; }
         
+        /* BUSCADOR ESTILO GOOGLE */
+        .search-box { width: 100%; margin-bottom: 20px; position: relative; }
+        .search-box input { padding-left: 45px; border-radius: 30px; border: 1px solid #555; background: #222; }
+        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; font-size: 18px; opacity: 0.5; }
+
         .filtros { display: flex; gap: 12px; margin-bottom: 25px; justify-content: center; }
         .filter-btn { padding: 10px 25px; border-radius: 25px; border: 1px solid var(--border); background: var(--card-bg); color: white; cursor: pointer; font-weight: bold; }
         .filter-btn.active { background: var(--primary); border-color: var(--primary); }
@@ -71,10 +74,9 @@
         .tab-btn { flex: 1; padding: 12px; border: none; background: #222; color: var(--text-muted); cursor: pointer; font-weight: bold; }
         .tab-btn.active { background: var(--secondary); color: black; }
         
-        .cancion-body { display: none; padding: 20px; white-space: pre-wrap; font-family: 'Courier New', monospace; color: #fff; background: #000; font-size: 16px; }
+        .cancion-body { display: none; padding: 20px; white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; color: #fff; background: #000; font-size: 16px; line-height: 1.5; }
         .cancion-item.open .cancion-body.visible { display: block; }
 
-        /* Botón de borrar (Solo se verá en modo Admin) */
         .btn-del { display: none; color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -90,8 +92,8 @@
     <div class="container">
         
         <div id="admin-panel">
-            <h3 style="color: var(--secondary); margin-top: 0; text-align: center;">MODO EDITOR ACTIVO ✨</h3>
-            <input type="text" id="titulo" placeholder="🔍 Nombre de la canción...">
+            <h3 style="color: var(--secondary); margin-top: 0; text-align: center;">MODO EDITOR ✨</h3>
+            <input type="text" id="titulo" placeholder="Nombre de la canción...">
             <div class="form-row">
                 <select id="ritmo">
                     <option value="rapida">🔥 Rápida</option>
@@ -105,40 +107,144 @@
                 </select>
             </div>
             <p style="margin: 0 0 5px 0; font-size: 13px; color: var(--secondary); font-weight: bold;">VOCES (SOLO LETRA)</p>
-            <textarea id="letraVoces" rows="5"></textarea>
+            <textarea id="letraVoces" rows="5" placeholder="Pega la letra aquí..."></textarea>
             <p style="margin: 0 0 5px 0; font-size: 13px; color: var(--secondary); font-weight: bold;">NOTA ORIGINAL</p>
-            <textarea id="letraNotas" rows="5"></textarea>
+            <textarea id="letraNotas" rows="5" placeholder="Pega las notas aquí..."></textarea>
             <button class="btn-save" onclick="guardarLetra()">GUARDAR EN LA NUBE ☁️</button>
             <button style="width:100%; margin-top:10px; background:none; border:none; color:gray; cursor:pointer;" onclick="location.reload()">Cerrar Sesión</button>
         </div>
 
+        <div class="search-box">
+            <input type="text" id="searchInput" onkeyup="filtrarPorNombre()" placeholder="Buscar canción por nombre...">
+        </div>
+
         <div class="filtros">
-            <button class="filter-btn active" onclick="cambiarRitmo('rapida', this)">🔥 Rápidas</button>
-            <button class="filter-btn" onclick="cambiarRitmo('lenta', this)">❄️ Lentas</button>
+            <button class="filter-btn active" id="btn-rapidas" onclick="cambiarRitmo('rapida', this)">🔥 Rápidas</button>
+            <button class="filter-btn" id="btn-lentas" onclick="cambiarRitmo('lenta', this)">❄️ Lentas</button>
         </div>
         
         <div id="lista-tonos"></div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE ACCESO ---
-        const CLAVE_MAESTRA = "1234"; // Cambia esta clave si quieres
+        const CLAVE_MAESTRA = "1234"; 
         let modoAdmin = false;
+        let todasLasCanciones = []; 
+
+        const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        let ritmoActual = 'rapida';
+
+        // --- ORGANIZAR TEXTO AUTOMÁTICAMENTE ---
+        function limpiarTexto(texto) {
+            return texto.split('\n')
+                        .map(linea => linea.trim())
+                        .filter(linea => linea !== "")
+                        .join('\n');
+        }
 
         function loginAdmin() {
             const pass = prompt("Introduce la clave para editar:");
             if(pass === CLAVE_MAESTRA) {
                 modoAdmin = true;
                 document.getElementById('admin-panel').style.display = 'block';
-                // Mostrar botones de borrar
-                document.querySelectorAll('.btn-del').forEach(b => b.style.display = 'block');
-                alert("Modo editor activado, Eddy Efraín.");
+                renderizarLista(); 
+                alert("Modo editor activado.");
             } else {
                 alert("Clave incorrecta.");
             }
         }
 
-        // --- GENERADOR DE NOTAS DE FONDO ---
+        function guardarLetra() {
+            const titulo = document.getElementById('titulo').value.trim();
+            const ritmo = document.getElementById('ritmo').value;
+            const tonalidad = document.getElementById('tonalidad').value;
+            // Limpiamos la letra antes de guardar
+            const letraVoces = limpiarTexto(document.getElementById('letraVoces').value);
+            const letraNotas = limpiarTexto(document.getElementById('letraNotas').value);
+
+            if (titulo && (letraVoces || letraNotas)) {
+                const nuevaRef = database.ref('canciones').push();
+                nuevaRef.set({ id: nuevaRef.key, titulo, ritmo, tonalidad, letraVoces, letraNotas, fecha: Date.now() })
+                .then(() => {
+                    document.getElementById('titulo').value = '';
+                    document.getElementById('letraVoces').value = '';
+                    document.getElementById('letraNotas').value = '';
+                    alert("¡Guardada y organizada!");
+                });
+            }
+        }
+
+        function cambiarRitmo(ritmo, btn) { 
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active'); 
+            ritmoActual = ritmo; 
+            renderizarLista(); 
+        }
+
+        function filtrarPorNombre() {
+            renderizarLista();
+        }
+
+        function cargarCanciones() {
+            database.ref('canciones').on('value', (snapshot) => {
+                todasLasCanciones = [];
+                snapshot.forEach(c => { todasLasCanciones.push(c.val()); });
+                renderizarLista();
+            });
+        }
+
+        function renderizarLista() {
+            const listaDiv = document.getElementById('lista-tonos');
+            const busqueda = document.getElementById('searchInput').value.toLowerCase();
+            listaDiv.innerHTML = '';
+
+            const filtradas = todasLasCanciones.filter(c => {
+                const coincideRitmo = c.ritmo === ritmoActual;
+                const coincideNombre = c.titulo.toLowerCase().includes(busqueda);
+                return coincideRitmo && coincideNombre;
+            });
+
+            const grupos = {};
+            filtradas.forEach(c => {
+                if(!grupos[c.tonalidad]) grupos[c.tonalidad] = [];
+                grupos[c.tonalidad].push(c);
+            });
+
+            Object.keys(grupos).sort().forEach(tono => {
+                const tonoDiv = document.createElement('div');
+                tonoDiv.className = 'tono-group';
+                tonoDiv.innerHTML = `<div class="tono-header" onclick="this.parentElement.classList.toggle('open')"><span>Tono: ${tono}</span><span>${grupos[tono].length} ▾</span></div><div class="tono-content"></div>`;
+                const content = tonoDiv.querySelector('.tono-content');
+
+                grupos[tono].sort((a,b)=>a.titulo.localeCompare(b.titulo)).forEach(can => {
+                    const canDiv = document.createElement('div');
+                    canDiv.className = 'cancion-item';
+                    const displayDel = modoAdmin ? 'block' : 'none';
+                    canDiv.innerHTML = `
+                        <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
+                            <span>${can.titulo}</span>
+                            <button class="btn-del" style="display:${displayDel}" onclick="event.stopPropagation(); eliminarCancion('${can.id}')">✕</button>
+                        </div>
+                        <div class="tabs-cancion"><button id="btn-voces-${can.id}" class="tab-btn active" onclick="switchTab('${can.id}','voces')">Voces</button><button id="btn-notas-${can.id}" class="tab-btn" onclick="switchTab('${can.id}','notas')">Nota</button></div>
+                        <div id="voces-${can.id}" class="cancion-body visible">${can.letraVoces || ''}</div>
+                        <div id="notas-${can.id}" class="cancion-body">${can.letraNotas || ''}</div>`;
+                    content.appendChild(canDiv);
+                });
+                listaDiv.appendChild(tonoDiv);
+            });
+        }
+
+        function switchTab(id, tab) {
+            const v = document.getElementById('voces-'+id); const n = document.getElementById('notas-'+id);
+            const bv = document.getElementById('btn-voces-'+id); const bn = document.getElementById('btn-notas-'+id);
+            if(tab==='voces'){ v.classList.add('visible'); n.classList.remove('visible'); bv.classList.add('active'); bn.classList.remove('active'); }
+            else { v.classList.remove('visible'); n.classList.add('visible'); bv.classList.remove('active'); bn.classList.add('active'); }
+        }
+
+        function eliminarCancion(id) { if(confirm("¿Borrar?")) database.ref('canciones/'+id).remove(); }
+
         function crearNotasFondo() {
             const bg = document.getElementById('bg-music');
             const figuras = ['♩', '♪', '♫', '♬', '♭', '♯', '𝄞', '𝄢', '𝄥'];
@@ -153,81 +259,8 @@
                 bg.appendChild(span);
             }
         }
+
         crearNotasFondo();
-
-        const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        let ritmoActual = 'rapida';
-
-        function guardarLetra() {
-            const titulo = document.getElementById('titulo').value.trim();
-            const ritmo = document.getElementById('ritmo').value;
-            const tonalidad = document.getElementById('tonalidad').value;
-            const letraVoces = document.getElementById('letraVoces').value.trim();
-            const letraNotas = document.getElementById('letraNotas').value.trim();
-
-            if (titulo && (letraVoces || letraNotas)) {
-                const nuevaRef = database.ref('canciones').push();
-                nuevaRef.set({ id: nuevaRef.key, titulo, ritmo, tonalidad, letraVoces, letraNotas, fecha: Date.now() })
-                .then(() => {
-                    document.getElementById('titulo').value = '';
-                    document.getElementById('letraVoces').value = '';
-                    document.getElementById('letraNotas').value = '';
-                    alert("¡Guardada!");
-                });
-            }
-        }
-
-        function switchTab(id, tab) {
-            const v = document.getElementById('voces-'+id); const n = document.getElementById('notas-'+id);
-            const bv = document.getElementById('btn-voces-'+id); const bn = document.getElementById('btn-notas-'+id);
-            if(tab==='voces'){ v.classList.add('visible'); n.classList.remove('visible'); bv.classList.add('active'); bn.classList.remove('active'); }
-            else { v.classList.remove('visible'); n.classList.add('visible'); bv.classList.remove('active'); bn.classList.add('active'); }
-        }
-
-        function eliminarCancion(id) { if(confirm("¿Borrar?")) database.ref('canciones/'+id).remove(); }
-        
-        function cambiarRitmo(ritmo, btn) { 
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active'); ritmoActual = ritmo; cargarCanciones(); 
-        }
-
-        function cargarCanciones() {
-            database.ref('canciones').on('value', (snapshot) => {
-                const listaDiv = document.getElementById('lista-tonos');
-                listaDiv.innerHTML = '';
-                if(!snapshot.exists()) return;
-                const datos = []; snapshot.forEach(c => datos.push(c.val()));
-                const grupos = {};
-                datos.filter(d => d.ritmo === ritmoActual).forEach(c => {
-                    if(!grupos[c.tonalidad]) grupos[c.tonalidad] = [];
-                    grupos[c.tonalidad].push(c);
-                });
-                Object.keys(grupos).sort().forEach(tono => {
-                    const tonoDiv = document.createElement('div');
-                    tonoDiv.className = 'tono-group';
-                    tonoDiv.innerHTML = `<div class="tono-header" onclick="this.parentElement.classList.toggle('open')"><span>Tono: ${tono}</span><span>${grupos[tono].length} ▾</span></div><div class="tono-content"></div>`;
-                    const content = tonoDiv.querySelector('.tono-content');
-                    grupos[tono].sort((a,b)=>a.titulo.localeCompare(b.titulo)).forEach(can => {
-                        const canDiv = document.createElement('div');
-                        canDiv.className = 'cancion-item';
-                        // El botón de borrar se renderiza pero se oculta con CSS a menos que sea modoAdmin
-                        const displayDel = modoAdmin ? 'block' : 'none';
-                        canDiv.innerHTML = `
-                            <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
-                                <span>${can.titulo}</span>
-                                <button class="btn-del" style="display:${displayDel}" onclick="event.stopPropagation(); eliminarCancion('${can.id}')">✕</button>
-                            </div>
-                            <div class="tabs-cancion"><button id="btn-voces-${can.id}" class="tab-btn active" onclick="switchTab('${can.id}','voces')">Voces</button><button id="btn-notas-${can.id}" class="tab-btn" onclick="switchTab('${can.id}','notas')">Nota</button></div>
-                            <div id="voces-${can.id}" class="cancion-body visible">${can.letraVoces || ''}</div>
-                            <div id="notas-${can.id}" class="cancion-body">${can.letraNotas || ''}</div>`;
-                        content.appendChild(canDiv);
-                    });
-                    listaDiv.appendChild(tonoDiv);
-                });
-            });
-        }
         cargarCanciones();
     </script>
 </body>
