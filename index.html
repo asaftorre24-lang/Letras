@@ -3,376 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Edición Musical</title>
+    <title>Mis Letras Cloud - Clasificador</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
         :root {
             --primary: #1DB954;
             --bg: #121212;
-            --card: rgba(30, 30, 30, 0.9); /* Un poco transparente para ver el fondo */
+            --card: rgba(30, 30, 30, 0.95);
             --text: #ffffff;
             --accent: #b3b3b3;
         }
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg);
-            /* --- NUEVO FONDO MUSICAL SUTIL --- */
             background-image: 
-                linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.8)), /* Capa oscura encima */
-                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM1NTUiIGZpbGwtb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNMCAwaDIwdjIwaC0yMFYwem0yMCAyMGgyMHYyMGgtMjBWMjB6TTAgMjBoMjB2MjBoLTIwVjIwem0yMCAwaDIwdjIwaC0yMFYwek0wIDBoMTB2MTBIMFYwek0xMCAxMGgxMHYxMEgxMFYxMHpNMjAgMjBoMTB2MTBIMjBWMjB6TTMwIDMwaDEwdjEwSDMwVjMwek0wIDIwaDEwdjEwSDBWMjB6TTEwIDMwaDEwdjEwSDEwVjMwek0yMCAwIGgxMHYxMEgyMFYwek0zMCAxMGgxMHYxMEgzMFYxMHpNMCAxMGg1djVIMFYxMHpNNSAwaDV2NUg1VjB6TTEwIDB2NWg1VjBIMTBEek0xMCAxMGg1djVIMTBEek0xNSAxNWg1djVISDE1VjEwek0yMCAxMHY1aDVWMTBIMjBEek0yNSAwIGg1djVIMjVWMHpNMzAgMHY1aDVWMkgzMER6TTMwIDEwaDV2NUgzMFYxMHpNMzUgMTVoNXY1SDM1VjEwek0wIDIwaDV2NUgwVjIwek01IDI1aDV2NUg1VjI1ek0xMCAyMHY1aDVWMjBIMTBEek0xMCAzMGg1djVIMTBEek0xNSAyNWg1djVISDE1VjI1ek0yMCAzMGg1djVIMjBWMzB6TTI1IDIwaDV2NUgyNVYyMHpNMzAgMjB2NWg1VjIwSDMwRHpNMzAgMzBoNXY1SDMwVjMwek0zNSAyNWg1djVISDM1VjI1eiIvPjwvZz48L2c+PC9zdmc+'); /* SVG de notas muy claro */
-            background-repeat: repeat;
-            /* ---------------------------------- */
+                linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)),
+                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM1NTUiIGZpbGwtb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNMCAwaDIwdjIwaC0yMFYwem0yMCAyMGgyMHYyMGgtMjBWMjB6TTAgMjBoMjB2MjBoLTIwVjIwem0yMCAwaDIwdjIwaC0yMFYwek0wIDBoMTB2MTBIMFYwek0xMCAxMGgxMHYxMEgxMFYxMHpNMjAgMjBoMTB2MTBIMjBWMjB6TTMwIDMwaDEwdjEwSDMwVjMwek0wIDIwaDEwdjEwSDBWMjB6TTEwIDMwaDEwdjEwSDEwVjMwek0yMCAwIGgxMHYxMEgyMFYwek0zMCAxMGgxMHYxMEgzMFYxMHpNMzAgMjB2NWg1VjIwSDMwRHpNMzAgMzBoNXY1SDMwVjMwek0zNSAyNWg1djVISDM1VjI1eiIvPjwvZz48L2c+PC9zdmc+');
             color: var(--text);
             margin: 0;
             padding: 20px;
         }
-        .container { width: 100%; max-width: 900px; margin: auto; position: relative; z-index: 1; }
-        h1 { color: var(--primary); text-align: center; margin-bottom: 5px;}
-        .subtitle { text-align: center; color: var(--accent); font-size: 0.9em; margin-bottom: 25px;}
-        
-        /* Estilos del Formulario */
+        .container { width: 100%; max-width: 1200px; margin: auto; }
+        h1 { color: var(--primary); text-align: center; }
+
+        /* Formulario */
         .input-group {
             background: var(--card);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
             border: 1px solid #333;
-            background: rgba(40, 40, 40, 0.8);
-            color: white;
-            box-sizing: border-box;
         }
-        textarea { resize: vertical; }
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary);
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #000;
-            font-size: 16px;
-        }
-        button:hover { background-color: #1ed760; }
+        .form-top { display: flex; gap: 10px; margin-bottom: 10px; }
+        select { background: #282828; color: white; border-radius: 8px; padding: 10px; border: 1px solid #444; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        input, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: rgba(0,0,0,0.3); color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
 
-        /* Estilos de las Columnas */
+        /* División de Pantalla en Lentas y Rápidas */
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+        .section-title { 
+            text-align: center; 
+            padding: 10px; 
+            background: rgba(29, 185, 84, 0.1); 
+            border-radius: 8px; 
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border: 1px solid var(--primary);
+        }
+
+        /* Tarjetas de canciones */
         .cancion-card {
             background: var(--card);
-            border-radius: 12px;
-            margin-bottom: 25px;
-            padding: 20px;
-            border-top: 4px solid var(--primary);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        }
-        .cancion-titulo { color: var(--primary); margin: 0 0 15px 0; text-align: center; font-size: 1.5em; }
-        
-        .columnas-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .columna {
-            background: rgba(37, 37, 37, 0.7);
+            border-radius: 10px;
+            margin-bottom: 20px;
             padding: 15px;
-            border-radius: 8px;
+            border-top: 3px solid var(--primary);
         }
-        .columna-header {
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.8em;
-            color: var(--primary);
-            border-bottom: 1px solid #444;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            text-align: center;
-        }
-        .letra-content {
-            white-space: pre-wrap;
-            font-family: 'Courier New', Courier, monospace; /* Fuente monospace más tradicional */
-            font-size: 14px;
-            color: var(--accent);
-            line-height: 1.5;
-        }
+        .cancion-titulo { font-size: 1.2em; color: var(--primary); margin-bottom: 10px; }
+        .columnas-view { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .col { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 5px; }
+        .col-label { font-size: 0.7em; color: var(--accent); margin-bottom: 5px; text-transform: uppercase; }
+        .letra-box { white-space: pre-wrap; font-family: monospace; font-size: 12px; line-height: 1.4; color: #ccc; }
 
-        @media (max-width: 600px) {
-            .columnas-container { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>☁️ Mis Letras Cloud</h1>
-        <div class="subtitle">Tu repertorio musical en la nube</div>
+        <h1>🎵 Mis Letras Cloud</h1>
         
         <div class="input-group">
-            <input type="text" id="titulo" placeholder="Nombre de la canción..." style="margin-bottom:10px;">
-            <div class="form-row">
-                <textarea id="letraVoces" rows="5" placeholder="Letra Voces..."></textarea>
-                <textarea id="letraNota" rows="5" placeholder="Letra con Nota Original..."></textarea>
+            <div class="form-top">
+                <input type="text" id="titulo" placeholder="Título de la canción..." style="flex: 3;">
+                <select id="velocidad" style="flex: 1;">
+                    <option value="lenta">Lenta</option>
+                    <option value="rapida">Rápida</option>
+                </select>
             </div>
-            <button onclick="guardarLetra()">GUARDAR EN LA NUBE</button>
+            <div class="form-row">
+                <textarea id="letraVoces" rows="6" placeholder="Letra Voces..."></textarea>
+                <textarea id="letraNota" rows="6" placeholder="Letra con Nota Original..."></textarea>
+            </div>
+            <button onclick="guardarLetra()">GUARDAR CANCIÓN</button>
         </div>
 
-        <div id="lista-canciones"></div>
+        <div class="main-grid">
+            <div>
+                <div class="section-title">🐢 Canciones Lentas</div>
+                <div id="lista-lentas"></div>
+            </div>
+
+            <div>
+                <div class="section-title">⚡ Canciones Rápidas</div>
+                <div id="lista-rapidas"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE TU FIREBASE (Mantenemos la misma)
         const firebaseConfig = { databaseURL: "https://letras-bb844-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         function guardarLetra() {
-            const titulo = document.getElementById('titulo').value;
-            const letraV = document.getElementById('letraVoces').value;
-            const letraN = document.getElementById('letraNota').value;
+            const t = document.getElementById('titulo').value;
+            const lv = document.getElementById('letraVoces').value;
+            const ln = document.getElementById('letraNota').value;
+            const vel = document.getElementById('velocidad').value;
 
-            if (titulo && (letraV || letraN)) {
+            if (t && (lv || ln)) {
                 database.ref('canciones').push().set({
-                    nombre: titulo,
-                    letraVoces: letraV,
-                    letraNota: letraN,
-                    fecha: Date.now()
+                    nombre: t,
+                    letraVoces: lv,
+                    letraNota: ln,
+                    velocidad: vel,
+                    timestamp: Date.now()
                 }).then(() => {
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNota').value = '';
-                    alert("¡Canción guardada correctamente con el nuevo fondo musical! ✨");
                 });
             } else {
-                alert("Por favor, completa el título y al menos una de las dos columnas de letra.");
+                alert("Completa el título.");
             }
         }
 
-        // FUNCIÓN PARA LEER Y DIBUJAR LAS CARTAS
         database.ref('canciones').on('value', (snapshot) => {
-            const listaDiv = document.getElementById('lista-canciones');
-            listaDiv.innerHTML = '';
+            const listaLentas = document.getElementById('lista-lentas');
+            const listaRapidas = document.getElementById('lista-rapidas');
+            listaLentas.innerHTML = '';
+            listaRapidas.innerHTML = '';
             
-            // Usamos un array para invertir el orden (más nuevas primero)
-            const canciones = [];
-            snapshot.forEach((child) => {
-                canciones.push(child.val());
-            });
-            canciones.reverse(); // Invertir el orden
+            let canciones = [];
+            snapshot.forEach(child => { canciones.push(child.val()); });
+            canciones.reverse();
 
-            canciones.forEach((data) => {
-                const html = `
+            canciones.forEach(item => {
+                const card = `
                     <div class="cancion-card">
-                        <h2 class="cancion-titulo">${data.nombre}</h2>
-                        <div class="columnas-container">
-                            <div class="columna">
-                                <div class="columna-header">Letra Voces</div>
-                                <div class="letra-content">${data.letraVoces || '--- (Vacío) ---'}</div>
+                        <div class="cancion-titulo">${item.nombre}</div>
+                        <div class="columnas-view">
+                            <div class="col">
+                                <div class="col-label">Voces</div>
+                                <div class="letra-box">${item.letraVoces || '---'}</div>
                             </div>
-                            <div class="columna">
-                                <div class="columna-header">Letra con Nota Original</div>
-                                <div class="letra-content">${data.letraNota || '--- (Vacío) ---'}</div>
+                            <div class="col">
+                                <div class="col-label">Nota Original</div>
+                                <div class="letra-box">${item.letraNota || '---'}</div>
                             </div>
                         </div>
                     </div>
                 `;
-                listaDiv.insertAdjacentHTML('beforeend', html);
+
+                if (item.velocidad === 'rapida') {
+                    listaRapidas.insertAdjacentHTML('beforeend', card);
+                } else {
+                    listaLentas.insertAdjacentHTML('beforeend', card);
+                }
             });
         });
     </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Edición Musical</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <style>
-        :root {
-            --primary: #1DB954;
-            --bg: #121212;
-            --card: rgba(30, 30, 30, 0.9); /* Un poco transparente para ver el fondo */
-            --text: #ffffff;
-            --accent: #b3b3b3;
-        }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg);
-            /* --- NUEVO FONDO MUSICAL SUTIL --- */
-            background-image: 
-                linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.8)), /* Capa oscura encima */
-                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM1NTUiIGZpbGwtb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNMCAwaDIwdjIwaC0yMFYwem0yMCAyMGgyMHYyMGgtMjBWMjB6TTAgMjBoMjB2MjBoLTIwVjIwem0yMCAwaDIwdjIwaC0yMFYwek0wIDBoMTB2MTBIMFYwek0xMCAxMGgxMHYxMEgxMFYxMHpNMjAgMjBoMTB2MTBIMjBWMjB6TTMwIDMwaDEwdjEwSDMwVjMwek0wIDIwaDEwdjEwSDBWMjB6TTEwIDMwaDEwdjEwSDEwVjMwek0yMCAwIGgxMHYxMEgyMFYwek0zMCAxMGgxMHYxMEgzMFYxMHpNMCAxMGg1djVIMFYxMHpNNSAwaDV2NUg1VjB6TTEwIDB2NWg1VjBIMTBEek0xMCAxMGg1djVIMTBEek0xNSAxNWg1djVISDE1VjEwek0yMCAxMHY1aDVWMTBIMjBEek0yNSAwIGg1djVIMjVWMHpNMzAgMHY1aDVWMkgzMER6TTMwIDEwaDV2NUgzMFYxMHpNMzUgMTVoNXY1SDM1VjEwek0wIDIwaDV2NUgwVjIwek01IDI1aDV2NUg1VjI1ek0xMCAyMHY1aDVWMjBIMTBEek0xMCAzMGg1djVIMTBEek0xNSAyNWg1djVISDE1VjI1ek0yMCAzMGg1djVIMjBWMzB6TTI1IDIwaDV2NUgyNVYyMHpNMzAgMjB2NWg1VjIwSDMwRHpNMzAgMzBoNXY1SDMwVjMwek0zNSAyNWg1djVISDM1VjI1eiIvPjwvZz48L2c+PC9zdmc+'); /* SVG de notas muy claro */
-            background-repeat: repeat;
-            /* ---------------------------------- */
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-        }
-        .container { width: 100%; max-width: 900px; margin: auto; position: relative; z-index: 1; }
-        h1 { color: var(--primary); text-align: center; margin-bottom: 5px;}
-        .subtitle { text-align: center; color: var(--accent); font-size: 0.9em; margin-bottom: 25px;}
-        
-        /* Estilos del Formulario */
-        .input-group {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: rgba(40, 40, 40, 0.8);
-            color: white;
-            box-sizing: border-box;
-        }
-        textarea { resize: vertical; }
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary);
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #000;
-            font-size: 16px;
-        }
-        button:hover { background-color: #1ed760; }
 
-        /* Estilos de las Columnas */
-        .cancion-card {
-            background: var(--card);
-            border-radius: 12px;
-            margin-bottom: 25px;
-            padding: 20px;
-            border-top: 4px solid var(--primary);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        }
-        .cancion-titulo { color: var(--primary); margin: 0 0 15px 0; text-align: center; font-size: 1.5em; }
-        
-        .columnas-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .columna {
-            background: rgba(37, 37, 37, 0.7);
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .columna-header {
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.8em;
-            color: var(--primary);
-            border-bottom: 1px solid #444;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            text-align: center;
-        }
-        .letra-content {
-            white-space: pre-wrap;
-            font-family: 'Courier New', Courier, monospace; /* Fuente monospace más tradicional */
-            font-size: 14px;
-            color: var(--accent);
-            line-height: 1.5;
-        }
-
-        @media (max-width: 600px) {
-            .columnas-container { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h1>☁️ Mis Letras Cloud</h1>
-        <div class="subtitle">Tu repertorio musical en la nube</div>
-        
-        <div class="input-group">
-            <input type="text" id="titulo" placeholder="Nombre de la canción..." style="margin-bottom:10px;">
-            <div class="form-row">
-                <textarea id="letraVoces" rows="5" placeholder="Letra Voces..."></textarea>
-                <textarea id="letraNota" rows="5" placeholder="Letra con Nota Original..."></textarea>
-            </div>
-            <button onclick="guardarLetra()">GUARDAR EN LA NUBE</button>
-        </div>
-
-        <div id="lista-canciones"></div>
-    </div>
-
-    <script>
-        // CONFIGURACIÓN DE TU FIREBASE (Mantenemos la misma)
-        const firebaseConfig = { databaseURL: "https://letras-bb844-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        function guardarLetra() {
-            const titulo = document.getElementById('titulo').value;
-            const letraV = document.getElementById('letraVoces').value;
-            const letraN = document.getElementById('letraNota').value;
-
-            if (titulo && (letraV || letraN)) {
-                database.ref('canciones').push().set({
-                    nombre: titulo,
-                    letraVoces: letraV,
-                    letraNota: letraN,
-                    fecha: Date.now()
-                }).then(() => {
-                    document.getElementById('titulo').value = '';
-                    document.getElementById('letraVoces').value = '';
-                    document.getElementById('letraNota').value = '';
-                    alert("¡Canción guardada correctamente con el nuevo fondo musical! ✨");
-                });
-            } else {
-                alert("Por favor, completa el título y al menos una de las dos columnas de letra.");
-            }
-        }
-
-        // FUNCIÓN PARA LEER Y DIBUJAR LAS CARTAS
-        database.ref('canciones').on('value', (snapshot) => {
-            const listaDiv = document.getElementById('lista-canciones');
-            listaDiv.innerHTML = '';
-            
-            // Usamos un array para invertir el orden (más nuevas primero)
-            const canciones = [];
-            snapshot.forEach((child) => {
-                canciones.push(child.val());
-            });
-            canciones.reverse(); // Invertir el orden
-
-            canciones.forEach((data) => {
-                const html = `
-                    <div class="cancion-card">
-                        <h2 class="cancion-titulo">${data.nombre}</h2>
-                        <div class="columnas-container">
-                            <div class="columna">
-                                <div class="columna-header">Letra Voces</div>
-                                <div class="letra-content">${data.letraVoces || '--- (Vacío) ---'}</div>
-                            </div>
-                            <div class="columna">
-                                <div class="columna-header">Letra con Nota Original</div>
-                                <div class="letra-content">${data.letraNota || '--- (Vacío) ---'}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                listaDiv.insertAdjacentHTML('beforeend', html);
-            });
-        });
-    </script>
-</body>
-</html>
