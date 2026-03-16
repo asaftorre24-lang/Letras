@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Desplegable</title>
+    <title>Mis Letras Cloud - Nueva Era</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
@@ -47,7 +47,6 @@
         .content-section { display: none; }
         .content-section.active { display: block; }
 
-        /* Formulario */
         .input-group {
             background: var(--card);
             padding: 25px;
@@ -67,7 +66,6 @@
             cursor: pointer; font-size: 16px; margin-top: 10px;
         }
 
-        /* Acordeón de Canciones */
         .acordeon-item {
             background: var(--card);
             margin-bottom: 10px;
@@ -82,10 +80,8 @@
             justify-content: space-between;
             align-items: center;
             background: rgba(255,255,255,0.02);
-            transition: 0.3s;
         }
-        .acordeon-header:hover { background: rgba(255,255,255,0.05); }
-        .acordeon-titulo { margin: 0; font-size: 1.1em; color: var(--primary); }
+        .acordeon-titulo { margin: 0; font-size: 1.1em; color: var(--primary); font-weight: bold; }
         .badge { background: #444; color: var(--primary); padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
 
         .acordeon-contenido {
@@ -95,11 +91,10 @@
             background: rgba(0,0,0,0.2);
         }
         .acordeon-item.open .acordeon-contenido {
-            max-height: 2000px; /* Suficiente para letras largas */
+            max-height: 3000px;
             padding-bottom: 20px;
         }
 
-        /* Columnas internas */
         .view-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -142,18 +137,18 @@
         
         <section id="nuevo" class="content-section active">
             <div class="input-group">
-                <h2 style="color:var(--primary); text-align:center; margin-top:0;">Registrar Canción</h2>
+                <h2 style="color:var(--primary); text-align:center; margin-top:0;">Nuevo Repertorio</h2>
                 <div class="form-grid">
-                    <input type="text" id="titulo" placeholder="Título...">
+                    <input type="text" id="titulo" placeholder="Título de la canción...">
                     <select id="velocidad">
-                        <option value="lenta">Ritmo: Lenta</option>
-                        <option value="rapida">Ritmo: Rápida</option>
+                        <option value="lenta">🐢 Lenta</option>
+                        <option value="rapida">⚡ Rápida</option>
                     </select>
                     <select id="nota">
-                        <option value="C">Nota: C</option><option value="D">Nota: D</option>
-                        <option value="E">Nota: E</option><option value="F">Nota: F</option>
-                        <option value="G">Nota: G</option><option value="A">Nota: A</option>
-                        <option value="B">Nota: B</option>
+                        <option value="C">C</option><option value="D">D</option>
+                        <option value="E">E</option><option value="F">F</option>
+                        <option value="G">G</option><option value="A">A</option>
+                        <option value="B">B</option>
                     </select>
                     <select id="tipoTono">
                         <option value="Mayor">Mayor</option>
@@ -179,7 +174,6 @@
     </div>
 
     <script>
-        // URL de tu base de datos confirmada en la imagen
         const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -199,9 +193,9 @@
         }
 
         function guardarLetra() {
-            const t = document.getElementById('titulo').value;
-            const lv = document.getElementById('letraVoces').value;
-            const ln = document.getElementById('letraNota').value;
+            const t = document.getElementById('titulo').value.trim();
+            const lv = document.getElementById('letraVoces').value.trim();
+            const ln = document.getElementById('letraNota').value.trim();
             const v = document.getElementById('velocidad').value;
             const nota = document.getElementById('nota').value;
             const tipo = document.getElementById('tipoTono').value;
@@ -209,18 +203,18 @@
             if (t) {
                 database.ref('canciones').push().set({
                     nombre: t,
-                    letraVoces: lv,
-                    letraNota: ln,
+                    letraVoces: lv || "",
+                    letraNota: ln || "",
                     velocidad: v,
                     tono: `${nota} ${tipo}`,
                     timestamp: Date.now()
                 }).then(() => {
-                    alert("¡Canción guardada!");
+                    alert("¡Guardada con éxito!");
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNota').value = '';
-                });
-            } else { alert("Escribe el título."); }
+                }).catch(err => alert("Error al guardar: " + err.message));
+            } else { alert("Por favor, escribe un título."); }
         }
 
         database.ref('canciones').on('value', (snapshot) => {
@@ -228,16 +222,24 @@
             const lRapidas = document.getElementById('lista-rapidas');
             lLentas.innerHTML = ''; lRapidas.innerHTML = '';
             
+            if (!snapshot.exists()) return;
+
             let canciones = [];
-            snapshot.forEach(child => { canciones.push(child.val()); });
+            snapshot.forEach(child => { 
+                let data = child.val();
+                if(data) canciones.push(data); 
+            });
             canciones.reverse();
 
             canciones.forEach(item => {
+                const tituloMostrado = item.nombre || "Sin Título";
+                const tonoMostrado = item.tono || "";
+                
                 const html = `
                     <div class="acordeon-item">
                         <div class="acordeon-header" onclick="toggleAcordeon(this)">
-                            <h3 class="acordeon-titulo">${item.nombre}</h3>
-                            <span class="badge">${item.tono}</span>
+                            <h3 class="acordeon-titulo">${tituloMostrado}</h3>
+                            ${tonoMostrado ? `<span class="badge">${tonoMostrado}</span>` : ''}
                         </div>
                         <div class="acordeon-contenido">
                             <div class="view-grid">
