@@ -13,7 +13,6 @@
             --green: #34A853; 
             --bg: #0f0f0f; 
             --card: #1a1a1a;
-            --accent: #FBBC05;
         }
         
         body { 
@@ -90,7 +89,6 @@
         .item { 
             background: #1e1e1e; margin-bottom: 12px; 
             border-radius: 12px; border-left: 5px solid var(--blue); 
-            transition: 0.2s;
         }
 
         .item-head { padding: 18px; cursor: pointer; font-weight: 600; font-size: 16px; }
@@ -107,9 +105,7 @@
             font-size: 17px; line-height: 1.6; display: none; 
             padding: 10px; color: #eee;
         }
-        .text-area.active { display: block; animation: fadeIn 0.3s; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .text-area.active { display: block; }
 
         .btn-save { 
             width: 100%; padding: 18px; background: var(--green); 
@@ -134,7 +130,7 @@
         </div>
         <textarea id="lv" rows="4" placeholder="Letra Voces..."></textarea>
         <textarea id="ln" rows="4" placeholder="Letra Notas..."></textarea>
-        <button onclick="save()" class="btn-save">GUARDAR Y VER INICIO</button>
+        <button onclick="save()" class="btn-save">GUARDAR CANCIÓN</button>
     </div>
 
     <div class="filter-group">
@@ -150,6 +146,9 @@
     const db = firebase.database();
     let data = [];
     let filterR = '';
+
+    // Definimos el orden musical correcto
+    const ordenMusical = ["C", "D", "E", "F", "G", "A", "B"];
 
     function load() {
         db.ref('canciones').on('value', s => {
@@ -172,17 +171,21 @@
 
         const filtered = data.filter(c => (filterR === '' || c.ritmo === filterR));
 
+        // Agrupamos las canciones por tonalidad
         const groups = filtered.reduce((acc, c) => {
             acc[c.tonalidad] = acc[c.tonalidad] || [];
             acc[c.tonalidad].push(c);
             return acc;
         }, {});
 
-        Object.keys(groups).sort().forEach(ton => {
+        // Ordenamos las llaves de los grupos según el orden musical definido arriba
+        const tonosOrdenados = Object.keys(groups).sort((a, b) => {
+            return ordenMusical.indexOf(a) - ordenMusical.indexOf(b);
+        });
+
+        tonosOrdenados.forEach(ton => {
             const div = document.createElement('div');
-            // Si hay un filtro activo, los grupos aparecen abiertos (.open)
-            const openClass = filterR !== '' ? 'open' : '';
-            div.className = `tono-box ${openClass}`;
+            div.className = `tono-box`; // Siempre inicia cerrado
             
             div.innerHTML = `
                 <div class="tono-title" onclick="this.parentElement.classList.toggle('open')">
@@ -224,9 +227,7 @@
         if(!t) return alert("Pon un título");
 
         db.ref('canciones').push({
-            id: Date.now(), 
-            titulo: t, 
-            ritmo: r,
+            id: Date.now(), titulo: t, ritmo: r,
             tonalidad: document.getElementById('ton').value,
             letraVoces: document.getElementById('lv').value,
             letraNotas: document.getElementById('ln').value
@@ -236,9 +237,10 @@
             document.getElementById('t').value = '';
             document.getElementById('lv').value = '';
             document.getElementById('ln').value = '';
-            
-            // Activa el filtro de lo que acabas de guardar para que la veas de una vez
-            setR(r); 
+            filterR = ''; 
+            document.getElementById('br').classList.remove('active');
+            document.getElementById('bl').classList.remove('active');
+            draw();
         });
     }
 
