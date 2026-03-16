@@ -150,8 +150,8 @@
         <input type="text" id="t" placeholder="🎵 Nombre de la canción...">
         <div style="display:flex; gap:10px;">
             <select id="r">
-                <option value="rapida">🔥 Rápida</option>
-                <option value="lenta">❄️ Lenta</option>
+                <option value="rapida">🏍️ Rápida</option>
+                <option value="lenta">🐢 Lenta</option>
             </select>
             <select id="ton">
                 <option value="C">Do (C)</option><option value="C#">Do# (C#)</option>
@@ -169,8 +169,8 @@
     </div>
 
     <div class="filter-group">
-        <button id="br" class="f-btn" onclick="setR('rapida')">🔥 Rápidas</button>
-        <button id="bl" class="f-btn" onclick="setR('lenta')">❄️ Lentas</button>
+        <button id="br" class="f-btn" onclick="setR('rapida')">🏍️ Rápidas</button>
+        <button id="bl" class="f-btn" onclick="setR('lenta')">🐢 Lentas</button>
     </div>
 
     <div id="main-list"></div>
@@ -264,7 +264,7 @@
         if(!t) return alert("Escribe un título");
         db.ref('canciones').push({
             titulo: t, ritmo: document.getElementById('r').value,
-            tonalidad: document.getElementById('ton').value,
+            tonalidad: document.getElementById('tonalidad').value,
             letraVoces: document.getElementById('lv').value,
             letraNotas: document.getElementById('ln').value
         }).then(() => {
