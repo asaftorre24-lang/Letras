@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Clasificador</title>
+    <title>Mis Letras Cloud - Jarvis Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
@@ -25,91 +25,99 @@
             padding: 20px;
         }
         .container { width: 100%; max-width: 1200px; margin: auto; }
-        h1 { color: var(--primary); text-align: center; }
+        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: var(--accent); margin-bottom: 25px; font-size: 0.9em; }
 
-        /* Formulario */
+        /* Formulario de Entrada */
         .input-group {
             background: var(--card);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 30px;
             border: 1px solid #333;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
         .form-top { display: flex; gap: 10px; margin-bottom: 10px; }
-        select { background: #282828; color: white; border-radius: 8px; padding: 10px; border: 1px solid #444; }
+        select { background: #282828; color: white; border-radius: 8px; padding: 10px; border: 1px solid #444; cursor: pointer; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         input, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background: rgba(0,0,0,0.3); color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        button { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #1ed760; transform: translateY(-2px); }
 
-        /* División de Pantalla en Lentas y Rápidas */
-        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+        /* Columnas de Clasificación */
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .section-title { 
             text-align: center; 
-            padding: 10px; 
+            padding: 12px; 
             background: rgba(29, 185, 84, 0.1); 
             border-radius: 8px; 
             color: var(--primary);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            font-weight: bold;
             margin-bottom: 20px;
             border: 1px solid var(--primary);
         }
 
-        /* Tarjetas de canciones */
+        /* Tarjetas de Canciones */
         .cancion-card {
             background: var(--card);
-            border-radius: 10px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             padding: 15px;
-            border-top: 3px solid var(--primary);
+            border-left: 5px solid var(--primary);
         }
-        .cancion-titulo { font-size: 1.2em; color: var(--primary); margin-bottom: 10px; }
-        .columnas-view { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .col { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 5px; }
-        .col-label { font-size: 0.7em; color: var(--accent); margin-bottom: 5px; text-transform: uppercase; }
-        .letra-box { white-space: pre-wrap; font-family: monospace; font-size: 12px; line-height: 1.4; color: #ccc; }
+        .cancion-titulo { font-size: 1.3em; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .columnas-view { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .col { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; }
+        .col-label { font-size: 0.7em; color: var(--primary); font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
+        .letra-box { white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; color: #ddd; }
 
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .main-grid, .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>🎵 Mis Letras Cloud</h1>
+        <div class="subtitle">Conexión directa: canciones-56abc</div>
         
         <div class="input-group">
             <div class="form-top">
-                <input type="text" id="titulo" placeholder="Título de la canción..." style="flex: 3;">
+                <input type="text" id="titulo" placeholder="Nombre de la canción..." style="flex: 3;">
                 <select id="velocidad" style="flex: 1;">
-                    <option value="lenta">Lenta</option>
-                    <option value="rapida">Rápida</option>
+                    <option value="lenta">🐢 Lenta</option>
+                    <option value="rapida">⚡ Rápida</option>
                 </select>
             </div>
             <div class="form-row">
-                <textarea id="letraVoces" rows="6" placeholder="Letra Voces..."></textarea>
-                <textarea id="letraNota" rows="6" placeholder="Letra con Nota Original..."></textarea>
+                <textarea id="letraVoces" rows="8" placeholder="Escribe la Letra Voces aquí..."></textarea>
+                <textarea id="letraNota" rows="8" placeholder="Escribe la Letra con Nota Original..."></textarea>
             </div>
-            <button onclick="guardarLetra()">GUARDAR CANCIÓN</button>
+            <button onclick="guardarLetra()">GUARDAR EN MI NUBE</button>
         </div>
 
         <div class="main-grid">
             <div>
-                <div class="section-title">🐢 Canciones Lentas</div>
+                <div class="section-title">Canciones Lentas</div>
                 <div id="lista-lentas"></div>
             </div>
-
             <div>
-                <div class="section-title">⚡ Canciones Rápidas</div>
+                <div class="section-title">Canciones Rápidas</div>
                 <div id="lista-rapidas"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = { databaseURL: "https://letras-bb844-default-rtdb.firebaseio.com/" };
+        // CONFIGURACIÓN CORREGIDA SEGÚN TU IMAGEN
+        const firebaseConfig = {
+            databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/"
+        };
+
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // FUNCIÓN GUARDAR
         function guardarLetra() {
             const t = document.getElementById('titulo').value;
             const lv = document.getElementById('letraVoces').value;
@@ -127,12 +135,14 @@
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNota').value = '';
-                });
+                    alert("¡Guardado con éxito! ✨");
+                }).catch(e => alert("Error: " + e.message));
             } else {
-                alert("Completa el título.");
+                alert("Escribe al menos el título de la canción.");
             }
         }
 
+        // LEER DATOS EN TIEMPO REAL
         database.ref('canciones').on('value', (snapshot) => {
             const listaLentas = document.getElementById('lista-lentas');
             const listaRapidas = document.getElementById('lista-rapidas');
@@ -140,8 +150,12 @@
             listaRapidas.innerHTML = '';
             
             let canciones = [];
-            snapshot.forEach(child => { canciones.push(child.val()); });
-            canciones.reverse();
+            snapshot.forEach(child => {
+                let data = child.val();
+                data.id = child.key; // Guardamos el ID por si luego quieres borrar
+                canciones.push(data);
+            });
+            canciones.reverse(); // Mostrar las últimas agregadas primero
 
             canciones.forEach(item => {
                 const card = `
