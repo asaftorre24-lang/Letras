@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Nueva Era</title>
+    <title>Mis Letras Cloud - Separado</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
@@ -23,6 +23,7 @@
             margin: 0; padding: 0;
         }
         
+        /* Navegación */
         .tabs {
             display: flex;
             background: #000;
@@ -47,6 +48,7 @@
         .content-section { display: none; }
         .content-section.active { display: block; }
 
+        /* Formulario */
         .input-group {
             background: var(--card);
             padding: 25px;
@@ -66,62 +68,82 @@
             cursor: pointer; font-size: 16px; margin-top: 10px;
         }
 
+        /* Acordeón */
         .acordeon-item {
             background: var(--card);
-            margin-bottom: 10px;
-            border-radius: 8px;
+            margin-bottom: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            border-left: 4px solid var(--primary);
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .acordeon-header {
-            padding: 15px 20px;
+            padding: 18px 25px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255,255,255,0.03);
         }
-        .acordeon-titulo { margin: 0; font-size: 1.1em; color: var(--primary); font-weight: bold; }
-        .badge { background: #444; color: var(--primary); padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .acordeon-titulo { margin: 0; font-size: 1.15em; color: var(--primary); font-weight: bold; }
+        .badge { background: #444; color: var(--primary); padding: 3px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; }
 
         .acordeon-contenido {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.4s ease-out;
-            background: rgba(0,0,0,0.2);
+            transition: max-height 0.4s ease-in-out;
+            background: rgba(0,0,0,0.25);
         }
         .acordeon-item.open .acordeon-contenido {
-            max-height: 3000px;
-            padding-bottom: 20px;
+            max-height: 5000px; /* Suficiente para letras largas */
+            padding-bottom: 25px;
         }
 
+        /* DISEÑO DE COLUMNAS SEPARADAS */
         .view-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
             padding: 20px;
+            border-top: 1px solid rgba(29, 185, 84, 0.2);
         }
-        .column-label {
+        
+        .column-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header-info {
+            background: rgba(29, 185, 84, 0.1);
             color: var(--primary);
-            font-size: 10px;
-            text-transform: uppercase;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 12px;
             font-weight: bold;
-            margin-bottom: 10px;
-            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid rgba(29, 185, 84, 0.3);
         }
+
         .letra-box {
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #ddd;
-            line-height: 1.5;
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 8px;
+            font-size: 15px;
+            color: #eee;
+            line-height: 1.6;
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            min-height: 100px;
         }
 
-        @media (max-width: 800px) {
-            .view-grid, .form-grid { grid-template-columns: 1fr; }
+        /* Estilo para celulares */
+        @media (max-width: 850px) {
+            .view-grid { grid-template-columns: 1fr; gap: 30px; }
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -137,18 +159,18 @@
         
         <section id="nuevo" class="content-section active">
             <div class="input-group">
-                <h2 style="color:var(--primary); text-align:center; margin-top:0;">Nuevo Repertorio</h2>
+                <h2 style="color:var(--primary); text-align:center; margin-top:0;">Nuevo Registro</h2>
                 <div class="form-grid">
-                    <input type="text" id="titulo" placeholder="Título de la canción...">
+                    <input type="text" id="titulo" placeholder="Nombre de la canción...">
                     <select id="velocidad">
-                        <option value="lenta">🐢 Lenta</option>
-                        <option value="rapida">⚡ Rápida</option>
+                        <option value="lenta">Ritmo: Lenta</option>
+                        <option value="rapida">Ritmo: Rápida</option>
                     </select>
                     <select id="nota">
-                        <option value="C">C</option><option value="D">D</option>
-                        <option value="E">E</option><option value="F">F</option>
-                        <option value="G">G</option><option value="A">A</option>
-                        <option value="B">B</option>
+                        <option value="C">Nota: C</option><option value="D">Nota: D</option>
+                        <option value="E">Nota: E</option><option value="F">Nota: F</option>
+                        <option value="G">Nota: G</option><option value="A">Nota: A</option>
+                        <option value="B">Nota: B</option>
                     </select>
                     <select id="tipoTono">
                         <option value="Mayor">Mayor</option>
@@ -156,10 +178,10 @@
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <textarea id="letraVoces" rows="12" placeholder="Letra Voces..."></textarea>
-                    <textarea id="letraNota" rows="12" placeholder="Letra con Notas..."></textarea>
+                    <textarea id="letraVoces" rows="12" placeholder="Pegar solo letra para VOCES..."></textarea>
+                    <textarea id="letraNota" rows="12" placeholder="Pegar LETRA CON ACORDES..."></textarea>
                 </div>
-                <button class="btn-save" onclick="guardarLetra()">GUARDAR CANCIÓN</button>
+                <button class="btn-save" onclick="guardarLetra()">GUARDAR EN NUBE</button>
             </div>
         </section>
 
@@ -189,6 +211,11 @@
         }
 
         function toggleAcordeon(elemento) {
+            // Cerrar otros para que no se amontonen (opcional)
+            const items = document.getElementsByClassName("acordeon-item");
+            for(let item of items) {
+                if(item !== elemento.parentElement) item.classList.remove('open');
+            }
             elemento.parentElement.classList.toggle('open');
         }
 
@@ -209,12 +236,12 @@
                     tono: `${nota} ${tipo}`,
                     timestamp: Date.now()
                 }).then(() => {
-                    alert("¡Guardada con éxito!");
+                    alert("¡Canción registrada!");
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNota').value = '';
-                }).catch(err => alert("Error al guardar: " + err.message));
-            } else { alert("Por favor, escribe un título."); }
+                });
+            } else { alert("Escribe el nombre de la canción."); }
         }
 
         database.ref('canciones').on('value', (snapshot) => {
@@ -226,25 +253,31 @@
 
             let canciones = [];
             snapshot.forEach(child => { 
-                let data = child.val();
-                if(data) canciones.push(data); 
+                let d = child.val();
+                if(d) canciones.push(d); 
             });
             canciones.reverse();
 
             canciones.forEach(item => {
-                const tituloMostrado = item.nombre || "Sin Título";
-                const tonoMostrado = item.tono || "";
-                
                 const html = `
                     <div class="acordeon-item">
                         <div class="acordeon-header" onclick="toggleAcordeon(this)">
-                            <h3 class="acordeon-titulo">${tituloMostrado}</h3>
-                            ${tonoMostrado ? `<span class="badge">${tonoMostrado}</span>` : ''}
+                            <h3 class="acordeon-titulo">${item.nombre}</h3>
+                            <span class="badge">${item.tono || "Sin Tono"}</span>
                         </div>
                         <div class="acordeon-contenido">
                             <div class="view-grid">
-                                ${item.letraVoces ? `<div><span class="column-label">🎙️ Voces</span><div class="letra-box">${item.letraVoces}</div></div>` : ''}
-                                ${item.letraNota ? `<div><span class="column-label">🎸 Notas</span><div class="letra-box">${item.letraNota}</div></div>` : ''}
+                                
+                                <div class="column-section">
+                                    <div class="column-header-info">🎙️ Solo Letra / Voces</div>
+                                    <div class="letra-box">${item.letraVoces || "No hay letra de voces registrada."}</div>
+                                </div>
+
+                                <div class="column-section">
+                                    <div class="column-header-info">🎸 Letra con Acordes</div>
+                                    <div class="letra-box">${item.letraNota || "No hay notas musicales registradas."}</div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
