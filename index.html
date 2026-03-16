@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud - Repertorio Profesional</title>
+    <title>Mis Letras Cloud - Repertorio Pro</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
@@ -23,7 +23,6 @@
             margin: 0; padding: 0;
         }
         
-        /* Navegación por Pestañas */
         .tabs {
             display: flex;
             background: #000;
@@ -34,14 +33,13 @@
             border-bottom: 2px solid var(--primary);
         }
         .tab-btn {
-            padding: 15px 25px;
+            padding: 15px 20px;
             border: none;
             background: none;
             color: white;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
-            transition: 0.3s;
+            font-size: 13px;
         }
         .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
 
@@ -56,16 +54,15 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         select, input, textarea {
             background: #282828; color: white; border: 1px solid #444;
             padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box;
         }
-        textarea { resize: vertical; margin-top: 10px; }
         .btn-save {
             background: var(--primary); color: black; font-weight: bold;
             padding: 18px; border: none; border-radius: 8px; width: 100%;
-            cursor: pointer; font-size: 16px; margin-top: 20px;
+            cursor: pointer; font-size: 16px; margin-top: 10px;
         }
 
         /* Listas de canciones */
@@ -77,23 +74,25 @@
             border-left: 6px solid var(--primary);
         }
         .cancion-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .badge { background: #444; padding: 4px 10px; border-radius: 20px; font-size: 11px; color: var(--primary); }
+        .badge { background: #444; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: var(--primary); font-weight: bold; }
         
-        .columnas-view { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .columnas-view { display: flex; gap: 20px; flex-wrap: wrap; }
+        .columna { flex: 1; min-width: 300px; }
         .letra-box { 
             white-space: pre-wrap; font-family: 'Courier New', monospace; 
-            font-size: 13px; color: #ccc; line-height: 1.6;
-            background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px;
+            font-size: 14px; color: #ccc; line-height: 1.6;
+            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;
+            border: 1px solid #333;
         }
-        .label-col { font-size: 10px; text-transform: uppercase; color: var(--primary); margin-bottom: 5px; font-weight: bold;}
+        .label-col { font-size: 11px; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;}
 
-        @media (max-width: 700px) { .form-grid, .columnas-view { grid-template-columns: 1fr; } }
+        @media (max-width: 800px) { .form-grid { grid-template-columns: 1fr; } .columna { min-width: 100%; } }
     </style>
 </head>
 <body>
 
     <nav class="tabs">
-        <button class="tab-btn active" onclick="openTab(event, 'nuevo')">➕ GUARDAR NUEVA</button>
+        <button class="tab-btn active" onclick="openTab(event, 'nuevo')">➕ GUARDAR</button>
         <button class="tab-btn" onclick="openTab(event, 'lentas')">🐢 LENTAS</button>
         <button class="tab-btn" onclick="openTab(event, 'rapidas')">⚡ RÁPIDAS</button>
     </nav>
@@ -102,21 +101,27 @@
         
         <section id="nuevo" class="content-section active">
             <div class="input-group">
-                <h2 style="color:var(--primary); margin-top:0;">Agregar al Repertorio</h2>
+                <h2 style="color:var(--primary); margin-top:0;">Nuevo Registro Musical</h2>
                 <div class="form-grid">
                     <input type="text" id="titulo" placeholder="Título de la canción...">
                     <select id="velocidad">
                         <option value="lenta">Ritmo: Lenta</option>
                         <option value="rapida">Ritmo: Rápida</option>
                     </select>
-                    <select id="tonalidad">
-                        <option value="Mayor">Tono: Mayor</option>
-                        <option value="Menor">Tono: Menor</option>
+                    <select id="nota">
+                        <option value="C">Nota: C</option><option value="D">Nota: D</option>
+                        <option value="E">Nota: E</option><option value="F">Nota: F</option>
+                        <option value="G">Nota: G</option><option value="A">Nota: A</option>
+                        <option value="B">Nota: B</option>
+                    </select>
+                    <select id="tipoTono">
+                        <option value="Mayor">Mayor</option>
+                        <option value="Menor">Menor</option>
                     </select>
                 </div>
-                <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
-                    <textarea id="letraVoces" rows="10" placeholder="Letra Voces..."></textarea>
-                    <textarea id="letraNota" rows="10" placeholder="Letra con Nota Original..."></textarea>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <textarea id="letraVoces" rows="12" placeholder="Letra Voces... (Opcional)"></textarea>
+                    <textarea id="letraNota" rows="12" placeholder="Letra con Nota Original... (Opcional)"></textarea>
                 </div>
                 <button class="btn-save" onclick="guardarLetra()">GUARDAR CANCIÓN</button>
             </div>
@@ -154,23 +159,24 @@
             const lv = document.getElementById('letraVoces').value;
             const ln = document.getElementById('letraNota').value;
             const v = document.getElementById('velocidad').value;
-            const ton = document.getElementById('tonalidad').value;
+            const nota = document.getElementById('nota').value;
+            const tipo = document.getElementById('tipoTono').value;
 
-            if (t && (lv || ln)) {
+            if (t) {
                 database.ref('canciones').push().set({
                     nombre: t,
                     letraVoces: lv,
                     letraNota: ln,
                     velocidad: v,
-                    tonoTipo: ton,
+                    tonoCompleto: `${nota} ${tipo}`,
                     timestamp: Date.now()
                 }).then(() => {
-                    alert("¡Canción guardada! ✨ Revisa la pestaña de su ritmo.");
+                    alert("¡Canción guardada con éxito!");
                     document.getElementById('titulo').value = '';
                     document.getElementById('letraVoces').value = '';
                     document.getElementById('letraNota').value = '';
                 });
-            } else { alert("Completa al menos el título."); }
+            } else { alert("El título es obligatorio."); }
         }
 
         database.ref('canciones').on('value', (snapshot) => {
@@ -183,21 +189,28 @@
             canciones.reverse();
 
             canciones.forEach(item => {
+                // Lógica para NO mostrar columnas vacías
+                let columnaVoces = item.letraVoces ? `
+                    <div class="columna">
+                        <div class="label-col">Letra Voces</div>
+                        <div class="letra-box">${item.letraVoces}</div>
+                    </div>` : '';
+
+                let columnaNota = item.letraNota ? `
+                    <div class="columna">
+                        <div class="label-col">Letra con Nota Original</div>
+                        <div class="letra-box">${item.letraNota}</div>
+                    </div>` : '';
+
                 const html = `
                     <div class="cancion-card">
                         <div class="cancion-header">
                             <h3 style="margin:0; color:var(--primary);">${item.nombre}</h3>
-                            <span class="badge">${item.tonoTipo}</span>
+                            <span class="badge">${item.tonoCompleto}</span>
                         </div>
                         <div class="columnas-view">
-                            <div>
-                                <div class="label-col">Letra Voces</div>
-                                <div class="letra-box">${item.letraVoces || '---'}</div>
-                            </div>
-                            <div>
-                                <div class="label-col">Letra Nota Original</div>
-                                <div class="letra-box">${item.letraNota || '---'}</div>
-                            </div>
+                            ${columnaVoces}
+                            ${columnaNota}
                         </div>
                     </div>
                 `;
