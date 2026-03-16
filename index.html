@@ -8,114 +8,38 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { 
-            --blue: #4285F4; 
-            --green: #34A853; 
-            --bg: #000; 
-            --card: #1a1a1a;
-        }
-        
-        body { 
-            font-family: sans-serif; 
-            background: var(--bg); 
-            color: white; 
-            margin: 0; padding: 0; 
-            display: flex; flex-direction: column; align-items: center; 
-        }
-
-        header { 
-            width: 100%; text-align: center; padding: 25px 0; 
-            position: relative; 
-        }
-
-        .logo { font-size: 35px; font-weight: bold; letter-spacing: 1px; }
+        :root { --blue: #4285F4; --green: #34A853; --bg: #000; }
+        body { font-family: sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
+        header { width: 100%; text-align: center; padding: 20px; position: relative; }
+        .logo { font-size: 32px; font-weight: bold; }
         .logo span:nth-child(1) { color: var(--blue); }
         .logo span:nth-child(2) { color: var(--green); }
-
-        .admin-btn { 
-            position: absolute; right: 15px; top: 25px; 
-            background: transparent; color: #555; 
-            border: 1px solid #333; padding: 6px 12px; border-radius: 8px; 
-            font-size: 11px; cursor: pointer; 
-        }
+        .admin-btn { position: absolute; right: 10px; top: 20px; background: transparent; color: #888; border: 1px solid #333; padding: 5px 10px; border-radius: 5px; font-size: 12px; }
         
-        .container { width: 92%; max-width: 500px; padding: 20px 0; }
+        .container { width: 95%; max-width: 500px; padding: 20px 0; }
         
-        #admin-panel { 
-            display: none; border: 2px solid var(--green); 
-            border-radius: 20px; padding: 20px; 
-            margin-bottom: 25px; background: #0a0a0a;
-        }
-
-        input, textarea, select { 
-            width: 100%; margin-bottom: 12px; padding: 14px; 
-            border-radius: 12px; border: 1px solid #333; 
-            background: #111; color: white; font-size: 16px;
-            box-sizing: border-box;
-        }
+        #admin-panel { display: none; border: 2px solid var(--green); border-radius: 15px; padding: 15px; margin-bottom: 20px; background: #0a0a0a; }
+        input, textarea, select { width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 10px; border: 1px solid #444; background: #111; color: white; font-size: 16px; box-sizing: border-box; }
         
-        #search { 
-            border-radius: 30px; border: 1px solid #555; 
-            background: #111; padding: 15px 45px; margin-bottom: 20px;
-        }
+        .filter-group { display: flex; gap: 10px; margin-bottom: 25px; justify-content: center; }
+        .f-btn { flex: 1; padding: 15px; border-radius: 20px; border: none; background: #333; color: white; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .f-btn.active { background: var(--blue); }
 
-        .filter-group { 
-            display: flex; gap: 15px; margin-bottom: 30px; 
-            justify-content: center;
-        }
-
-        .f-btn { 
-            flex: 1; padding: 12px; border-radius: 20px; 
-            border: none; background: #333; 
-            color: white; cursor: pointer; font-weight: bold; 
-            font-size: 15px;
-        }
-
-        .f-btn.active { 
-            background: var(--blue);
-        }
-
-        .tono-box { 
-            background: var(--card); border-radius: 18px; 
-            margin-bottom: 15px; overflow: hidden; 
-            border: 1px solid #222;
-        }
-
-        .tono-title { 
-            padding: 20px; background: #1a1a1a; color: var(--green); 
-            font-weight: bold; display: flex; justify-content: space-between; 
-            cursor: pointer; font-size: 18px;
-        }
-
-        .cancion-list { display: none; padding: 12px; background: #111; }
+        .tono-box { background: #1a1a1a; border-radius: 15px; margin-bottom: 15px; overflow: hidden; }
+        .tono-title { padding: 15px; color: var(--green); font-weight: bold; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #333; }
+        .cancion-list { display: none; padding: 10px; }
         .tono-box.open .cancion-list { display: block; }
 
-        .item { 
-            background: #222; margin-bottom: 12px; 
-            border-radius: 12px; border-left: 5px solid var(--blue); 
-        }
-
-        .item-head { padding: 18px; cursor: pointer; font-size: 16px; }
-        
+        .item { background: #222; margin-bottom: 10px; border-radius: 10px; border-left: 4px solid var(--blue); }
+        .item-head { padding: 15px; cursor: pointer; }
         .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; }
         .item.open .item-content { display: block; }
         
-        .tabs { display: flex; margin-bottom: 15px; border-radius: 8px; overflow: hidden; background: #333; }
-        .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #999; cursor: pointer; }
+        .tabs { display: flex; margin-bottom: 10px; border-radius: 5px; overflow: hidden; background: #333; }
+        .t-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #888; cursor: pointer; }
         .t-btn.active { background: var(--green); color: black; font-weight: bold; }
-        
-        .text-area { 
-            white-space: pre-wrap; font-family: monospace; 
-            font-size: 18px; line-height: 1.6; display: none; 
-            padding: 10px; color: #eee;
-        }
+        .text-area { white-space: pre-wrap; font-family: monospace; font-size: 17px; line-height: 1.6; display: none; padding: 10px 0; }
         .text-area.active { display: block; }
-
-        .btn-save { 
-            width: 100%; padding: 18px; background: var(--green); 
-            border: none; color: white; font-weight: bold; 
-            border-radius: 15px; cursor: pointer; font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -129,26 +53,13 @@
     <div id="admin-panel">
         <input type="text" id="t" placeholder="Nombre de la canción...">
         <div style="display:flex; gap:10px;">
-            <select id="r">
-                <option value="rapida">🔥 Rápida</option>
-                <option value="lenta">❄️ Lenta</option>
-            </select>
-            <select id="ton">
-                <option value="C">Do (C)</option>
-                <option value="D">Re (D)</option>
-                <option value="E">Mi (E)</option>
-                <option value="F">Fa (F)</option>
-                <option value="G">Sol (G)</option>
-                <option value="A">La (A)</option>
-                <option value="B">Si (B)</option>
-            </select>
+            <select id="r"><option value="rapida">🔥 Rápida</option><option value="lenta">❄️ Lenta</option></select>
+            <select id="ton"><option value="C">Do (C)</option><option value="D">Re (D)</option><option value="E">Mi (E)</option><option value="F">Fa (F)</option><option value="G">Sol (G)</option><option value="A">La (A)</option><option value="B">Si (B)</option></select>
         </div>
         <textarea id="lv" rows="4" placeholder="Letra Voces..."></textarea>
         <textarea id="ln" rows="4" placeholder="Letra Notas..."></textarea>
-        <button onclick="save()" class="btn-save">GUARDAR ☁️</button>
+        <button onclick="save()" style="width:100%; padding:15px; background:var(--green); border:none; color:white; font-weight:bold; border-radius:10px; cursor:pointer;">GUARDAR ☁️</button>
     </div>
-
-    <input type="text" id="search" placeholder="🔍 Busca una canción..." oninput="draw()">
 
     <div class="filter-group">
         <button id="br" class="f-btn" onclick="setR('rapida')">🔥 Rápidas</button>
@@ -166,6 +77,10 @@
     const ordenMusical = ["C", "D", "E", "F", "G", "A", "B"];
 
     function load() {
+        // Recuperar filtro guardado
+        const savedFilter = localStorage.getItem('filtroRitmo_Letras');
+        if (savedFilter) { filterR = savedFilter; }
+
         db.ref('canciones').on('value', s => {
             data = [];
             s.forEach(c => { data.push({ ...c.val(), key: c.key }); });
@@ -174,26 +89,27 @@
     }
 
     function setR(r) {
-        // Lógica de activar y desmarcar
-        filterR = (filterR === r) ? '' : r;
-        document.getElementById('br').classList.toggle('active', filterR === 'rapida');
-        document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
+        if (filterR === r) {
+            filterR = '';
+            localStorage.removeItem('filtroRitmo_Letras');
+        } else {
+            filterR = r;
+            localStorage.setItem('filtroRitmo_Letras', r);
+        }
         draw();
     }
 
     function draw() {
         const list = document.getElementById('main-list');
-        const query = document.getElementById('search').value.toLowerCase();
         list.innerHTML = '';
 
-        // FILTRO CORREGIDO: Ahora sí reconoce el ritmo
+        document.getElementById('br').classList.toggle('active', filterR === 'rapida');
+        document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
+
         const filtered = data.filter(c => {
-            const matchesR = (filterR === '' || c.ritmo === filterR);
-            const matchesQ = c.titulo.toLowerCase().includes(query);
-            return (matchesR && matchesQ);
+            return (filterR === '' || c.ritmo === filterR);
         });
 
-        // Agrupar por tono
         const groups = filtered.reduce((acc, c) => {
             let t = c.tonalidad || "C";
             if(t === "undefined") t = "C"; 
@@ -202,7 +118,7 @@
             return acc;
         }, {});
 
-        // Ordenar tonos
+        // Orden musical C, D, E, F, G, A, B
         const tonosOrdenados = Object.keys(groups).sort((a, b) => {
             return ordenMusical.indexOf(a) - ordenMusical.indexOf(b);
         });
@@ -210,11 +126,10 @@
         tonosOrdenados.forEach(ton => {
             const div = document.createElement('div');
             div.className = 'tono-box';
-            div.innerHTML = `
-                <div class="tono-title" onclick="this.parentElement.classList.toggle('open')">
-                    <span>Tono: ${ton}</span> <span>${groups[ton].length} ▾</span>
-                </div>
-                <div class="cancion-list"></div>`;
+            div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')">
+                <span>Tono: ${ton}</span> <span>${groups[ton].length} ▾</span>
+            </div>
+            <div class="cancion-list"></div>`;
             
             const cList = div.querySelector('.cancion-list');
             groups[ton].forEach(c => {
@@ -262,13 +177,9 @@
         });
     }
 
-    function checkAdmin() { 
-        if(prompt("Clave:") === "1234") {
-            document.getElementById('admin-panel').style.display = 'block';
-        }
-    }
-    
+    function checkAdmin() { if(prompt("Clave:") === "1234") document.getElementById('admin-panel').style.display = 'block'; }
     load();
 </script>
 </body>
 </html>
+
