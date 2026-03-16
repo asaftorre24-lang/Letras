@@ -47,7 +47,7 @@
         .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; font-size: 18px; opacity: 0.5; }
 
         .filtros { display: flex; gap: 12px; margin-bottom: 25px; justify-content: center; }
-        .filter-btn { padding: 10px 25px; border-radius: 25px; border: 1px solid var(--border); background: var(--card-bg); color: white; cursor: pointer; font-weight: bold; }
+        .filter-btn { padding: 10px 25px; border-radius: 25px; border: 1px solid var(--border); background: var(--card-bg); color: white; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .filter-btn.active { background: var(--primary); border-color: var(--primary); }
 
         .tono-group { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 15px; overflow: hidden; background: rgba(24, 24, 24, 0.8); }
@@ -77,14 +77,14 @@
 
     <div class="container">
         <div id="admin-panel">
-            <input type="text" id="titulo" placeholder="Nombre de la canción...">
+            <input type="text" id="titulo" placeholder="Nombre de la canción..." style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; background:#2a2a2a; color:white; border:1px solid #444;">
             <div style="display: flex; gap: 10px;">
-                <select id="ritmo" style="flex:1; padding:10px; border-radius:10px;"><option value="rapida">🔥 Rápida</option><option value="lenta">❄️ Lenta</option></select>
-                <select id="tonalidad" style="flex:1; padding:10px; border-radius:10px;"><option value="C">Do (C)</option><option value="D">Re (D)</option><option value="E">Mi (E)</option><option value="F">Fa (F)</option><option value="G">Sol (G)</option><option value="A">La (A)</option><option value="B">Si (B)</option></select>
+                <select id="ritmo" style="flex:1; padding:10px; border-radius:10px; background:#2a2a2a; color:white;"><option value="rapida">🔥 Rápida</option><option value="lenta">❄️ Lenta</option></select>
+                <select id="tonalidad" style="flex:1; padding:10px; border-radius:10px; background:#2a2a2a; color:white;"><option value="C">Do (C)</option><option value="D">Re (D)</option><option value="E">Mi (E)</option><option value="F">Fa (F)</option><option value="G">Sol (G)</option><option value="A">La (A)</option><option value="B">Si (B)</option></select>
             </div>
-            <textarea id="letraVoces" rows="5" placeholder="Letra Voces..." style="width:100%; margin:10px 0; border-radius:10px; padding:10px; background:#2a2a2a; color:white;"></textarea>
-            <textarea id="letraNotas" rows="5" placeholder="Letra Notas..." style="width:100%; margin:10px 0; border-radius:10px; padding:10px; background:#2a2a2a; color:white;"></textarea>
-            <button onclick="guardarLetra()" style="width:100%; padding:15px; background:var(--secondary); border:none; border-radius:10px; font-weight:bold;">GUARDAR ☁️</button>
+            <textarea id="letraVoces" rows="5" placeholder="Letra Voces..." style="width:100%; margin:10px 0; border-radius:10px; padding:10px; background:#2a2a2a; color:white; border:1px solid #444;"></textarea>
+            <textarea id="letraNotas" rows="5" placeholder="Letra Notas..." style="width:100%; margin:10px 0; border-radius:10px; padding:10px; background:#2a2a2a; color:white; border:1px solid #444;"></textarea>
+            <button onclick="guardarLetra()" style="width:100%; padding:15px; background:var(--secondary); border:none; border-radius:10px; font-weight:bold; color:white; cursor:pointer;">GUARDAR ☁️</button>
         </div>
 
         <div class="search-box">
@@ -100,6 +100,7 @@
     </div>
 
     <script>
+        // CONFIGURACIÓN DE TU BASE DE DATOS
         const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -107,11 +108,14 @@
         let todasLasCanciones = [];
         let ritmoActual = ''; 
 
+        // CARGA Y ACTUALIZACIÓN AUTOMÁTICA
         function cargarCanciones() {
             database.ref('canciones').on('value', (snapshot) => {
                 todasLasCanciones = [];
                 snapshot.forEach(child => { 
-                    const d = child.val(); d.fKey = child.key; todasLasCanciones.push(d); 
+                    const d = child.val(); 
+                    d.fKey = child.key; 
+                    todasLasCanciones.push(d); 
                 });
                 renderizarLista();
             });
@@ -132,6 +136,7 @@
             const buscar = document.getElementById('searchInput').value.toLowerCase().trim();
             listaDiv.innerHTML = '';
 
+            // Lógica de filtrado mejorada
             const filtradas = todasLasCanciones.filter(c => {
                 const matchNombre = c.titulo.toLowerCase().includes(buscar);
                 const matchRitmo = ritmoActual === '' ? true : c.ritmo === ritmoActual;
@@ -143,6 +148,7 @@
 
             Object.keys(grupos).sort().forEach(tono => {
                 const tonoDiv = document.createElement('div');
+                // Si estás buscando o filtrando, se abren solas
                 const isOpen = (buscar !== "" || ritmoActual !== "") ? "open" : "";
                 tonoDiv.className = `tono-group ${isOpen}`;
                 tonoDiv.innerHTML = `<div class="tono-header" onclick="this.parentElement.classList.toggle('open')"><span>Tono: ${tono}</span><span>${grupos[tono].length} ▾</span></div><div class="tono-content"></div>`;
@@ -175,9 +181,28 @@
             const ton = document.getElementById('tonalidad').value;
             const v = document.getElementById('letraVoces').value;
             const n = document.getElementById('letraNotas').value;
+            
             if (t) {
-                database.ref('canciones').push({ id: Date.now(), titulo: t, ritmo: r, tonalidad: ton, letraVoces: v, letraNotas: n })
-                .then(() => { alert("Guardado"); location.reload(); });
+                database.ref('canciones').push({ 
+                    id: Date.now(), 
+                    titulo: t, 
+                    ritmo: r, 
+                    tonalidad: ton, 
+                    letraVoces: v, 
+                    letraNotas: n 
+                }).then(() => { 
+                    alert("¡Guardado con éxito!");
+                    // Limpiar campos
+                    document.getElementById('titulo').value = '';
+                    document.getElementById('letraVoces').value = '';
+                    document.getElementById('letraNotas').value = '';
+                    // Mostrar todo en el inicio inmediatamente
+                    ritmoActual = '';
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    renderizarLista(); 
+                });
+            } else {
+                alert("Ponle un título a la canción");
             }
         }
 
