@@ -2,134 +2,150 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Letras Cloud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mis Letras Pro ☁️</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
-            --primary: #1DB954; /* Verde tipo Spotify */
-            --bg: #121212;
-            --card: #1e1e1e;
-            --text: #ffffff;
+            --primary: #1DB954; --bg: #121212; --card-bg: #1e1e1e;
+            --text-main: #ffffff; --text-muted: #b3b3b3; --border: #333333;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-        }
-        h1 { color: var(--primary); text-align: center; }
-        .input-group {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: #282828;
-            color: white;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary);
-            border: none;
-            border-radius: 8px;
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:active { transform: scale(0.98); }
-        .cancion {
-            background: var(--card);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 10px;
-            border-left: 4px solid var(--primary);
-        }
-        .cancion h3 { margin: 0; color: var(--primary); }
-        .cancion p { white-space: pre-wrap; margin-top: 10px; color: #bbb; }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 600px; padding: 20px; }
+        header { text-align: center; padding: 20px 0; border-bottom: 1px solid var(--border); width: 100%; }
+        header h1 { color: var(--primary); margin: 0; font-size: 22px; }
+
+        /* FORMULARIO */
+        .input-group { background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid var(--border); }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); background: #2a2a2a; color: white; font-size: 16px; }
+        .btn-save { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: black; }
+
+        /* FILTROS PRINCIPALES */
+        .filtros { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .filter-btn { padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border); background: var(--card-bg); color: white; cursor: pointer; }
+        .filter-btn.active { background: var(--primary); color: black; }
+
+        /* ESTILO ACORDEÓN TONALIDADES */
+        .tono-group { margin-bottom: 10px; border: 1px solid #444; border-radius: 10px; background: #181818; }
+        .tono-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; color: var(--primary); background: #252525; border-radius: 10px; }
+        .tono-content { display: none; padding: 10px; }
+        .tono-group.open .tono-content { display: block; }
+
+        /* CANCIONES DENTRO DEL TONO */
+        .cancion-item { background: var(--card-bg); margin-bottom: 8px; border-radius: 8px; border-left: 4px solid var(--primary); overflow: hidden; }
+        .cancion-header { padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .cancion-titulo { font-size: 16px; }
+        .cancion-body { display: none; padding: 15px; border-top: 1px solid var(--border); white-space: pre-wrap; font-family: 'Courier New', monospace; color: var(--text-muted); font-size: 14px; background: #111; }
+        .cancion-item.open .cancion-body { display: block; }
     </style>
 </head>
 <body>
 
+    <header><h1>🎵 Mi Repertorio Musical</h1></header>
+
     <div class="container">
-        <h1>☁️ Mis Letras</h1>
-        
         <div class="input-group">
-            <input type="text" id="titulo" placeholder="Nombre de la canción..." autocomplete="off">
-            <textarea id="letra" rows="6" placeholder="Escribe la letra aquí..."></textarea>
-            <button onclick="guardarLetra()">GUARDAR EN LA NUBE</button>
+            <input type="text" id="titulo" placeholder="Título de la canción..." autocomplete="off">
+            <div style="display:flex; gap:10px;">
+                <select id="ritmo">
+                    <option value="rapida">🔥 Rápida</option>
+                    <option value="lenta">❄️ Lenta</option>
+                </select>
+                <select id="tonalidad">
+                    <option value="C">Do (C)</option><option value="Cm">Do m (Cm)</option>
+                    <option value="D">Re (D)</option><option value="Dm">Re m (Dm)</option>
+                    <option value="E">Mi (E)</option><option value="Em">Mi m (Em)</option>
+                    <option value="F">Fa (F)</option><option value="Fm">Fa m (Fm)</option>
+                    <option value="G">Sol (G)</option><option value="Gm">Sol m (Gm)</option>
+                    <option value="A">La (A)</option><option value="Am">La m (Am)</option>
+                    <option value="B">Si (B)</option><option value="Bm">Si m (Bm)</option>
+                </select>
+            </div>
+            <textarea id="letra" rows="5" placeholder="Letra y acordes..."></textarea>
+            <button class="btn-save" onclick="guardarLetra()">GUARDAR CANCIÓN</button>
         </div>
 
-        <div id="lista-canciones">
-            </div>
+        <div class="filtros">
+            <button class="filter-btn active" onclick="cambiarRitmo('rapida', this)">🔥 Rápidas</button>
+            <button class="filter-btn" onclick="cambiarRitmo('lenta', this)">❄️ Lentas</button>
+        </div>
+
+        <div id="lista-tonos"></div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE TU FIREBASE
-        const firebaseConfig = {
-            databaseURL: "https://letras-bb844-default-rtdb.firebaseio.com/"
-        };
-
-        // Inicializar Firebase
+        const firebaseConfig = { databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        let ritmoActual = 'rapida';
 
-        // FUNCIÓN PARA GUARDAR
         function guardarLetra() {
-            const titulo = document.getElementById('titulo').value;
-            const letra = document.getElementById('letra').value;
+            const titulo = document.getElementById('titulo').value.trim();
+            const ritmo = document.getElementById('ritmo').value;
+            const tonalidad = document.getElementById('tonalidad').value;
+            const letra = document.getElementById('letra').value.trim();
 
             if (titulo && letra) {
-                const nuevaCancionRef = database.ref('canciones').push();
-                nuevaCancionRef.set({
-                    titulo: titulo,
-                    letra: letra,
-                    fecha: Date.now()
-                }).then(() => {
+                database.ref('canciones').push({ titulo, ritmo, tonalidad, letra, fecha: Date.now() })
+                .then(() => {
                     document.getElementById('titulo').value = '';
                     document.getElementById('letra').value = '';
-                    alert("¡Guardado con éxito! ✨");
+                    alert("¡Canción guardada! ✨");
                 });
-            } else {
-                alert("Por favor rellena ambos campos");
             }
         }
 
-        // FUNCIÓN PARA LEER EN TIEMPO REAL
-        database.ref('canciones').on('value', (snapshot) => {
-            const listaDiv = document.getElementById('lista-canciones');
-            listaDiv.innerHTML = ''; // Limpiar lista
-            
-            snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                const html = `
-                    <div class="cancion">
-                        <h3>${data.titulo}</h3>
-                        <p>${data.letra}</p>
-                    </div>
-                `;
-                listaDiv.insertAdjacentHTML('afterbegin', html);
+        function cambiarRitmo(ritmo, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            ritmoActual = ritmo;
+            cargarCanciones();
+        }
+
+        function cargarCanciones() {
+            database.ref('canciones').on('value', (snapshot) => {
+                const listaDiv = document.getElementById('lista-tonos');
+                listaDiv.innerHTML = '';
+                const datos = [];
+                snapshot.forEach(child => { datos.push(child.val()); });
+
+                // Agrupar por tonalidad
+                const grupos = {};
+                datos.filter(d => d.ritmo === ritmoActual).forEach(c => {
+                    if (!grupos[c.tonalidad]) grupos[c.tonalidad] = [];
+                    grupos[c.tonalidad].push(c);
+                });
+
+                // Crear los acordeones de tonos
+                Object.keys(grupos).sort().forEach(tono => {
+                    const tonoDiv = document.createElement('div');
+                    tonoDiv.className = 'tono-group';
+                    tonoDiv.innerHTML = `
+                        <div class="tono-header" onclick="this.parentElement.classList.toggle('open')">
+                            <span>Tono: ${tono}</span>
+                            <span>${grupos[tono].length} canciones</span>
+                        </div>
+                        <div class="tono-content">
+                            ${grupos[tono].map(can => `
+                                <div class="cancion-item">
+                                    <div class="cancion-header" onclick="this.parentElement.classList.toggle('open')">
+                                        <span class="cancion-titulo">${can.titulo}</span>
+                                    </div>
+                                    <div class="cancion-body">${can.letra}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    listaDiv.appendChild(tonoDiv);
+                });
             });
-        });
+        }
+
+        cargarCanciones();
     </script>
 </body>
 </html>
