@@ -34,7 +34,7 @@
         .clear-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #333; color: #aaa; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; z-index: 2; }
         .clear-btn.visible { display: flex; }
 
-        .div-title { margin: 30px 0 15px; padding: 10px; color: var(--blue); font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(66, 133, 244, 0.2); width: 100%; text-align: center; }
+        .div-title { margin: 30px 0 15px; padding: 10px; color: var(--blue); font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(66, 133, 244, 0.2); width: 100%; text-align: center; }
 
         #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); }
         input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; box-sizing: border-box; }
@@ -49,12 +49,12 @@
         .tono-box.open .cancion-list { display: block; }
         
         .item { background: rgba(45,45,45,0.95); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); position: relative; }
-        .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding-right: 50px; }
+        .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; border-radius: 0 0 12px 12px; }
         .item.open .item-content { display: block; }
         
-        .del-btn { display: none; position: absolute; right: 10px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; z-index: 15; }
-        .clean-section { display: none; background: var(--red); color: white; border: none; border-radius: 5px; padding: 10px 15px; font-size: 12px; cursor: pointer; margin-top: 15px; margin-right: 5px; font-weight: bold; }
+        .del-btn { display: none; background: var(--red); color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .clean-section { display: none; background: #555; color: white; border: none; border-radius: 5px; padding: 8px 12px; font-size: 12px; cursor: pointer; margin-top: 15px; margin-right: 5px; font-weight: bold; border: 1px solid #777; }
         body.admin-mode .del-btn, body.admin-mode .clean-section { display: inline-block; }
 
         .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
@@ -98,7 +98,7 @@
         </div>
         <textarea id="lv" rows="3" placeholder="🎤 Letra Voces..."></textarea>
         <textarea id="ln" rows="3" placeholder="🎹 Notas / Acordes..."></textarea>
-        <button onclick="save()" style="width:100%; padding:18px; background:var(--green); border:none; border-radius:12px; color:white; font-weight:bold;">💾 GUARDAR</button>
+        <button onclick="save()" style="width:100%; padding:18px; background:var(--green); border:none; border-radius:12px; color:white; font-weight:bold;">💾 GUARDAR / ACTUALIZAR</button>
     </div>
 
     <div class="filter-group">
@@ -164,8 +164,9 @@
     }
 
     function renderGroup(ton, songs, list, q) {
-        const match = ton.match(/\(([^)]+)\)/);
-        let cifrado = match ? match[1] : ton.replace(/menor|mayor/gi, '').trim();
+        let cifrado = ton.replace(/menor|mayor/gi, '').trim();
+        const match = cifrado.match(/\(([^)]+)\)/);
+        if(match) cifrado = match[1];
         let esMenor = ton.toLowerCase().includes('menor');
         let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
 
@@ -178,8 +179,10 @@
             const item = document.createElement('div');
             item.className = 'item'; 
             item.innerHTML = `
-                <button class="del-btn" onclick="remove('${c.key}')">🗑️</button>
-                <div class="item-head" onclick="this.parentElement.classList.toggle('open')"><span>🎵 ${c.titulo}</span></div>
+                <div class="item-head" onclick="this.parentElement.classList.toggle('open')">
+                    <span>🎵 ${c.titulo}</span>
+                    <button class="del-btn" onclick="event.stopPropagation(); remove('${c.key}')">🗑️ Borrar</button>
+                </div>
                 <div class="item-content">
                     <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
                     <div class="text-area active v">${c.letraVoces || '...'}</div>
@@ -205,14 +208,44 @@
     function clearSec(key, field) { if(confirm("¿Limpiar sección?")) { let u = {}; u[field] = "..."; db.ref('canciones/'+key).update(u); } }
 
     function save() {
-        db.ref('canciones').push({
-            titulo: document.getElementById('t').value, ritmo: document.getElementById('r').value,
-            tonalidad: document.getElementById('ton').value, letraVoces: document.getElementById('lv').value,
-            letraNotas: document.getElementById('ln').value
-        }).then(() => { alert("Guardado"); location.reload(); });
+        const t = document.getElementById('t').value.trim();
+        const r = document.getElementById('r').value;
+        const ton = document.getElementById('ton').value;
+        const lv = document.getElementById('lv').value || "...";
+        const ln = document.getElementById('ln').value || "...";
+
+        if (!t) return alert("Por favor escribe el título");
+
+        // LÓGICA ANTI-DUPLICADOS: Busca si ya existe el nombre
+        const existente = data.find(c => c.titulo.toLowerCase() === t.toLowerCase());
+
+        const cancionData = {
+            titulo: t,
+            ritmo: r,
+            tonalidad: ton,
+            letraVoces: lv,
+            letraNotas: ln
+        };
+
+        if (existente) {
+            if (confirm(`La canción "${t}" ya existe. ¿Quieres actualizarla con la nueva información?`)) {
+                db.ref('canciones/' + existente.key).update(cancionData)
+                .then(() => { alert("Canción actualizada ✅"); resetAdmin(); });
+            }
+        } else {
+            db.ref('canciones').push(cancionData)
+            .then(() => { alert("Nueva canción guardada ✅"); resetAdmin(); });
+        }
     }
 
-    function remove(key) { if(confirm("¿Borrar canción?")) db.ref('canciones/'+key).remove(); }
+    function resetAdmin() {
+        document.getElementById('t').value = '';
+        document.getElementById('lv').value = '';
+        document.getElementById('ln').value = '';
+        document.getElementById('admin-panel').style.display = 'none';
+    }
+
+    function remove(key) { if(confirm("¿Borrar canción definitivamente?")) db.ref('canciones/'+key).remove(); }
 
     load();
 </script>
