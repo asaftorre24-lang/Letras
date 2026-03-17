@@ -82,7 +82,7 @@
         </div>
         <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
         <textarea id="ln" rows="4" placeholder="🎹 Letra Notas..."></textarea>
-        <button onclick="save()" class="btn-save">GUARDAR CANCIÓN ☁️</button>
+        <button onclick="save()" class="btn-save">GUARDAR CAMBIOS ✅</button>
     </div>
 
     <div class="filter-group">
@@ -110,7 +110,7 @@
     function setR(r) { 
         filterR = (filterR === r) ? '' : r; 
         const logo = document.getElementById('main-logo');
-        logo.innerText = filterR === 'rapida' ? 'Rápidas' : (filterR === 'lenta' ? 'Lentas' : 'Letras');
+        logo.innerText = filterR === 'rapida' ? 'RÁPIDAS' : (filterR === 'lenta' ? 'LENTAS' : 'LETRAS');
         draw(); 
     }
 
@@ -152,8 +152,8 @@
                             <button class="t-btn active" onclick="shTab(this,'v')">Voces</button>
                             <button class="t-btn" onclick="shTab(this,'n')">Notas</button>
                         </div>
-                        <div class="text-area active v">${c.letraVoces || 'Sin letra de voces...'}</div>
-                        <div class="text-area n">${c.letraNotas || 'Sin notas musicales...'}</div>
+                        <div class="text-area active v">${c.letraVoces || '...'}</div>
+                        <div class="text-area n">${c.letraNotas || '...'}</div>
                     </div>`;
                 cList.appendChild(item);
             });
@@ -169,50 +169,52 @@
         p.querySelector('.n').classList.toggle('active', mode === 'n');
     }
 
-    // --- FUNCIÓN DE GUARDADO UNIFICADA ---
+    // FUNCIÓN DE LIMPIEZA PARA EVITAR DUPLICADOS POR TILDES O ESPACIOS
+    function limpiarTexto(texto) {
+        return texto.toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quita tildes
+            .replace(/\s+/g, ' ') // Quita espacios dobles
+            .trim();
+    }
+
     function save() {
-        const t = document.getElementById('t').value.trim();
+        const tOriginal = document.getElementById('t').value.trim();
+        const tLimpio = limpiarTexto(tOriginal);
         const r = document.getElementById('r').value;
         const ton = document.getElementById('ton').value;
         const lv = document.getElementById('lv').value.trim();
         const ln = document.getElementById('ln').value.trim();
         
-        if(!t) return alert("Título obligatorio");
+        if(!tOriginal) return alert("Título vacío");
 
-        // Buscamos si ya existe por el título exacto (sin importar mayúsculas)
-        const existe = data.find(c => c.titulo.toLowerCase() === t.toLowerCase());
+        // Buscamos si ya existe comparando los textos limpios
+        const existe = data.find(c => limpiarTexto(c.titulo) === tLimpio);
 
         if(existe) {
-            // Si ya existe, actualizamos EL MISMO registro
-            // Solo reemplazamos la letra si el campo NO está vacío. 
-            // Si está vacío, dejamos lo que ya estaba guardado.
-            const updateData = {
-                titulo: t,
+            // Si ya existe, actualizamos ese ID específico
+            const updateObj = {
+                titulo: tOriginal, // Actualiza al nombre que escribiste (por si quieres corregir tildes)
                 ritmo: r,
-                tonalidad: ton,
-                letraVoces: lv !== "" ? lv : (existe.letraVoces || ""),
-                letraNotas: ln !== "" ? ln : (existe.letraNotas || "")
+                tonalidad: ton
             };
+            
+            // Solo sobreescribe si hay algo escrito en el cuadro, si no, mantiene lo viejo
+            if (lv !== "") updateObj.letraVoces = lv;
+            if (ln !== "") updateObj.letraNotas = ln;
 
-            db.ref('canciones/' + existe.key).update(updateData)
-            .then(() => { 
-                alert("Canción '" + t + "' actualizada correctamente ✅"); 
-                cerrarAdmin(); 
-            });
+            db.ref('canciones/' + existe.key).update(updateObj)
+            .then(() => { alert("Canción actualizada sin crear otra ✅"); cerrarAdmin(); });
         } else {
-            // Si es nueva, creamos un registro único
-            const newData = {
-                titulo: t,
+            // Si realmente es nueva
+            const newSong = {
+                titulo: tOriginal,
                 ritmo: r,
                 tonalidad: ton,
-                letraVoces: lv || "",
-                letraNotas: ln || ""
+                letraVoces: lv || "...",
+                letraNotas: ln || "..."
             };
-            db.ref('canciones').push(newData)
-            .then(() => { 
-                alert("Nueva canción '" + t + "' guardada con éxito ✅"); 
-                cerrarAdmin(); 
-            });
+            db.ref('canciones').push(newSong)
+            .then(() => { alert("Guardada como nueva canción ✅"); cerrarAdmin(); });
         }
     }
 
@@ -235,7 +237,6 @@
             document.getElementById('admin-panel').style.display = 'block'; 
         }
     }
-    
     load();
 </script>
 </body>
