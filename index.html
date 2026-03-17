@@ -20,7 +20,7 @@
         :root { --blue: #4285F4; --green: #34A853; --red: #ea4335; --bg: #000000; --text: #eee; }
         body { 
             font-family: 'Segoe UI', sans-serif; background-color: var(--bg);
-            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='60' fill='rgba(66, 133, 244, 0.08)' text-anchor='middle' dominant-baseline='middle'%3E𝄞%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='60' fill='rgba(66, 133, 244, 0.08)' text-anchor='middle' dominant-baseline='middle'%3E\uD834\uDD1E%3C/text%3E%3C/svg%3E");
             background-position: center; background-repeat: no-repeat; background-attachment: fixed; 
             color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
@@ -184,14 +184,13 @@
         let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
 
         const div = document.createElement('div');
-        // El grupo (Tono) se abre si hay búsqueda, pero la canción NO.
         div.className = 'tono-box' + (query ? ' open' : '');
         div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${displayTon}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
         const cList = div.querySelector('.cancion-list');
         
         songs.forEach(c => {
             const item = document.createElement('div');
-            // AQUÍ QUITÉ LA OPCIÓN DE ABRIR AUTOMÁTICAMENTE LA CANCIÓN
+            // AQUÍ SE ELIMINÓ EL "OPEN" AUTOMÁTICO PARA QUE NO SE ABRAN AL BUSCAR
             item.className = 'item'; 
             item.innerHTML = `
                 <button class="del-btn" onclick="remove('${c.key}')">🗑️</button>
