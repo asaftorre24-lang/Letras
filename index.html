@@ -29,11 +29,11 @@
         .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
         
-        /* BUSCADOR INICIO */
+        /* BUSCADOR INICIAL */
         .search-box { width: 100%; margin-bottom: 20px; }
         #main-search { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #333; background: #151515; color: white; font-size: 16px; outline: none; box-sizing: border-box; }
-        #main-search:focus { border-color: var(--blue); box-shadow: 0 0 10px rgba(66, 133, 244, 0.2); }
 
+        /* PANEL ADMIN ORIGINAL */
         #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.95); }
         input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; box-sizing: border-box; }
         
@@ -64,13 +64,9 @@
         
         .text-area { white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 20px; display: none; padding: 10px; color: #fff; }
         .text-area.active { display: block; }
-        
-        .save-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .btn-save { width: 100%; padding: 16px; border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 14px; transition: 0.2s; }
-        .btn-save:active { transform: scale(0.98); }
-        .btn-v { background: rgba(66, 133, 244, 0.8); border: 1px solid #444; }
-        .btn-n { background: rgba(255, 215, 0, 0.15); color: #FFD700; border: 1px solid #FFD700; }
-        .btn-all { background: var(--green); font-size: 16px; }
+
+        /* BOTÓN DE GUARDADO UNIFICADO */
+        .btn-save-main { width: 100%; padding: 18px; border: none; background: var(--green); color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 16px; margin-top: 10px; }
     </style>
 </head>
 <body id="body-app">
@@ -104,11 +100,7 @@
         <textarea id="lv" rows="3" placeholder="🎤 Letra Voces..."></textarea>
         <textarea id="ln" rows="3" placeholder="🎹 Notas / Acordes..."></textarea>
         
-        <div class="save-group">
-            <button onclick="save('v')" class="btn-save btn-v">🎤 Guardar SÓLO Letra (Voces)</button>
-            <button onclick="save('n')" class="btn-save btn-n">🎹 Guardar SÓLO Notas / Acordes</button>
-            <button onclick="save('all')" class="btn-save btn-all">💾 GUARDAR TODO JUNTO</button>
-        </div>
+        <button onclick="save()" class="btn-save-main">💾 GUARDAR TODO JUNTO</button>
     </div>
 
     <div class="filter-group">
@@ -171,7 +163,7 @@
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
 
         if (!filterR && !query) { 
-            list.innerHTML = '<div style="text-align:center; opacity:0.5">Elige un ritmo o busca una canción...</div>'; 
+            list.innerHTML = '<div style="text-align:center; opacity:0.5">Elige un ritmo o busca...</div>'; 
             return; 
         }
 
@@ -188,7 +180,6 @@
 
         Object.keys(groups).sort().forEach(ton => {
             const div = document.createElement('div');
-            // Si hay búsqueda, el grupo se abre solo
             div.className = 'tono-box' + (query ? ' open' : ''); 
             div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span></div><div class="cancion-list"></div>`;
             const cList = div.querySelector('.cancion-list');
@@ -227,7 +218,7 @@
         return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
 
-    function save(type) {
+    function save() {
         const t = document.getElementById('t').value.trim();
         const r = document.getElementById('r').value;
         const ton = document.getElementById('ton').value;
@@ -239,23 +230,20 @@
         const tLimpio = limpiarTexto(t);
         const existe = data.find(c => limpiarTexto(c.titulo) === tLimpio);
 
+        let updateData = {
+            titulo: t,
+            ritmo: r,
+            tonalidad: ton,
+            letraVoces: lv || "...",
+            letraNotas: ln || "..."
+        };
+
         if(existe) {
-            let update = { titulo: t, ritmo: r, tonalidad: ton };
-            if (type === 'v') {
-                update.letraVoces = lv; 
-                if(!confirm("¿Confirmas guardar SÓLO la letra?")) return;
-            } else if (type === 'n') {
-                update.letraNotas = ln;
-                if(!confirm("¿Confirmas guardar SÓLO las notas?")) return;
-            } else if (type === 'all') {
-                update.letraVoces = lv;
-                update.letraNotas = ln;
-            }
-            db.ref('canciones/' + existe.key).update(update)
+            db.ref('canciones/' + existe.key).update(updateData)
             .then(() => { alert("Guardado ✅"); cerrarAdmin(); });
         } else {
-            db.ref('canciones').push({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv || "...", letraNotas: ln || "..." })
-            .then(() => { alert("Guardada ✅"); cerrarAdmin(); });
+            db.ref('canciones').push(updateData)
+            .then(() => { alert("Nueva canción guardada ✅"); cerrarAdmin(); });
         }
     }
 
