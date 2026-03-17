@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Letras IPUC">
     
-    <link rel="icon" type="image/png" href="https://img.icons8.com/isometric/512/treble-clef--v2.png?v=99" sizes="512x512">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/isometric/512/treble-clef--v2.png?v=99">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png">
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -106,7 +106,7 @@
     function setR(r) { 
         filterR = (filterR === r) ? '' : r; 
         
-        // ACTUALIZA EL TÍTULO SEGÚN EL BOTÓN
+        // ACTUALIZA EL TEXTO EN LA CABECERA
         const logo = document.getElementById('main-logo');
         if (filterR === 'rapida') logo.innerText = 'Rápidas';
         else if (filterR === 'lenta') logo.innerText = 'Lentas';
