@@ -82,7 +82,7 @@
         </div>
         <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
         <textarea id="ln" rows="4" placeholder="🎹 Letra Notas..."></textarea>
-        <button onclick="save()" class="btn-save">GUARDAR TODO JUNTO ☁️</button>
+        <button onclick="save()" class="btn-save">GUARDAR CANCIÓN ☁️</button>
     </div>
 
     <div class="filter-group">
@@ -169,7 +169,7 @@
         p.querySelector('.n').classList.toggle('active', mode === 'n');
     }
 
-    // --- FUNCIÓN MODIFICADA PARA GUARDADO INTELIGENTE ---
+    // --- FUNCIÓN DE GUARDADO UNIFICADA ---
     function save() {
         const t = document.getElementById('t').value.trim();
         const r = document.getElementById('r').value;
@@ -177,28 +177,42 @@
         const lv = document.getElementById('lv').value.trim();
         const ln = document.getElementById('ln').value.trim();
         
-        if(!t) return alert("Título vacío");
+        if(!t) return alert("Título obligatorio");
 
+        // Buscamos si ya existe por el título exacto (sin importar mayúsculas)
         const existe = data.find(c => c.titulo.toLowerCase() === t.toLowerCase());
 
         if(existe) {
-            // Si la canción existe, mezclamos lo nuevo con lo viejo
-            const songObj = { 
-                titulo: t, 
-                ritmo: r, 
-                tonalidad: ton, 
-                // Si el cuadro de texto está vacío, usa lo que ya estaba en la base de datos
-                letraVoces: lv !== "" ? lv : (existe.letraVoces || ""), 
-                letraNotas: ln !== "" ? ln : (existe.letraNotas || "") 
+            // Si ya existe, actualizamos EL MISMO registro
+            // Solo reemplazamos la letra si el campo NO está vacío. 
+            // Si está vacío, dejamos lo que ya estaba guardado.
+            const updateData = {
+                titulo: t,
+                ritmo: r,
+                tonalidad: ton,
+                letraVoces: lv !== "" ? lv : (existe.letraVoces || ""),
+                letraNotas: ln !== "" ? ln : (existe.letraNotas || "")
             };
 
-            db.ref('canciones/' + existe.key).set(songObj)
-            .then(() => { alert("Canción actualizada ✅"); cerrarAdmin(); });
+            db.ref('canciones/' + existe.key).update(updateData)
+            .then(() => { 
+                alert("Canción '" + t + "' actualizada correctamente ✅"); 
+                cerrarAdmin(); 
+            });
         } else {
-            // Si es nueva, guarda lo que haya escrito
-            const newSong = { titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln };
-            db.ref('canciones').push(newSong)
-            .then(() => { alert("¡Guardado nuevo con éxito! ✅"); cerrarAdmin(); });
+            // Si es nueva, creamos un registro único
+            const newData = {
+                titulo: t,
+                ritmo: r,
+                tonalidad: ton,
+                letraVoces: lv || "",
+                letraNotas: ln || ""
+            };
+            db.ref('canciones').push(newData)
+            .then(() => { 
+                alert("Nueva canción '" + t + "' guardada con éxito ✅"); 
+                cerrarAdmin(); 
+            });
         }
     }
 
