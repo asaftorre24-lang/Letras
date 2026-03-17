@@ -24,22 +24,30 @@
             background-attachment: fixed; color: var(--text); margin: 0; padding: 0; 
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-        .music-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; opacity: 0.12; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='30' font-family='Arial' font-size='20' fill='white'%3E♩%3C/text%3E%3Ctext x='50' y='80' font-family='Arial' font-size='25' fill='white'%3E♫%3C/text%3E%3Ctext x='80' y='40' font-family='Arial' font-size='18' fill='white'%3E♬%3C/text%3E%3C%2Fsvg%3E"); }
         header { width: 100%; text-align: center; padding: 25px 0; background: rgba(0,0,0,0.8); position: relative; border-bottom: 1px solid #222; backdrop-filter: blur(10px); z-index: 10; }
         .logo { font-family: 'Major Mono Display', monospace; font-size: 38px; font-weight: bold; letter-spacing: 3px; background: linear-gradient(to right, var(--blue), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
+        
+        /* PANEL ADMIN MEJORADO */
         #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.95); }
         input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; box-sizing: border-box; }
+        
+        /* SUGERENCIAS DE TÍTULO */
+        #suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .sug-item { background: #333; font-size: 12px; padding: 6px 12px; border-radius: 20px; cursor: pointer; border: 1px solid #444; }
+        .sug-item:hover { background: var(--blue); }
+
         .filter-group { display: flex; gap: 15px; margin-bottom: 35px; justify-content: center; }
         .f-btn { flex: 1; padding: 18px; border-radius: 22px; border: 1px solid #333; background: rgba(40,40,40,0.6); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
         .f-btn.active { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 20px rgba(66, 133, 244, 0.3); }
+        
         .tono-box { background: rgba(30,30,30,0.7); border-radius: 18px; margin-bottom: 15px; border: 1px solid #222; }
         .tono-title { padding: 20px; color: var(--green); font-weight: bold; display: flex; justify-content: space-between; cursor: pointer; }
         .cancion-list { display: none; padding: 12px; }
         .tono-box.open .cancion-list { display: block; }
         
-        .item { background: rgba(45,45,45,0.9); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); position: relative; }
+        .item { background: rgba(45,45,45,0.9); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); }
         .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .del-btn { display: none; background: var(--red); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; }
         .admin-mode .del-btn { display: inline-block; }
@@ -51,37 +59,36 @@
         .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
         .t-btn.active { background: var(--green); color: black; }
         
-        .text-area { white-space: pre-wrap; font-family: 'Times New Roman', Times, serif; font-size: 20px; line-height: 1.5; display: none; padding: 10px; color: #fff; }
+        .text-area { white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 20px; display: none; padding: 10px; color: #fff; }
         .text-area.active { display: block; }
         
         .btn-save { width: 100%; padding: 18px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 15px; cursor: pointer; }
-        .empty-state { text-align: center; color: #555; margin-top: 50px; font-style: italic; }
     </style>
 </head>
 <body id="body-app">
-<div class="music-bg"></div>
+
 <header>
-    <div class="logo" id="main-logo">Letras</div>
+    <div class="logo" id="main-logo">LETRAS</div>
     <button class="admin-btn" onclick="checkAdmin()">🔑 ADMIN</button>
 </header>
 
 <div class="container">
     <div id="admin-panel">
-        <input type="text" id="t" placeholder="🎵 Nombre de la canción...">
-        <div style="display:flex; gap:10px;">
+        <input type="text" id="t" placeholder="🎵 Título de la canción..." oninput="updateSug()">
+        <div id="suggestions"></div> <div style="display:flex; gap:10px;">
             <select id="r">
                 <option value="rapida">🏍️ Rápida</option>
                 <option value="lenta">🐢 Lenta</option>
             </select>
             <select id="ton">
-                <option value="C Mayor">Do Mayor (C)</option><option value="D Mayor">Re Mayor (D)</option>
-                <option value="E Mayor">Mi Mayor (E)</option><option value="F Mayor">Fa Mayor (F)</option>
-                <option value="G Mayor">Sol Mayor (G)</option><option value="A Mayor">La Mayor (A)</option>
-                <option value="B Mayor">Si Mayor (B)</option>
+                <option value="C Mayor">Do (C)</option><option value="D Mayor">Re (D)</option>
+                <option value="E Mayor">Mi (E)</option><option value="F Mayor">Fa (F)</option>
+                <option value="G Mayor">Sol (G)</option><option value="A Mayor">La (A)</option>
+                <option value="B Mayor">Si (B)</option>
             </select>
         </div>
-        <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
-        <textarea id="ln" rows="4" placeholder="🎹 Letra Notas..."></textarea>
+        <textarea id="lv" rows="3" placeholder="🎤 Letra Voces..."></textarea>
+        <textarea id="ln" rows="3" placeholder="🎹 Notas / Acordes..."></textarea>
         <button onclick="save()" class="btn-save">GUARDAR CAMBIOS ✅</button>
     </div>
 
@@ -104,13 +111,36 @@
             data = [];
             s.forEach(c => { data.push({ ...c.val(), key: c.key }); });
             draw();
+            updateSug(); 
+        });
+    }
+
+    // MOSTRAR SUGERENCIAS PARA NO ESCRIBIR DE MÁS
+    function updateSug() {
+        const input = document.getElementById('t').value.toLowerCase();
+        const sugDiv = document.getElementById('suggestions');
+        sugDiv.innerHTML = '';
+        
+        if(input.length < 2) return;
+
+        const matches = data.filter(c => c.titulo.toLowerCase().includes(input)).slice(0, 5);
+        matches.forEach(m => {
+            const span = document.createElement('span');
+            span.className = 'sug-item';
+            span.innerText = m.titulo;
+            span.onclick = () => {
+                document.getElementById('t').value = m.titulo;
+                document.getElementById('r').value = m.ritmo;
+                document.getElementById('ton').value = m.tonalidad;
+                sugDiv.innerHTML = '';
+            };
+            sugDiv.appendChild(span);
         });
     }
 
     function setR(r) { 
         filterR = (filterR === r) ? '' : r; 
-        const logo = document.getElementById('main-logo');
-        logo.innerText = filterR === 'rapida' ? 'RÁPIDAS' : (filterR === 'lenta' ? 'LENTAS' : 'LETRAS');
+        document.getElementById('main-logo').innerText = filterR.toUpperCase() || 'LETRAS';
         draw(); 
     }
 
@@ -120,10 +150,7 @@
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
 
-        if (filterR === '') { 
-            list.innerHTML = '<div class="empty-state">Selecciona un ritmo...</div>'; 
-            return; 
-        }
+        if (!filterR) { list.innerHTML = '<div style="text-align:center; opacity:0.5">Elige un ritmo...</div>'; return; }
 
         const filtered = data.filter(c => c.ritmo === filterR);
         const groups = filtered.reduce((acc, c) => {
@@ -143,8 +170,8 @@
                 const item = document.createElement('div');
                 item.className = 'item';
                 item.innerHTML = `
-                    <div class="item-head">
-                        <span style="flex-grow:1" onclick="this.parentElement.parentElement.classList.toggle('open')">🎵 ${c.titulo}</span>
+                    <div class="item-head" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🎵 ${c.titulo}</span>
                         <button class="del-btn" onclick="borrar('${c.key}', '${c.titulo}')">🗑️</button>
                     </div>
                     <div class="item-content">
@@ -169,66 +196,42 @@
         p.querySelector('.n').classList.toggle('active', mode === 'n');
     }
 
-    // FUNCIÓN DE LIMPIEZA PARA EVITAR DUPLICADOS POR TILDES O ESPACIOS
     function limpiarTexto(texto) {
-        return texto.toLowerCase()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quita tildes
-            .replace(/\s+/g, ' ') // Quita espacios dobles
-            .trim();
+        return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
 
     function save() {
-        const tOriginal = document.getElementById('t').value.trim();
-        const tLimpio = limpiarTexto(tOriginal);
+        const t = document.getElementById('t').value.trim();
         const r = document.getElementById('r').value;
         const ton = document.getElementById('ton').value;
         const lv = document.getElementById('lv').value.trim();
         const ln = document.getElementById('ln').value.trim();
         
-        if(!tOriginal) return alert("Título vacío");
+        if(!t) return alert("Escribe el título");
 
-        // Buscamos si ya existe comparando los textos limpios
+        const tLimpio = limpiarTexto(t);
         const existe = data.find(c => limpiarTexto(c.titulo) === tLimpio);
 
         if(existe) {
-            // Si ya existe, actualizamos ese ID específico
-            const updateObj = {
-                titulo: tOriginal, // Actualiza al nombre que escribiste (por si quieres corregir tildes)
-                ritmo: r,
-                tonalidad: ton
-            };
-            
-            // Solo sobreescribe si hay algo escrito en el cuadro, si no, mantiene lo viejo
-            if (lv !== "") updateObj.letraVoces = lv;
-            if (ln !== "") updateObj.letraNotas = ln;
+            // ACTUALIZACIÓN INTELIGENTE
+            const update = { titulo: t, ritmo: r, tonalidad: ton };
+            if (lv !== "") update.letraVoces = lv;
+            if (ln !== "") update.letraNotas = ln;
 
-            db.ref('canciones/' + existe.key).update(updateObj)
-            .then(() => { alert("Canción actualizada sin crear otra ✅"); cerrarAdmin(); });
+            db.ref('canciones/' + existe.key).update(update)
+            .then(() => { alert("Actualizada ✅"); cerrarAdmin(); });
         } else {
-            // Si realmente es nueva
-            const newSong = {
-                titulo: tOriginal,
-                ritmo: r,
-                tonalidad: ton,
-                letraVoces: lv || "...",
-                letraNotas: ln || "..."
-            };
-            db.ref('canciones').push(newSong)
-            .then(() => { alert("Guardada como nueva canción ✅"); cerrarAdmin(); });
+            // NUEVA CANCIÓN
+            db.ref('canciones').push({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv || "...", letraNotas: ln || "..." })
+            .then(() => { alert("Guardada ✅"); cerrarAdmin(); });
         }
     }
 
-    function borrar(key, nombre) {
-        if(confirm("¿Borrar definitivamente '" + nombre + "'?")) {
-            db.ref('canciones/' + key).remove().then(() => alert("Eliminado 🗑️"));
-        }
-    }
+    function borrar(key, n) { if(confirm("¿Borrar '"+n+"'?")) db.ref('canciones/'+key).remove(); }
 
     function cerrarAdmin() {
         document.getElementById('admin-panel').style.display='none';
-        document.getElementById('t').value = '';
-        document.getElementById('lv').value = '';
-        document.getElementById('ln').value = '';
+        document.getElementById('t').value = ''; document.getElementById('lv').value = ''; document.getElementById('ln').value = '';
     }
 
     function checkAdmin() { 
