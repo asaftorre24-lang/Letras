@@ -29,13 +29,11 @@
         .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
         
-        /* BUSCADOR CENTRADO */
         .search-container { position: relative; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; }
         #main-search { width: 100%; padding: 15px; text-align: center; border-radius: 25px; border: 1px solid #333; background: rgba(21, 21, 21, 0.9); color: white; font-size: 16px; outline: none; box-sizing: border-box; backdrop-filter: blur(5px); }
         .clear-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #333; color: #aaa; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; z-index: 2; }
         .clear-btn.visible { display: flex; }
 
-        /* ESTILO DE DIVISIÓN */
         .div-title { margin: 20px 0 10px; padding: 10px; color: var(--blue); font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #222; width: 100%; text-align: center; }
 
         #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); }
@@ -165,23 +163,30 @@
         const mayores = sortedTones.filter(t => !t.toLowerCase().includes('menor'));
         const menores = sortedTones.filter(t => t.toLowerCase().includes('menor'));
 
-        // RENDERIZAR MAYORES
         if(mayores.length > 0) {
             list.innerHTML += '<div class="div-title">☀️ Tonos Mayores</div>';
-            mayores.forEach(t => renderGroup(t, groups[t], list, query));
+            mayores.forEach(t => renderGroup(t, groups[t], list, query, false));
         }
 
-        // RENDERIZAR MENORES
         if(menores.length > 0) {
             list.innerHTML += '<div class="div-title">🌑 Tonos Menores</div>';
-            menores.forEach(t => renderGroup(t, groups[t], list, query));
+            menores.forEach(t => renderGroup(t, groups[t], list, query, true));
         }
     }
 
-    function renderGroup(ton, songs, list, query) {
+    function renderGroup(ton, songs, list, query, esMenor) {
+        // Lógica para extraer solo el cifrado (lo que está entre paréntesis)
+        const match = ton.match(/\(([^)]+)\)/);
+        let displayTon = match ? match[1] : ton;
+        
+        // Si es menor, forzamos que termine en 'm' si no lo tiene ya
+        if(esMenor && !displayTon.toLowerCase().endsWith('m')) {
+            displayTon += 'm';
+        }
+
         const div = document.createElement('div');
         div.className = 'tono-box' + (query ? ' open' : '');
-        div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${ton}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
+        div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${displayTon}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
         const cList = div.querySelector('.cancion-list');
         
         songs.forEach(c => {
