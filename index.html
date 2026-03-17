@@ -54,7 +54,8 @@
         .item.open .item-content { display: block; }
         
         .del-btn { display: none; position: absolute; right: 10px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; z-index: 15; }
-        body.admin-mode .del-btn { display: block; }
+        .clean-section { display: none; background: var(--red); color: white; border: none; border-radius: 5px; padding: 6px 10px; font-size: 11px; cursor: pointer; margin-top: 10px; margin-right: 5px; }
+        body.admin-mode .del-btn, body.admin-mode .clean-section { display: inline-block; }
 
         .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
         .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
@@ -163,46 +164,35 @@
         }, {});
 
         const sortedTones = Object.keys(groups).sort();
-        const mayores = sortedTones.filter(t => !t.toLowerCase().includes('menor'));
-        const menores = sortedTones.filter(t => t.toLowerCase().includes('menor'));
+        sortedTones.forEach(t => {
+            const esMenor = t.toLowerCase().includes('menor');
+            const match = t.match(/\(([^)]+)\)/);
+            let cifrado = match ? match[1] : t;
+            cifrado = cifrado.replace(/menor|mayor/gi, '').trim();
+            let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
 
-        if(mayores.length > 0) {
-            list.innerHTML += '<div class="div-title">☀️ Tonos Mayores</div>';
-            mayores.forEach(t => renderGroup(t, groups[t], list, query, false));
-        }
-
-        if(menores.length > 0) {
-            list.innerHTML += '<div class="div-title">🌑 Tonos Menores</div>';
-            menores.forEach(t => renderGroup(t, groups[t], list, query, true));
-        }
-    }
-
-    function renderGroup(ton, songs, list, query, esMenor) {
-        const match = ton.match(/\(([^)]+)\)/);
-        let cifrado = match ? match[1] : ton;
-        cifrado = cifrado.replace(/menor|mayor/gi, '').trim();
-        let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
-
-        const div = document.createElement('div');
-        div.className = 'tono-box' + (query ? ' open' : '');
-        div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${displayTon}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
-        const cList = div.querySelector('.cancion-list');
-        
-        songs.forEach(c => {
-            const item = document.createElement('div');
-            // AQUÍ SE ELIMINÓ EL "OPEN" AUTOMÁTICO PARA QUE NO SE ABRAN AL BUSCAR
-            item.className = 'item'; 
-            item.innerHTML = `
-                <button class="del-btn" onclick="remove('${c.key}')">🗑️</button>
-                <div class="item-head" onclick="this.parentElement.classList.toggle('open')"><span>🎵 ${c.titulo}</span></div>
-                <div class="item-content">
-                    <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
-                    <div class="text-area active v">${c.letraVoces || '...'}</div>
-                    <div class="text-area n">${c.letraNotas || '...'}</div>
-                </div>`;
-            cList.appendChild(item);
+            const div = document.createElement('div');
+            div.className = 'tono-box' + (query ? ' open' : '');
+            div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${displayTon}</span> <span>${groups[t].length} ▾</span></div><div class="cancion-list"></div>`;
+            const cList = div.querySelector('.cancion-list');
+            
+            groups[t].forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'item'; 
+                item.innerHTML = `
+                    <button class="del-btn" onclick="remove('${c.key}')">🗑️</button>
+                    <div class="item-head" onclick="this.parentElement.classList.toggle('open')"><span>🎵 ${c.titulo}</span></div>
+                    <div class="item-content">
+                        <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
+                        <div class="text-area active v">${c.letraVoces || '...'}</div>
+                        <div class="text-area n">${c.letraNotas || '...'}</div>
+                        <button class="clean-section" onclick="clearSec('${c.key}', 'letraVoces')">🧹 Limpiar Voces</button>
+                        <button class="clean-section" onclick="clearSec('${c.key}', 'letraNotas')">🧹 Limpiar Notas</button>
+                    </div>`;
+                cList.appendChild(item);
+            });
+            list.appendChild(div);
         });
-        list.appendChild(div);
     }
 
     function shTab(btn, mode) {
@@ -218,6 +208,14 @@
             document.getElementById('admin-panel').style.display = 'block';
             document.body.classList.add('admin-mode');
         } 
+    }
+
+    function clearSec(key, field) {
+        if(confirm("¿Limpiar solo esta sección?")) {
+            let updates = {};
+            updates[field] = "...";
+            db.ref('canciones/' + key).update(updates);
+        }
     }
     
     function save() {
