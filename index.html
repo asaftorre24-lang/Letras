@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Letras IPUC">
     
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png?v=final">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png?v=final">
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -86,10 +86,12 @@
         <button id="br" class="f-btn" onclick="setR('rapida')">🏍️ Rápidas</button>
         <button id="bl" class="f-btn" onclick="setR('lenta')">🐢 Lentas</button>
     </div>
+
     <div id="main-list"></div>
 </div>
 
 <script>
+    // Configuración Firebase (Asegúrate que sea la tuya)
     const app = firebase.initializeApp({ databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" });
     const db = firebase.database();
     let data = [];
@@ -106,7 +108,7 @@
     function setR(r) { 
         filterR = (filterR === r) ? '' : r; 
         
-        // ACTUALIZA EL TEXTO EN LA CABECERA
+        // Cambio dinámico del título en el header
         const logo = document.getElementById('main-logo');
         if (filterR === 'rapida') logo.innerText = 'Rápidas';
         else if (filterR === 'lenta') logo.innerText = 'Lentas';
@@ -120,7 +122,11 @@
         list.innerHTML = '';
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
-        if (filterR === '') { list.innerHTML = '<div class="empty-state">Selecciona un ritmo...</div>'; return; }
+
+        if (filterR === '') { 
+            list.innerHTML = '<div class="empty-state">Selecciona un ritmo...</div>'; 
+            return; 
+        }
 
         const filtered = data.filter(c => c.ritmo === filterR);
         const groups = filtered.reduce((acc, c) => {
@@ -135,13 +141,17 @@
             div.className = 'tono-box';
             div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span></div><div class="cancion-list"></div>`;
             const cList = div.querySelector('.cancion-list');
+            
             groups[ton].forEach(c => {
                 const item = document.createElement('div');
                 item.className = 'item';
                 item.innerHTML = `
                     <div class="item-head" onclick="this.parentElement.classList.toggle('open')">🎵 ${c.titulo}</div>
                     <div class="item-content">
-                        <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
+                        <div class="tabs">
+                            <button class="t-btn active" onclick="shTab(this,'v')">Voces</button>
+                            <button class="t-btn" onclick="shTab(this,'n')">Notas</button>
+                        </div>
                         <div class="text-area active v">${c.letraVoces || '...'}</div>
                         <div class="text-area n">${c.letraNotas || '...'}</div>
                     </div>`;
@@ -167,10 +177,16 @@
         const ln = document.getElementById('ln').value;
         if(!t) return alert("Título vacío");
         db.ref('canciones').push({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln })
-        .then(() => { alert("Guardado!"); document.getElementById('admin-panel').style.display='none'; });
+        .then(() => { 
+            alert("¡Guardado!"); 
+            document.getElementById('admin-panel').style.display='none'; 
+        });
     }
 
-    function checkAdmin() { if(prompt("Clave:") === "ipuc") document.getElementById('admin-panel').style.display = 'block'; }
+    function checkAdmin() { 
+        if(prompt("Clave:") === "ipuc") document.getElementById('admin-panel').style.display = 'block'; 
+    }
+    
     load();
 </script>
 </body>
