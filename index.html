@@ -29,11 +29,14 @@
         .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
         
-        /* PANEL ADMIN MEJORADO */
+        /* BARRA DE BÚSQUEDA */
+        .search-container { width: 100%; margin-bottom: 20px; }
+        #main-search { width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #333; background: #151515; color: white; font-size: 16px; outline: none; transition: 0.3s; }
+        #main-search:focus { border-color: var(--blue); box-shadow: 0 0 10px rgba(66, 133, 244, 0.2); }
+
         #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.95); }
         input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; box-sizing: border-box; }
         
-        /* SUGERENCIAS DE TÍTULO */
         #suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .sug-item { background: #333; font-size: 12px; padding: 6px 12px; border-radius: 20px; cursor: pointer; border: 1px solid #444; }
         .sug-item:hover { background: var(--blue); }
@@ -59,8 +62,10 @@
         .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
         .t-btn.active { background: var(--green); color: black; }
         
-        .text-area { white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 20px; display: none; padding: 10px; color: #fff; }
+        /* VISOR MEJORADO: Letra más grande y clara */
+        .text-area { white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; font-size: 24px; font-weight: 500; line-height: 1.6; display: none; padding: 15px; color: #fff; text-shadow: 1px 1px 2px black; }
         .text-area.active { display: block; }
+        .text-area.n { color: #FFD700; font-family: monospace; } /* Notas en color oro */
         
         .btn-save { width: 100%; padding: 18px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 15px; cursor: pointer; }
     </style>
@@ -73,9 +78,14 @@
 </header>
 
 <div class="container">
+    <div class="search-container">
+        <input type="text" id="main-search" placeholder="🔍 Buscar canción por nombre..." oninput="draw()">
+    </div>
+
     <div id="admin-panel">
         <input type="text" id="t" placeholder="🎵 Título de la canción..." oninput="updateSug()">
-        <div id="suggestions"></div> <div style="display:flex; gap:10px;">
+        <div id="suggestions"></div>
+        <div style="display:flex; gap:10px;">
             <select id="r">
                 <option value="rapida">🏍️ Rápida</option>
                 <option value="lenta">🐢 Lenta</option>
@@ -115,14 +125,11 @@
         });
     }
 
-    // MOSTRAR SUGERENCIAS PARA NO ESCRIBIR DE MÁS
     function updateSug() {
         const input = document.getElementById('t').value.toLowerCase();
         const sugDiv = document.getElementById('suggestions');
         sugDiv.innerHTML = '';
-        
         if(input.length < 2) return;
-
         const matches = data.filter(c => c.titulo.toLowerCase().includes(input)).slice(0, 5);
         matches.forEach(m => {
             const span = document.createElement('span');
@@ -146,13 +153,21 @@
 
     function draw() {
         const list = document.getElementById('main-list');
+        const query = document.getElementById('main-search').value.toLowerCase();
         list.innerHTML = '';
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
 
-        if (!filterR) { list.innerHTML = '<div style="text-align:center; opacity:0.5">Elige un ritmo...</div>'; return; }
+        if (!filterR && !query) { 
+            list.innerHTML = '<div style="text-align:center; opacity:0.5">Elige un ritmo o busca una canción...</div>'; 
+            return; 
+        }
 
-        const filtered = data.filter(c => c.ritmo === filterR);
+        // Filtro por Ritmo Y por Búsqueda
+        let filtered = data;
+        if (filterR) filtered = filtered.filter(c => c.ritmo === filterR);
+        if (query) filtered = filtered.filter(c => c.titulo.toLowerCase().includes(query));
+
         const groups = filtered.reduce((acc, c) => {
             let t = c.tonalidad || "C Mayor";
             acc[t] = acc[t] || [];
@@ -162,7 +177,7 @@
 
         Object.keys(groups).sort().forEach(ton => {
             const div = document.createElement('div');
-            div.className = 'tono-box';
+            div.className = 'tono-box' + (query ? ' open' : ''); // Auto-abrir si hay búsqueda
             div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span></div><div class="cancion-list"></div>`;
             const cList = div.querySelector('.cancion-list');
             
@@ -172,7 +187,7 @@
                 item.innerHTML = `
                     <div class="item-head" onclick="this.parentElement.classList.toggle('open')">
                         <span>🎵 ${c.titulo}</span>
-                        <button class="del-btn" onclick="borrar('${c.key}', '${c.titulo}')">🗑️</button>
+                        <button class="del-btn" onclick="event.stopPropagation(); borrar('${c.key}', '${c.titulo}')">🗑️</button>
                     </div>
                     <div class="item-content">
                         <div class="tabs">
@@ -206,24 +221,17 @@
         const ton = document.getElementById('ton').value;
         const lv = document.getElementById('lv').value.trim();
         const ln = document.getElementById('ln').value.trim();
-        
         if(!t) return alert("Escribe el título");
-
         const tLimpio = limpiarTexto(t);
         const existe = data.find(c => limpiarTexto(c.titulo) === tLimpio);
 
         if(existe) {
-            // ACTUALIZACIÓN INTELIGENTE
             const update = { titulo: t, ritmo: r, tonalidad: ton };
             if (lv !== "") update.letraVoces = lv;
             if (ln !== "") update.letraNotas = ln;
-
-            db.ref('canciones/' + existe.key).update(update)
-            .then(() => { alert("Actualizada ✅"); cerrarAdmin(); });
+            db.ref('canciones/' + existe.key).update(update).then(() => { alert("Actualizada ✅"); cerrarAdmin(); });
         } else {
-            // NUEVA CANCIÓN
-            db.ref('canciones').push({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv || "...", letraNotas: ln || "..." })
-            .then(() => { alert("Guardada ✅"); cerrarAdmin(); });
+            db.ref('canciones').push({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv || "...", letraNotas: ln || "..." }).then(() => { alert("Guardada ✅"); cerrarAdmin(); });
         }
     }
 
