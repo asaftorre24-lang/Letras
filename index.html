@@ -38,20 +38,24 @@
         .tono-title { padding: 20px; color: var(--green); font-weight: bold; display: flex; justify-content: space-between; cursor: pointer; }
         .cancion-list { display: none; padding: 12px; }
         .tono-box.open .cancion-list { display: block; }
+        
+        /* Contenedor único para la canción */
         .item { background: rgba(45,45,45,0.9); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); position: relative; }
         .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Botón de borrar - Solo visible en modo admin */
         .del-btn { display: none; background: var(--red); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; }
         .admin-mode .del-btn { display: inline-block; }
         
         .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; border-radius: 0 0 12px 12px; }
         .item.open .item-content { display: block; }
+        
+        /* Pestañas para alternar entre Voces y Notas dentro de la misma caja */
         .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
         .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
         .t-btn.active { background: var(--green); color: black; }
+        
         .text-area { white-space: pre-wrap; font-family: 'Times New Roman', Times, serif; font-size: 20px; line-height: 1.5; display: none; padding: 10px; color: #fff; }
         .text-area.active { display: block; }
+        
         .btn-save { width: 100%; padding: 18px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 15px; cursor: pointer; }
         .empty-state { text-align: center; color: #555; margin-top: 50px; font-style: italic; }
     </style>
@@ -72,19 +76,15 @@
                 <option value="lenta">🐢 Lenta</option>
             </select>
             <select id="ton">
-                <option value="C Mayor">Do Mayor (C)</option><option value="C Menor">Do Menor (Cm)</option>
-                <option value="D Mayor">Re Mayor (D)</option><option value="D Menor">Re Menor (Dm)</option>
-                <option value="E Mayor">Mi Mayor (E)</option><option value="E Menor">Mi Menor (Em)</option>
-                <option value="F Mayor">Fa Mayor (F)</option><option value="F Menor">Fa Menor (Fm)</option>
-                <option value="G Mayor">Sol Mayor (G)</option><option value="G Menor">Sol Menor (Gm)</option>
-                <option value="A Mayor">La Mayor (A)</option><option value="A Menor">La Menor (Am)</option>
-                <option value="Bb Mayor">Si bemol Mayor (Bb)</option><option value="Bb Menor">Si bemol Menor (Bbm)</option>
-                <option value="B Mayor">Si Mayor (B)</option><option value="B Menor">Si Menor (Bm)</option>
+                <option value="C Mayor">Do Mayor (C)</option><option value="D Mayor">Re Mayor (D)</option>
+                <option value="E Mayor">Mi Mayor (E)</option><option value="F Mayor">Fa Mayor (F)</option>
+                <option value="G Mayor">Sol Mayor (G)</option><option value="A Mayor">La Mayor (A)</option>
+                <option value="B Mayor">Si Mayor (B)</option>
             </select>
         </div>
         <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
         <textarea id="ln" rows="4" placeholder="🎹 Letra Notas..."></textarea>
-        <button onclick="save()" class="btn-save">GUARDAR CANCIÓN ☁️</button>
+        <button onclick="save()" class="btn-save">GUARDAR TODO JUNTO ☁️</button>
     </div>
 
     <div class="filter-group">
@@ -112,9 +112,7 @@
     function setR(r) { 
         filterR = (filterR === r) ? '' : r; 
         const logo = document.getElementById('main-logo');
-        if (filterR === 'rapida') logo.innerText = 'Rápidas';
-        else if (filterR === 'lenta') logo.innerText = 'Lentas';
-        else logo.innerText = 'Letras';
+        logo.innerText = filterR === 'rapida' ? 'Rápidas' : (filterR === 'lenta' ? 'Lentas' : 'Letras');
         draw(); 
     }
 
@@ -152,9 +150,12 @@
                         <button class="del-btn" onclick="borrar('${c.key}', '${c.titulo}')">🗑️</button>
                     </div>
                     <div class="item-content">
-                        <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
-                        <div class="text-area active v">${c.letraVoces || '...'}</div>
-                        <div class="text-area n">${c.letraNotas || '...'}</div>
+                        <div class="tabs">
+                            <button class="t-btn active" onclick="shTab(this,'v')">Voces</button>
+                            <button class="t-btn" onclick="shTab(this,'n')">Notas</button>
+                        </div>
+                        <div class="text-area active v">${c.letraVoces || 'Sin letra de voces...'}</div>
+                        <div class="text-area n">${c.letraNotas || 'Sin notas musicales...'}</div>
                     </div>`;
                 cList.appendChild(item);
             });
@@ -178,15 +179,16 @@
         const ln = document.getElementById('ln').value;
         if(!t) return alert("Título vacío");
 
-        // Lógica para NO duplicar: busca si el título ya existe
+        // UNIFICACIÓN: Buscamos si ya existe para guardar en el mismo ID
         const existe = data.find(c => c.titulo.toLowerCase() === t.toLowerCase());
+        const songObj = { titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln };
 
         if(existe) {
-            db.ref('canciones/' + existe.key).set({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln })
-            .then(() => { alert("Canción actualizada ✅"); cerrarAdmin(); });
+            db.ref('canciones/' + existe.key).set(songObj)
+            .then(() => { alert("Canción actualizada en un solo almacén ✅"); cerrarAdmin(); });
         } else {
-            db.ref('canciones').push({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln })
-            .then(() => { alert("¡Guardado nuevo! ✅"); cerrarAdmin(); });
+            db.ref('canciones').push(songObj)
+            .then(() => { alert("¡Guardado nuevo con éxito! ✅"); cerrarAdmin(); });
         }
     }
 
