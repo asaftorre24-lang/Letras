@@ -29,7 +29,7 @@
         .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
         
-        /* PANEL ADMIN */
+        /* PANEL ADMIN CON BOTONES SEPARADOS */
         #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.95); }
         input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; box-sizing: border-box; }
         
@@ -61,12 +61,13 @@
         .text-area { white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 20px; display: none; padding: 10px; color: #fff; }
         .text-area.active { display: block; }
         
-        /* BOTONES DE GUARDADO INDEPENDIENTES */
-        .save-options { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .btn-action { width: 100%; padding: 14px; border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 14px; }
-        .btn-voces { background: #2c5aa0; border: 1px solid #4285F4; }
-        .btn-notas { background: #8a7300; border: 1px solid #FFD700; color: #FFD700; }
-        .btn-save-all { background: var(--green); font-size: 16px; margin-top: 5px; }
+        /* ESTILOS DE BOTONES DE GUARDADO */
+        .save-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .btn-save { width: 100%; padding: 16px; border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-save:active { transform: scale(0.98); }
+        .btn-v { background: rgba(66, 133, 244, 0.8); border: 1px solid #444; } /* Azul suave */
+        .btn-n { background: rgba(255, 215, 0, 0.15); color: #FFD700; border: 1px solid #FFD700; } /* Oro */
+        .btn-all { background: var(--green); font-size: 16px; } /* Verde principal */
     </style>
 </head>
 <body id="body-app">
@@ -92,13 +93,14 @@
                 <option value="B Mayor">Si (B)</option>
             </select>
         </div>
+        
         <textarea id="lv" rows="3" placeholder="🎤 Letra Voces..."></textarea>
         <textarea id="ln" rows="3" placeholder="🎹 Notas / Acordes..."></textarea>
         
-        <div class="save-options">
-            <button onclick="save('v')" class="btn-action btn-voces">🎤 Guardar SÓLO Voces</button>
-            <button onclick="save('n')" class="btn-action btn-notas">🎹 Guardar SÓLO Notas</button>
-            <button onclick="save('all')" class="btn-action btn-save-all">💾 GUARDAR TODO ✅</button>
+        <div class="save-group">
+            <button onclick="save('v')" class="btn-save btn-v">🎤 Guardar SÓLO Letra (Voces)</button>
+            <button onclick="save('n')" class="btn-save btn-n">🎹 Guardar SÓLO Notas / Acordes</button>
+            <button onclick="save('all')" class="btn-save btn-all">💾 GUARDAR TODO JUNTO</button>
         </div>
     </div>
 
@@ -139,6 +141,7 @@
                 document.getElementById('t').value = m.titulo;
                 document.getElementById('r').value = m.ritmo;
                 document.getElementById('ton').value = m.tonalidad;
+                // Al sugerir, cargamos lo que ya tiene para editar
                 document.getElementById('lv').value = m.letraVoces || '';
                 document.getElementById('ln').value = m.letraNotas || '';
                 sugDiv.innerHTML = '';
@@ -158,7 +161,9 @@
         list.innerHTML = '';
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
+
         if (!filterR) { list.innerHTML = '<div style="text-align:center; opacity:0.5">Elige un ritmo...</div>'; return; }
+
         const filtered = data.filter(c => c.ritmo === filterR);
         const groups = filtered.reduce((acc, c) => {
             let t = c.tonalidad || "C Mayor";
@@ -166,11 +171,13 @@
             acc[t].push(c);
             return acc;
         }, {});
+
         Object.keys(groups).sort().forEach(ton => {
             const div = document.createElement('div');
             div.className = 'tono-box';
             div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span></div><div class="cancion-list"></div>`;
             const cList = div.querySelector('.cancion-list');
+            
             groups[ton].forEach(c => {
                 const item = document.createElement('div');
                 item.className = 'item';
@@ -205,7 +212,8 @@
         return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
 
-    function save(modo) {
+    // --- FUNCIÓN DE GUARDADO CON ELIMINACIÓN SEPARADA ---
+    function save(type) {
         const t = document.getElementById('t').value.trim();
         const r = document.getElementById('r').value;
         const ton = document.getElementById('ton').value;
@@ -213,28 +221,34 @@
         const ln = document.getElementById('ln').value.trim();
         
         if(!t) return alert("Escribe el título");
+
         const tLimpio = limpiarTexto(t);
         const existe = data.find(c => limpiarTexto(c.titulo) === tLimpio);
 
         if(existe) {
+            // ACTUALIZACIÓN INTELIGENTE Y SEPARADA
             let update = { titulo: t, ritmo: r, tonalidad: ton };
             
-            if (modo === 'v') {
-                update.letraVoces = lv;
-                if(!confirm("¿Guardar solo la letra? Las notas no cambiarán.")) return;
-            } else if (modo === 'n') {
+            if (type === 'v') {
+                // SÓLO ACTUALIZA VOCES
+                update.letraVoces = lv; 
+                if(!confirm("¿Confirmas guardar SÓLO la letra de voces? Las notas no se tocarán.")) return;
+            } else if (type === 'n') {
+                // SÓLO ACTUALIZA NOTAS
                 update.letraNotas = ln;
-                if(!confirm("¿Guardar solo las notas? La letra no cambiará.")) return;
-            } else {
+                if(!confirm("¿Confirmas guardar SÓLO las notas musicales? La letra no se tocará.")) return;
+            } else if (type === 'all') {
+                // ACTUALIZA AMBOS
                 update.letraVoces = lv;
                 update.letraNotas = ln;
             }
 
             db.ref('canciones/' + existe.key).update(update)
-            .then(() => { alert("Cambio realizado ✅"); cerrarAdmin(); });
+            .then(() => { alert("Cambios guardados correctamente ✅"); cerrarAdmin(); });
         } else {
+            // NUEVA CANCIÓN (Siempre guarda ambos campos iniciales)
             db.ref('canciones').push({ titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv || "...", letraNotas: ln || "..." })
-            .then(() => { alert("Canción nueva guardada ✅"); cerrarAdmin(); });
+            .then(() => { alert("Guardada ✅"); cerrarAdmin(); });
         }
     }
 
