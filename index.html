@@ -48,11 +48,14 @@
         .cancion-list { display: none; padding: 12px; }
         .tono-box.open .cancion-list { display: block; }
         
-        .item { background: rgba(45,45,45,0.95); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); }
-        .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .item { background: rgba(45,45,45,0.95); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); position: relative; }
+        .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding-right: 50px; }
         .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; border-radius: 0 0 12px 12px; }
         .item.open .item-content { display: block; }
         
+        .del-btn { display: none; position: absolute; right: 10px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; z-index: 15; }
+        body.admin-mode .del-btn { display: block; }
+
         .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
         .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
         .t-btn.active { background: var(--green); color: black; }
@@ -175,25 +178,24 @@
     }
 
     function renderGroup(ton, songs, list, query, esMenor) {
-        // Extraemos solo el cifrado (ej: "C" de "Do (C)")
         const match = ton.match(/\(([^)]+)\)/);
         let cifrado = match ? match[1] : ton;
-        
-        // Limpiamos cualquier rastro de la palabra "Menor" si se guardó mal
-        cifrado = cifrado.replace(/menor/gi, '').trim();
-
-        // Si es menor, nos aseguramos que tenga la 'm' y nada más
+        cifrado = cifrado.replace(/menor|mayor/gi, '').trim();
         let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
 
         const div = document.createElement('div');
+        // Predictivo: si hay búsqueda, dejamos los grupos abiertos
         div.className = 'tono-box' + (query ? ' open' : '');
-        div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${displayTon}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
+        div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${displayTon}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
         const cList = div.querySelector('.cancion-list');
         
         songs.forEach(c => {
             const item = document.createElement('div');
-            item.className = 'item';
+            // Predictivo: si el título coincide exactamente con la búsqueda, abre la canción
+            const isOpen = query && c.titulo.toLowerCase().includes(query) ? ' open' : '';
+            item.className = 'item' + isOpen;
             item.innerHTML = `
+                <button class="del-btn" onclick="remove('${c.key}')">🗑️</button>
                 <div class="item-head" onclick="this.parentElement.classList.toggle('open')"><span>🎵 ${c.titulo}</span></div>
                 <div class="item-content">
                     <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
@@ -213,7 +215,12 @@
         p.querySelector('.n').classList.toggle('active', mode === 'n');
     }
 
-    function checkAdmin() { if(prompt("Clave:") === "ipuc") document.getElementById('admin-panel').style.display = 'block'; }
+    function checkAdmin() { 
+        if(prompt("Clave:") === "ipuc") {
+            document.getElementById('admin-panel').style.display = 'block';
+            document.body.classList.add('admin-mode');
+        } 
+    }
     
     function save() {
         db.ref('canciones').push({
@@ -221,6 +228,12 @@
             tonalidad: document.getElementById('ton').value, letraVoces: document.getElementById('lv').value,
             letraNotas: document.getElementById('ln').value
         }).then(() => { alert("Guardado"); location.reload(); });
+    }
+
+    function remove(key) {
+        if(confirm("¿Seguro que quieres borrar esta canción?")) {
+            db.ref('canciones/' + key).remove();
+        }
     }
 
     load();
