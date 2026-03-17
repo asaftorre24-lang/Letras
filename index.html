@@ -17,14 +17,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
 
     <style>
-        :root { --blue: #4285F4; --green: #34A853; --red: #ea4335; --bg: #0b0b0b; --text: #eee; }
+        :root { --blue: #4285F4; --green: #34A853; --red: #ea4335; --bg: #000000; --text: #eee; }
         body { 
             font-family: 'Segoe UI', sans-serif; background-color: var(--bg);
-            background-image: 
-                linear-gradient(rgba(11, 11, 11, 0.96), rgba(11, 11, 11, 0.96)),
-                url('https://img.freepik.com/foto-gratis/fondo-textura-musica-nota-pentagrama-papel-oscuro_1017-31364.jpg');
-            background-size: cover;
+            /* NUEVO FONDO: Negro puro con Clave de Sol centrada */
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='60' fill='rgba(66, 133, 244, 0.08)' text-anchor='middle' dominant-baseline='middle'%3E𝄞%3C/text%3E%3C/svg%3E");
             background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed; color: var(--text); margin: 0; padding: 0; 
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
@@ -33,10 +32,12 @@
         .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
         
-        /* BUSCADOR CON BOTÓN X */
-        .search-container { position: relative; width: 100%; margin-bottom: 20px; }
-        #main-search { width: 100%; padding: 15px 45px 15px 15px; border-radius: 25px; border: 1px solid #333; background: rgba(21, 21, 21, 0.9); color: white; font-size: 16px; outline: none; box-sizing: border-box; backdrop-filter: blur(5px); }
-        .clear-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #333; color: #aaa; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        /* BUSCADOR CENTRADO */
+        .search-container { position: relative; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; }
+        #main-search { width: 100%; padding: 15px 15px 15px 15px; text-align: center; /* Centra el texto escrito */ border-radius: 25px; border: 1px solid #333; background: rgba(21, 21, 21, 0.9); color: white; font-size: 16px; outline: none; box-sizing: border-box; backdrop-filter: blur(5px); }
+        
+        /* BOTÓN X CENTRADO RELATIVO AL INPUT */
+        .clear-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #333; color: #aaa; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; z-index: 2; }
         .clear-btn.visible { display: flex; }
 
         #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); }
