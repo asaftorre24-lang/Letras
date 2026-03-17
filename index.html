@@ -29,34 +29,34 @@
         .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
         .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
         
-        #main-search { width: 100%; padding: 15px; text-align: center; border-radius: 25px; border: 1px solid #333; background: rgba(21, 21, 21, 0.9); color: white; font-size: 16px; outline: none; box-sizing: border-box; backdrop-filter: blur(5px); margin-bottom: 20px; }
+        .search-container { position: relative; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; }
+        #main-search { width: 100%; padding: 15px; text-align: center; border-radius: 25px; border: 1px solid #333; background: rgba(21, 21, 21, 0.9); color: white; font-size: 16px; outline: none; box-sizing: border-box; backdrop-filter: blur(5px); }
+        .clear-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #333; color: #aaa; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; z-index: 2; }
+        .clear-btn.visible { display: flex; }
 
         .div-title { margin: 30px 0 15px; padding: 10px; color: var(--blue); font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(66, 133, 244, 0.2); width: 100%; text-align: center; }
 
-        #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.98); }
+        #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); }
         input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; box-sizing: border-box; }
         
         .filter-group { display: flex; gap: 15px; margin-bottom: 35px; justify-content: center; }
-        .f-btn { flex: 1; padding: 18px; border-radius: 22px; border: 1px solid #333; background: rgba(40,40,40,0.7); color: white; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .f-btn { flex: 1; padding: 18px; border-radius: 22px; border: 1px solid #333; background: rgba(40,40,40,0.7); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; backdrop-filter: blur(5px); }
         .f-btn.active { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 20px rgba(66, 133, 244, 0.4); }
         
-        .tono-box { background: rgba(30,30,30,0.8); border-radius: 18px; margin-bottom: 15px; border: 1px solid #222; overflow: hidden; }
+        .tono-box { background: rgba(30,30,30,0.8); border-radius: 18px; margin-bottom: 15px; border: 1px solid #222; backdrop-filter: blur(10px); }
         .tono-title { padding: 20px; color: var(--green); font-weight: bold; display: flex; justify-content: space-between; cursor: pointer; }
         .cancion-list { display: none; padding: 12px; }
         .tono-box.open .cancion-list { display: block; }
         
         .item { background: rgba(45,45,45,0.95); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); position: relative; }
-        .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; padding-right: 50px; }
-        .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; }
+        .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding-right: 50px; }
+        .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; border-radius: 0 0 12px 12px; }
         .item.open .item-content { display: block; }
         
-        /* BOTONES ADMIN */
-        .del-total { display: none; position: absolute; right: 10px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; z-index: 15; }
-        .clean-section { display: none; background: var(--red); color: white; border: none; border-radius: 5px; padding: 4px 8px; font-size: 10px; cursor: pointer; margin-left: 10px; }
-        body.admin-mode .del-total, body.admin-mode .clean-section { display: inline-block; }
+        .del-btn { display: none; position: absolute; right: 10px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; z-index: 15; }
+        body.admin-mode .del-btn { display: block; }
 
-        .tabs { display: flex; align-items: center; margin-bottom: 15px; gap: 10px; }
-        .tabs-btns { flex: 1; display: flex; border-radius: 10px; overflow: hidden; background: #222; }
+        .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
         .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
         .t-btn.active { background: var(--green); color: black; }
         
@@ -72,7 +72,10 @@
 </header>
 
 <div class="container">
-    <input type="text" id="main-search" placeholder="🔍 Buscar canción..." oninput="draw()">
+    <div class="search-container">
+        <input type="text" id="main-search" placeholder="🔍 Buscar canción..." oninput="handleSearchInput()">
+        <button id="clear-search" class="clear-btn" onclick="clearSearch()">X</button>
+    </div>
 
     <div id="admin-panel">
         <input type="text" id="t" placeholder="🎵 Título de la canción...">
@@ -98,7 +101,7 @@
         </div>
         <textarea id="lv" rows="3" placeholder="🎤 Letra Voces..."></textarea>
         <textarea id="ln" rows="3" placeholder="🎹 Notas / Acordes..."></textarea>
-        <button onclick="save()" style="width:100%; padding:18px; background:var(--green); border:none; border-radius:12px; color:white; font-weight:bold;">💾 GUARDAR TODO</button>
+        <button onclick="save()" style="width:100%; padding:18px; background:var(--green); border:none; border-radius:12px; color:white; font-weight:bold;">💾 GUARDAR</button>
     </div>
 
     <div class="filter-group">
@@ -121,6 +124,17 @@
             s.forEach(c => { data.push({ ...c.val(), key: c.key }); });
             draw();
         });
+    }
+
+    function handleSearchInput() {
+        document.getElementById('clear-search').classList.toggle('visible', document.getElementById('main-search').value.length > 0);
+        draw();
+    }
+
+    function clearSearch() {
+        document.getElementById('main-search').value = '';
+        document.getElementById('clear-search').classList.remove('visible');
+        draw();
     }
 
     function setR(r) { 
@@ -148,40 +162,48 @@
             return acc;
         }, {});
 
-        Object.keys(groups).sort().forEach(t => {
-            const esMenor = t.toLowerCase().includes('menor');
-            const match = t.match(/\(([^)]+)\)/);
-            let cifrado = match ? match[1] : t;
-            cifrado = cifrado.replace(/menor|mayor/gi, '').trim();
-            let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
+        const sortedTones = Object.keys(groups).sort();
+        const mayores = sortedTones.filter(t => !t.toLowerCase().includes('menor'));
+        const menores = sortedTones.filter(t => t.toLowerCase().includes('menor'));
 
-            const div = document.createElement('div');
-            div.className = 'tono-box' + (query ? ' open' : '');
-            div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${displayTon}</span> <span>${groups[t].length} ▾</span></div><div class="cancion-list"></div>`;
-            const cList = div.querySelector('.cancion-list');
-            
-            groups[t].forEach(c => {
-                const item = document.createElement('div');
-                item.className = 'item' + (query && c.titulo.toLowerCase().includes(query) ? ' open' : '');
-                item.innerHTML = `
-                    <button class="del-total" onclick="remove('${c.key}')">🗑️</button>
-                    <div class="item-head" onclick="this.parentElement.classList.toggle('open')"><span>🎵 ${c.titulo}</span></div>
-                    <div class="item-content">
-                        <div class="tabs">
-                            <div class="tabs-btns">
-                                <button class="t-btn active" onclick="shTab(this,'v')">Voces</button>
-                                <button class="t-btn" onclick="shTab(this,'n')">Notas</button>
-                            </div>
-                            <button class="clean-section" onclick="clearSec('${c.key}', 'letraVoces')">🧹 Limpiar Voces</button>
-                            <button class="clean-section" onclick="clearSec('${c.key}', 'letraNotas')">🧹 Limpiar Notas</button>
-                        </div>
-                        <div class="text-area active v">${c.letraVoces || '...'}</div>
-                        <div class="text-area n">${c.letraNotas || '...'}</div>
-                    </div>`;
-                cList.appendChild(item);
-            });
-            list.appendChild(div);
+        if(mayores.length > 0) {
+            list.innerHTML += '<div class="div-title">☀️ Tonos Mayores</div>';
+            mayores.forEach(t => renderGroup(t, groups[t], list, query, false));
+        }
+
+        if(menores.length > 0) {
+            list.innerHTML += '<div class="div-title">🌑 Tonos Menores</div>';
+            menores.forEach(t => renderGroup(t, groups[t], list, query, true));
+        }
+    }
+
+    function renderGroup(ton, songs, list, query, esMenor) {
+        const match = ton.match(/\(([^)]+)\)/);
+        let cifrado = match ? match[1] : ton;
+        cifrado = cifrado.replace(/menor|mayor/gi, '').trim();
+        let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
+
+        const div = document.createElement('div');
+        // El grupo (Tono) se abre si hay búsqueda, pero la canción NO.
+        div.className = 'tono-box' + (query ? ' open' : '');
+        div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 ${displayTon}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
+        const cList = div.querySelector('.cancion-list');
+        
+        songs.forEach(c => {
+            const item = document.createElement('div');
+            // AQUÍ QUITÉ LA OPCIÓN DE ABRIR AUTOMÁTICAMENTE LA CANCIÓN
+            item.className = 'item'; 
+            item.innerHTML = `
+                <button class="del-btn" onclick="remove('${c.key}')">🗑️</button>
+                <div class="item-head" onclick="this.parentElement.classList.toggle('open')"><span>🎵 ${c.titulo}</span></div>
+                <div class="item-content">
+                    <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
+                    <div class="text-area active v">${c.letraVoces || '...'}</div>
+                    <div class="text-area n">${c.letraNotas || '...'}</div>
+                </div>`;
+            cList.appendChild(item);
         });
+        list.appendChild(div);
     }
 
     function shTab(btn, mode) {
@@ -199,24 +221,18 @@
         } 
     }
     
-    function clearSec(key, field) {
-        if(confirm("¿Borrar solo esta sección?")) {
-            let updates = {};
-            updates[field] = "...";
-            db.ref('canciones/' + key).update(updates);
-        }
-    }
-
-    function remove(key) {
-        if(confirm("¿Borrar toda la canción?")) db.ref('canciones/' + key).remove();
-    }
-
     function save() {
         db.ref('canciones').push({
             titulo: document.getElementById('t').value, ritmo: document.getElementById('r').value,
             tonalidad: document.getElementById('ton').value, letraVoces: document.getElementById('lv').value,
             letraNotas: document.getElementById('ln').value
         }).then(() => { alert("Guardado"); location.reload(); });
+    }
+
+    function remove(key) {
+        if(confirm("¿Seguro que quieres borrar esta canción?")) {
+            db.ref('canciones/' + key).remove();
+        }
     }
 
     load();
