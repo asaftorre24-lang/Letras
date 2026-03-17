@@ -54,7 +54,7 @@
         .item.open .item-content { display: block; }
         
         .del-btn { display: none; background: var(--red); color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: bold; }
-        .clean-section { display: none; background: #555; color: white; border: none; border-radius: 5px; padding: 8px 12px; font-size: 12px; cursor: pointer; margin-top: 15px; margin-right: 5px; font-weight: bold; border: 1px solid #777; }
+        .clean-section { display: none; background: var(--red); color: white; border: none; border-radius: 5px; padding: 8px 12px; font-size: 12px; cursor: pointer; margin-top: 15px; margin-right: 5px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); }
         body.admin-mode .del-btn, body.admin-mode .clean-section { display: inline-block; }
 
         .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
@@ -211,42 +211,37 @@
         const t = document.getElementById('t').value.trim();
         const r = document.getElementById('r').value;
         const ton = document.getElementById('ton').value;
-        const lv = document.getElementById('lv').value || "...";
-        const ln = document.getElementById('ln').value || "...";
+        const lv = document.getElementById('lv').value.trim();
+        const ln = document.getElementById('ln').value.trim();
 
         if (!t) return alert("Por favor escribe el título");
 
-        // LÓGICA ANTI-DUPLICADOS: Busca si ya existe el nombre
-        const existente = data.find(c => c.titulo.toLowerCase() === t.toLowerCase());
-
-        const cancionData = {
-            titulo: t,
-            ritmo: r,
-            tonalidad: ton,
-            letraVoces: lv,
-            letraNotas: ln
-        };
+        const limpiar = (txt) => txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const existente = data.find(c => limpiar(c.titulo) === limpiar(t));
 
         if (existente) {
-            if (confirm(`La canción "${t}" ya existe. ¿Quieres actualizarla con la nueva información?`)) {
-                db.ref('canciones/' + existente.key).update(cancionData)
-                .then(() => { alert("Canción actualizada ✅"); resetAdmin(); });
+            if (confirm(`"${t}" ya existe. ¿Actualizar solo lo nuevo?`)) {
+                const nuevaData = {
+                    titulo: t,
+                    ritmo: r,
+                    tonalidad: ton,
+                    letraVoces: lv !== "" ? lv : (existente.letraVoces || "..."),
+                    letraNotas: ln !== "" ? ln : (existente.letraNotas || "...")
+                };
+                db.ref('canciones/' + existente.key).update(nuevaData).then(() => { alert("Actualizada ✅"); resetAdmin(); });
             }
         } else {
-            db.ref('canciones').push(cancionData)
-            .then(() => { alert("Nueva canción guardada ✅"); resetAdmin(); });
+            const cancionData = { titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv || "...", letraNotas: ln || "..." };
+            db.ref('canciones').push(cancionData).then(() => { alert("Guardada ✅"); resetAdmin(); });
         }
     }
 
     function resetAdmin() {
-        document.getElementById('t').value = '';
-        document.getElementById('lv').value = '';
-        document.getElementById('ln').value = '';
+        document.getElementById('t').value = ''; document.getElementById('lv').value = ''; document.getElementById('ln').value = '';
         document.getElementById('admin-panel').style.display = 'none';
     }
 
-    function remove(key) { if(confirm("¿Borrar canción definitivamente?")) db.ref('canciones/'+key).remove(); }
-
+    function remove(key) { if(confirm("¿Borrar definitivamente?")) db.ref('canciones/'+key).remove(); }
     load();
 </script>
 </body>
