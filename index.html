@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Letras PRO 🎵 (OFFLINE)</title>
+    <title>Letras PRO 🎵 (TIEMPO REAL)</title>
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Fira+Code:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -88,7 +88,7 @@
         .item { background: #1c1f2b; margin-bottom: 10px; border-radius: 12px; border-left: 4px solid var(--blue); position: relative; }
         .item-head { padding: 16px; cursor: pointer; font-weight: 600; font-size: 16px; }
         
-        /* Botones Admin ocultos para usuarios normales */
+        /* Botones Admin */
         .actions-btn { display: none; position: absolute; right: 10px; top: 12px; gap: 6px; }
         body.is-admin .actions-btn { display: flex; }
         body.is-admin .item-head { padding-right: 70px; }
@@ -122,10 +122,12 @@
         .text-area.active { display: block; }
 
         .btn-save { width: 100%; padding: 16px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 15px; margin-bottom: 10px; }
-        .btn-secondary { background: #2b3552; border: 1px solid #33384f; color: #fff; }
-
         .empty-state { text-align: center; color: #666; margin-top: 40px; font-style: italic; }
     </style>
+
+    <!-- Conexión a Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -137,15 +139,14 @@
 </header>
 
 <div class="container">
-    <!-- Panel Administrador Exclusivo para importar JSON -->
+    <!-- Panel Administrador Exclusivo -->
     <div id="admin-panel">
-        <h3 style="margin-top:0; color:var(--green);">Panel Admin: Cargar Canciones</h3>
-        <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Pega aquí el código JSON (una canción o un arreglo de canciones):</p>
+        <h3 style="margin-top:0; color:var(--green);">Panel Admin: Cargar a la Nube ☁️</h3>
+        <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Pega aquí el JSON. Se actualizará para <b>todos los usuarios en tiempo real</b>:</p>
         
         <textarea id="json-input" rows="8" placeholder='[&#10;  {&#10;    "id": 1,&#10;    "titulo": "Ejemplo",&#10;    "ritmo": "lenta",&#10;    "tonalidad": "C",&#10;    "letraVoces": "...",&#10;    "letraNotas": "..."&#10;  }&#10;]'></textarea>
         
-        <button onclick="importJSON()" class="btn-save">📥 SUBIR / AGREGAR CANCIONES</button>
-        <button onclick="exportData()" class="btn-save btn-secondary">💾 DESCARGAR BASE COMPLETA (JSON)</button>
+        <button onclick="importJSON()" class="btn-save">☁️ SUBIR A LA NUBE (TIEMPO REAL)</button>
     </div>
 
     <!-- Buscador Global -->
@@ -159,28 +160,42 @@
         <button id="bl" class="f-btn" onclick="setR('lenta')">🐢 Lentas</button>
     </div>
 
-    <div id="main-list"></div>
+    <div id="main-list">Cargando base de datos en tiempo real...</div>
 </div>
 
 <script>
-    // BASE DE DATOS INICIAL
-    const defaultSongs = [
-      {
-        "id": 2001,
-        "titulo": "En el principio el Espíritu de Dios",
-        "ritmo": "rapida",
-        "tonalidad": "Em",
-        "letraVoces": "Tono: Em\n\nEn el principio el Espíritu de Dios\nse movía sobre las aguas.\n\nPero ahora se está moviendo\ndentro de mi corazón.\n\nJerusalén, qué bonita eres,\ncalles de oro, mar de cristal.\n\nPor esas calles yo voy a caminar,\ncalles de oro, mar de cristal.",
-        "letraNotas": "Tono: Em\n\n[Em]\nEn el principio el Espíritu de Dios\n                 [B7]\nse movía sobre las aguas.\n\nPero ahora se está moviendo\n             [Em]\ndentro de mi corazón.\n\n       [E7]          [Am]\nJerusalén, qué bonita eres,\n[D7]            [G]\ncalles de oro, mar de cristal.\n\n[Em]               [Am]\nPor esas calles yo voy a caminar,\n[B7]                    [Em]\ncalles de oro, mar de cristal."
-      }
-    ];
+    // ⚙️ INSERTA AQUÍ TUS CLAVES DE FIREBASE DE TU CONSOLA
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_PROJECT_ID.firebaseapp.com",
+        projectId: "TU_PROJECT_ID",
+        storageBucket: "TU_PROJECT_ID.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef"
+    };
 
-    let data = JSON.parse(localStorage.getItem('mis_canciones')) || defaultSongs;
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let data = [];
     let filterR = '';
     let scrollInterval = null;
     let isAdminMode = false;
 
     const scale = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+
+    // 🔄 ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE LA NUBE
+    db.collection("canciones").onSnapshot((snapshot) => {
+        data = [];
+        snapshot.forEach((doc) => {
+            data.push(doc.data());
+        });
+        draw();
+    }, (error) => {
+        console.error("Error al cargar Firebase:", error);
+        document.getElementById('main-list').innerText = "Error al conectar con la base de datos. Verifica la configuración de Firebase.";
+    });
 
     function toggleAdmin() {
         if(!isAdminMode) {
@@ -202,7 +217,7 @@
         }
     }
 
-    function importJSON() {
+    async function importJSON() {
         const raw = document.getElementById('json-input').value.trim();
         if(!raw) return alert("Pega primero el código JSON en el recuadro.");
 
@@ -211,35 +226,26 @@
             const itemsToProcess = Array.isArray(parsed) ? parsed : [parsed];
 
             let count = 0;
-            itemsToProcess.forEach(item => {
+            for (const item of itemsToProcess) {
                 if(item.titulo && item.ritmo && item.tonalidad) {
-                    // Evitar duplicados por ID o actualizar si existe
-                    const idx = data.findIndex(c => c.id === item.id || c.titulo === item.titulo);
-                    if(idx !== -1) {
-                        data[idx] = item;
-                    } else {
-                        if(!item.id) item.id = Date.now() + Math.floor(Math.random() * 1000);
-                        data.push(item);
-                    }
+                    if(!item.id) item.id = Date.now() + Math.floor(Math.random() * 1000);
+                    // Guardar en la base de datos de la nube
+                    await db.collection("canciones").doc(String(item.id)).set(item);
                     count++;
                 }
-            });
+            }
 
-            localStorage.setItem('mis_canciones', JSON.stringify(data));
             document.getElementById('json-input').value = '';
-            draw();
-            alert(`¡Se procesaron y guardaron ${count} canción(es) con éxito!`);
+            alert(`¡Se subieron ${count} canción(es) a la nube con éxito! Se actualizarán a todos en tiempo real.`);
 
         } catch (e) {
-            alert("Error en el formato JSON. Asegúrate de copiar tal cual te entrego los datos.");
+            alert("Error al guardar en la nube. Verifica el formato JSON o tus credenciales de Firebase.");
         }
     }
 
-    function deleteSong(id) {
-        if(confirm("¿Estás seguro de ELIMINAR esta canción de la lista?")) {
-            data = data.filter(c => c.id !== id);
-            localStorage.setItem('mis_canciones', JSON.stringify(data));
-            draw();
+    async function deleteSong(id) {
+        if(confirm("¿Estás seguro de ELIMINAR esta canción para TODOS en tiempo real?")) {
+            await db.collection("canciones").doc(String(id)).delete();
         }
     }
 
@@ -312,7 +318,7 @@
         });
 
         if (filtered.length === 0) {
-            list.innerHTML = `<div class="empty-state">${query ? 'No se encontraron resultados.' : 'Selecciona un ritmo o busca una canción...'}</div>`;
+            list.innerHTML = `<div class="empty-state">${query ? 'No se encontraron resultados.' : 'Sin canciones en la nube. Entra como Admin para cargar.'}</div>`;
             return;
         }
 
@@ -372,16 +378,7 @@
         p.querySelector('.v').classList.toggle('active', mode === 'v');
         p.querySelector('.n').classList.toggle('active', mode === 'n');
     }
-
-    function exportData() {
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `letras_base_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-    }
-
-    draw();
 </script>
 </body>
 </html>
+
