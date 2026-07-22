@@ -56,17 +56,18 @@
             padding: 20px; margin-bottom: 25px; background: rgba(15,18,25,0.98); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         
-        input, textarea, select { 
+        textarea { 
             width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; 
-            border: 1px solid #2a2d3d; background: #0f1015; color: white; font-size: 15px; box-sizing: border-box; 
-            outline: none; font-family: inherit;
+            border: 1px solid #2a2d3d; background: #0f1015; color: #34A853; font-size: 13px; box-sizing: border-box; 
+            outline: none; font-family: 'Fira Code', monospace;
         }
-        input:focus, textarea:focus { border-color: var(--blue); }
+        textarea:focus { border-color: var(--blue); }
 
         /* Buscador */
         .search-box input { 
-            border-color: #2a2d3d; border-radius: 16px; background: rgba(22,24,32,0.8);
-            padding-left: 18px; font-size: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 16px; 
+            border: 1px solid #2a2d3d; background: rgba(22,24,32,0.8); color: white; font-size: 16px; box-sizing: border-box; 
+            outline: none; font-family: inherit; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
 
         /* Filtros */
@@ -90,10 +91,9 @@
         /* Botones Admin ocultos para usuarios normales */
         .actions-btn { display: none; position: absolute; right: 10px; top: 12px; gap: 6px; }
         body.is-admin .actions-btn { display: flex; }
-        body.is-admin .item-head { padding-right: 90px; }
+        body.is-admin .item-head { padding-right: 70px; }
 
         .btn-action { border: none; color: white; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px; }
-        .btn-edit { background: #2b3040; border: 1px solid #3f465e; }
         .btn-del { background: #501d1d; }
 
         .item-content { display: none; padding: 15px; background: #0a0b0e; border-top: 1px solid #222533; border-radius: 0 0 12px 12px; }
@@ -121,7 +121,7 @@
         }
         .text-area.active { display: block; }
 
-        .btn-save { width: 100%; padding: 16px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 16px; margin-bottom: 10px; }
+        .btn-save { width: 100%; padding: 16px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 15px; margin-bottom: 10px; }
         .btn-secondary { background: #2b3552; border: 1px solid #33384f; color: #fff; }
 
         .empty-state { text-align: center; color: #666; margin-top: 40px; font-style: italic; }
@@ -137,37 +137,15 @@
 </header>
 
 <div class="container">
-    <!-- Panel Administrador Exclusivo -->
+    <!-- Panel Administrador Exclusivo para importar JSON -->
     <div id="admin-panel">
-        <h3 id="panel-title" style="margin-top:0; color:var(--green);">Panel de Administración</h3>
-        <input type="hidden" id="edit-id" value="">
-        <input type="text" id="t" placeholder="🎵 Nombre de la canción...">
-        <div style="display:flex; gap:10px;">
-            <select id="r">
-                <option value="rapida">🏍️ Rápida</option>
-                <option value="lenta">🐢 Lenta</option>
-            </select>
-            <select id="ton">
-                <option value="C">Do Mayor (C)</option><option value="Cm">Do Menor (Cm)</option>
-                <option value="C#">Do# Mayor (C#)</option><option value="C#m">Do# Menor (C#m)</option>
-                <option value="D">Re Mayor (D)</option><option value="Dm">Re Menor (Dm)</option>
-                <option value="Eb">Mi b Mayor (Eb)</option><option value="Ebm">Mi b Menor (Ebm)</option>
-                <option value="E">Mi Mayor (E)</option><option value="Em">Mi Menor (Em)</option>
-                <option value="F">Fa Mayor (F)</option><option value="Fm">Fa Menor (Fm)</option>
-                <option value="F#">Fa# Mayor (F#)</option><option value="F#m">Fa# Menor (F#m)</option>
-                <option value="G">Sol Mayor (G)</option><option value="Gm">Sol Menor (Gm)</option>
-                <option value="Ab">Sol# / La b Mayor</option><option value="Abm">Sol# / La b Menor</option>
-                <option value="A">La Mayor (A)</option><option value="Am">La Menor (Am)</option>
-                <option value="Bb">Si b Mayor (Bb)</option><option value="Bbm">Si b Menor (Bbm)</option>
-                <option value="B">Si Mayor (B)</option><option value="Bm">Si Menor (Bm)</option>
-            </select>
-        </div>
-        <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
-        <textarea id="ln" rows="4" placeholder="🎹 Letra y Notas..."></textarea>
+        <h3 style="margin-top:0; color:var(--green);">Panel Admin: Cargar Canciones</h3>
+        <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Pega aquí el código JSON (una canción o un arreglo de canciones):</p>
         
-        <button onclick="save()" class="btn-save">GUARDAR / ACTUALIZAR CANCIÓN 💾</button>
-        <button onclick="exportData()" class="btn-save btn-secondary">📥 DESCARGAR BASE COMPLETA (JSON)</button>
-        <button onclick="resetForm()" style="width:100%; padding:10px; background:transparent; border:none; color:#888; cursor:pointer;">Cerrar Formulario</button>
+        <textarea id="json-input" rows="8" placeholder='[&#10;  {&#10;    "id": 1,&#10;    "titulo": "Ejemplo",&#10;    "ritmo": "lenta",&#10;    "tonalidad": "C",&#10;    "letraVoces": "...",&#10;    "letraNotas": "..."&#10;  }&#10;]'></textarea>
+        
+        <button onclick="importJSON()" class="btn-save">📥 SUBIR / AGREGAR CANCIONES</button>
+        <button onclick="exportData()" class="btn-save btn-secondary">💾 DESCARGAR BASE COMPLETA (JSON)</button>
     </div>
 
     <!-- Buscador Global -->
@@ -185,7 +163,7 @@
 </div>
 
 <script>
-    // BASE DE DATOS FIJA DE LA PÁGINA
+    // BASE DE DATOS INICIAL
     const defaultSongs = [
       {
         "id": 2001,
@@ -194,62 +172,6 @@
         "tonalidad": "Em",
         "letraVoces": "Tono: Em\n\nEn el principio el Espíritu de Dios\nse movía sobre las aguas.\n\nPero ahora se está moviendo\ndentro de mi corazón.\n\nJerusalén, qué bonita eres,\ncalles de oro, mar de cristal.\n\nPor esas calles yo voy a caminar,\ncalles de oro, mar de cristal.",
         "letraNotas": "Tono: Em\n\n[Em]\nEn el principio el Espíritu de Dios\n                 [B7]\nse movía sobre las aguas.\n\nPero ahora se está moviendo\n             [Em]\ndentro de mi corazón.\n\n       [E7]          [Am]\nJerusalén, qué bonita eres,\n[D7]            [G]\ncalles de oro, mar de cristal.\n\n[Em]               [Am]\nPor esas calles yo voy a caminar,\n[B7]                    [Em]\ncalles de oro, mar de cristal."
-      },
-      {
-        "id": 2002,
-        "titulo": "Una mirada de fe",
-        "ritmo": "rapida",
-        "tonalidad": "Em",
-        "letraVoces": "Tono: Em\n\nUna mirada de fe, una mirada al Señor\nes la que puede salvar al pecador.\n\nY si tú miras a Cristo Jesús,\nÉl te perdonará,\nporque una mirada de fe\nes la que te puede salvar.",
-        "letraNotas": "Tono: Em\n\n[Em]\nUna mirada de fe, una mirada al Señor\n                           [B7]\nes la que puede salvar al pecador.\n\nY si tú miras a Cristo Jesús,\n            [Em]\nÉl te perdonará,\n\nporque una mirada de fe\n                   [Em]\nes la que te puede salvar."
-      },
-      {
-        "id": 2003,
-        "titulo": "Jesús está pasando por aquí",
-        "ritmo": "rapida",
-        "tonalidad": "G",
-        "letraVoces": "Tono: G\n\nJesús está pasando por aquí,\nJesús está pasando por aquí.\n\nY cuando Él pasa todo se transforma,\nse va la tristeza, llega la alegría.\n\nY cuando Él pasa todo se transforma,\nllega la alegría para ti y para mí.",
-        "letraNotas": "Tono: G\n\n[G]                      [D7]\nJesús está pasando por aquí,\n                         [G]\nJesús está pasando por aquí.\n\n         [G7]          [C]\nY cuando Él pasa todo se transforma,\n          [G]      [D7]       [G]\nse va la tristeza, llega la alegría.\n\n         [G7]          [C]\nY cuando Él pasa todo se transforma,\n          [G]        [D7]        [G]\nllega la alegría para ti y para mí."
-      },
-      {
-        "id": 2004,
-        "titulo": "Libre, tú me hiciste libre",
-        "ritmo": "rapida",
-        "tonalidad": "A",
-        "letraVoces": "Tono: A\n\nLibre, tú me hiciste libre,\ntú me hiciste libre, libre Señor.\n\nLibre, tú me hiciste libre,\ntú me hiciste libre con tu gran amor.\n\nCadenas tenía yo, cadenas tenía yo,\npero el Señor las rompió.",
-        "letraNotas": "Tono: A\n\n[A]\nLibre, tú me hiciste libre,\n                       [E7]\ntú me hiciste libre, libre Señor.\n\nLibre, tú me hiciste libre,\n                        [A]\ntú me hiciste libre con tu gran amor.\n\n        [A7]     [D]\nCadenas tenía yo, cadenas tenía yo,\n[A]        [E7]         [A]\npero el Señor las rompió."
-      },
-      {
-        "id": 2005,
-        "titulo": "Caminar con Dios",
-        "ritmo": "lenta",
-        "tonalidad": "D",
-        "letraVoces": "Tono: D\n\nCaminar con Dios es mi deseo,\ncaminar con Dios es mi oración.\n\nEstar cerca de Él, sentir su presencia,\ncaminar con Dios cada día más.",
-        "letraNotas": "Tono: D\n\n[D]            [A7]      [D]\nCaminar con Dios es mi deseo,\n               [A7]      [D]\ncaminar con Dios es mi oración.\n\n      [D7]      [G]   [A]      [F#m]\nEstar cerca de Él, sentir su presencia,\n[Bm]          [Em]   [A7]      [D]\ncaminar con Dios cada día más."
-      },
-      {
-        "id": 254,
-        "titulo": "254. El alfarero",
-        "ritmo": "lenta",
-        "tonalidad": "D",
-        "letraVoces": "Tono: D\n\nEl alfarero vio un vaso\nque se había roto por el uso y el tiempo,\ny Él trató con mucha paciencia\nde hacerlo otra vez...\n\nY yo era ese vaso\nque nadie creyó que servía;\nclamé: ¡Señor, yo soy barro y Tú eres el alfarero!\n¡Moldéame como Tú quieras hoy!\n\nY Dios tomó los pedazos\nde mi roto corazón,\nme hizo un vaso nuevo,\ny revivió mi alma otra vez.",
-        "letraNotas": "Tono: D\n\n[D]                  [F#m]\nEl alfarero vio un vaso\n       [G]                 [A7]\nque se había roto por el uso y el tiempo,\n  [D]                     [Bm]\ny Él trató con mucha paciencia\nde hacerlo otra vez...\n\n   [D]          [F#m]\nY yo era ese vaso\n     [G]                   [A7]\nque nadie creyó que servía;\n  [D]              [D7]            [G]\nclamé: ¡Señor, yo soy barro y Tú eres el alfarero!\n   [D]             [A7]        [D]\n¡Moldéame como Tú quieras hoy!\n\n   [D]                [Bm]\nY Dios tomó los pedazos\n      [Em]         [A7]\nde mi roto corazón,\n   [D]              [Bm]\nme hizo un vaso nuevo,\n   [Em]         [A7]       [D]\ny revivió mi alma otra vez."
-      },
-      {
-        "id": 255,
-        "titulo": "255. Qué bueno es el Señor",
-        "ritmo": "lenta",
-        "tonalidad": "G",
-        "letraVoces": "Tono: G\n\nCoro:\n¡Qué bueno es el Señor! ¡Tan bueno para mí,\nque no puedo entender su grande amor!\nSu Espíritu me dio y libertado fui.\n¡Tan bueno es para mí! No me he de quejar.\n\nI\nHay días malos, momentos de dolor,\nhay días tristes y tiempos de aflicción;\npero al mirar atrás no me puedo quejar,\npues en lo malo y en lo bueno Él me ha de ayudar.\n\nII\nCuando hay problemas y dura tentación\npregunto a mi Señor: ¿Qué pasa en mí?\nPues Él conoce bien, aun lo que yo no sé.\nLe digo: ¡Gracias Dios! No me he de quejar.",
-        "letraNotas": "Tono: G\n\nCoro:\n     [G]                  [C]            [G]\n¡Qué bueno es el Señor! ¡Tan bueno para mí,\n                     [Em]            [A7]   [D7]\nque no puedo entender su grande amor!\n   [G]                  [C]          [G]\nSu Espíritu me dio y libertado fui.\n                         [D7]         [G]\n¡Tan bueno es para mí! No me he de quejar.\n\nI\n    [G]               [C]         [G]\nHay días malos, momentos de dolor,\n                      [A7]        [D7]\nhay días tristes y tiempos de aflicción;\n    [G]                [C]           [G]\npero al mirar atrás no me puedo quejar,\n                     [D7]             [G]\npues en lo malo y en lo bueno Él me ha de ayudar.\n\nII\n       [G]            [C]          [G]\nCuando hay problemas y dura tentación\n                        [A7]        [D7]\npregunto a mi Señor: ¿Qué pasa en mí?\n     [G]                  [C]             [G]\nPues Él conoce bien, aun lo que yo no sé.\n                     [D7]         [G]\nLe digo: ¡Gracias Dios! No me he de quejar."
-      },
-      {
-        "id": 256,
-        "titulo": "256. Su gracia es mayor",
-        "ritmo": "lenta",
-        "tonalidad": "C",
-        "letraVoces": "Tono: C\n\nI\nSu gracia es mayor si las cargas aumentan,\nsu fuerza es mayor si la prueba es más cruel;\nsi es grande la lucha, mayor es su gracia,\nsi más son las penas, mayor es su paz.\n\nCoro:\nSu amor no termina, su gracia no acaba,\ny un límite no hay al poder de Jesús;\npues de sus inmensas riquezas en gloria\nabundan sus dones, abunda su amor.\n\nII\nSi nuestros recursos ya se han agotado,\nsi fuerzas nos faltan para terminar,\nsi a punto ya estamos de desanimarnos,\nel tiempo ha llegado en que Dios obrará.",
-        "letraNotas": "Tono: C\n\nI\n   [C]                   [F]        [C]\nSu gracia es mayor si las cargas aumentan,\n    [G7]                             [C]\nsu fuerza es mayor si la prueba es más cruel;\n   [C7]                  [F]\nsi es grande la lucha, mayor es su gracia,\n   [C]                   [G7]       [C]\nsi más son las penas, mayor es su paz.\n\nCoro:\n   [C]                  [F]        [C]\nSu amor no termina, su gracia no acaba,\n    [G7]                          [C]\ny un límite no hay al poder de Jesús;\n     [C7]                  [F]\npues de sus inmensas riquezas en gloria\nabundan sus dones, abunda su amor.\n\nII\n   [C]                   [F]       [C]\nSi nuestros recursos ya se han agotado,\n   [G7]                      [C]\nsi fuerzas nos faltan para terminar,\n   [C7]                  [F]\nsi a punto ya estamos de desanimarnos,\n   [C]                     [G7]    [C]\nel tiempo ha llegado en que Dios obrará."
       }
     ];
 
@@ -280,53 +202,37 @@
         }
     }
 
-    function save() {
-        const id = document.getElementById('edit-id').value;
-        const t = document.getElementById('t').value.trim();
-        const r = document.getElementById('r').value;
-        const ton = document.getElementById('ton').value;
-        const lv = document.getElementById('lv').value;
-        const ln = document.getElementById('ln').value;
+    function importJSON() {
+        const raw = document.getElementById('json-input').value.trim();
+        if(!raw) return alert("Pega primero el código JSON en el recuadro.");
 
-        if(!t) return alert("Escribe un título");
+        try {
+            const parsed = JSON.parse(raw);
+            const itemsToProcess = Array.isArray(parsed) ? parsed : [parsed];
 
-        if(id) {
-            const index = data.findIndex(c => c.id == id);
-            if(index !== -1) {
-                data[index] = { id: Number(id), titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln };
-            }
-        } else {
-            const nueva = { id: Date.now(), titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln };
-            data.push(nueva);
+            let count = 0;
+            itemsToProcess.forEach(item => {
+                if(item.titulo && item.ritmo && item.tonalidad) {
+                    // Evitar duplicados por ID o actualizar si existe
+                    const idx = data.findIndex(c => c.id === item.id || c.titulo === item.titulo);
+                    if(idx !== -1) {
+                        data[idx] = item;
+                    } else {
+                        if(!item.id) item.id = Date.now() + Math.floor(Math.random() * 1000);
+                        data.push(item);
+                    }
+                    count++;
+                }
+            });
+
+            localStorage.setItem('mis_canciones', JSON.stringify(data));
+            document.getElementById('json-input').value = '';
+            draw();
+            alert(`¡Se procesaron y guardaron ${count} canción(es) con éxito!`);
+
+        } catch (e) {
+            alert("Error en el formato JSON. Asegúrate de copiar tal cual te entrego los datos.");
         }
-
-        localStorage.setItem('mis_canciones', JSON.stringify(data));
-        resetForm();
-        draw();
-        alert("¡Guardado correctamente!");
-    }
-
-    function editSong(id) {
-        const c = data.find(item => item.id === id);
-        if(!c) return;
-        
-        document.getElementById('admin-panel').style.display = 'block';
-        document.getElementById('panel-title').innerText = 'Editar Canción';
-        document.getElementById('edit-id').value = c.id;
-        document.getElementById('t').value = c.titulo;
-        document.getElementById('r').value = c.ritmo;
-        document.getElementById('ton').value = c.tonalidad;
-        document.getElementById('lv').value = c.letraVoces || '';
-        document.getElementById('ln').value = c.letraNotas || '';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function resetForm() {
-        document.getElementById('edit-id').value = '';
-        document.getElementById('t').value = '';
-        document.getElementById('lv').value = '';
-        document.getElementById('ln').value = '';
-        document.getElementById('panel-title').innerText = 'Panel de Administración';
     }
 
     function deleteSong(id) {
@@ -428,8 +334,7 @@
                 item.className = 'item';
                 item.innerHTML = `
                     <div class="actions-btn">
-                        <button class="btn-action btn-edit" onclick="editSong(${c.id})">✏️</button>
-                        <button class="btn-action btn-del" onclick="deleteSong(${c.id})">🗑️</button>
+                        <button class="btn-action btn-del" title="Eliminar" onclick="deleteSong(${c.id})">🗑️</button>
                     </div>
                     <div class="item-head" onclick="this.parentElement.classList.toggle('open')">🎵 ${c.titulo}</div>
                     <div class="item-content">
