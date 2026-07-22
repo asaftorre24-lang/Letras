@@ -119,15 +119,17 @@
 
         .btn-save { width: 100%; padding: 16px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 16px; }
 
-        /* Barra de Copia de Seguridad Siempre Visible */
+        /* Barra de Copia de Seguridad */
         .backup-bar { 
             margin-top: 30px; padding: 15px; background: rgba(22, 24, 32, 0.9); 
             border: 1px solid #2a2d3d; border-radius: 16px; text-align: center;
         }
         .backup-title { font-size: 13px; color: #aaa; margin-bottom: 10px; font-weight: 600; }
-        .backup-group { display: flex; gap: 10px; }
-        .btn-backup { flex: 1; padding: 12px; background: #1a1d29; border: 1px solid #33384f; color: #fff; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .backup-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-backup { flex: 1; min-width: 110px; padding: 12px; background: #1a1d29; border: 1px solid #33384f; color: #fff; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .btn-backup:active { background: var(--blue); }
+
+        #paste-modal { display: none; margin-top: 15px; }
 
         .empty-state { text-align: center; color: #666; margin-top: 40px; font-style: italic; }
     </style>
@@ -189,11 +191,17 @@
 
     <!-- Gestión de Copias de Seguridad -->
     <div class="backup-bar">
-        <div class="backup-title">📦 Copia de seguridad / Archivos JSON</div>
+        <div class="backup-title">📦 Copia de seguridad / Carga de Canciones</div>
         <div class="backup-group">
             <button class="btn-backup" onclick="exportData()">📥 Guardar Copia</button>
-            <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar Canciones</button>
+            <button class="btn-backup" style="background:#2b3552;" onclick="togglePasteModal()">📋 Pegar JSON</button>
+            <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar Archivo</button>
             <input type="file" id="import-file" style="display:none" onchange="importData(event)" accept="*/*">
+        </div>
+
+        <div id="paste-modal">
+            <textarea id="json-paste-input" rows="6" placeholder="Pega aquí el código JSON de las canciones..."></textarea>
+            <button onclick="processPastedJSON()" class="btn-save" style="background:var(--blue);">Cargar Canciones Pegadas 🚀</button>
         </div>
     </div>
 </div>
@@ -407,30 +415,50 @@
         a.click();
     }
 
+    function togglePasteModal() {
+        const modal = document.getElementById('paste-modal');
+        modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function parseAndSaveJSON(rawText) {
+        let textContent = rawText;
+        const firstBracket = textContent.indexOf('[');
+        const lastBracket = textContent.lastIndexOf(']');
+        if(firstBracket !== -1 && lastBracket !== -1) {
+            textContent = textContent.substring(firstBracket, lastBracket + 1);
+        }
+        const imported = JSON.parse(textContent);
+        if(Array.isArray(imported)) {
+            data = imported;
+            localStorage.setItem('mis_canciones', JSON.stringify(data));
+            draw();
+            alert("¡Canciones cargadas con éxito! 🎉");
+            document.getElementById('paste-modal').style.display = 'none';
+            document.getElementById('json-paste-input').value = '';
+        } else {
+            alert("El texto no contiene un formato de lista válido.");
+        }
+    }
+
+    function processPastedJSON() {
+        const text = document.getElementById('json-paste-input').value;
+        if(!text.trim()) return alert("Pega el texto JSON primero.");
+        try {
+            parseAndSaveJSON(text);
+        } catch(err) {
+            alert("Texto no válido. Asegúrate de copiar todo el código JSON completo.");
+        }
+    }
+
     function importData(e) {
         const file = e.target.files[0];
         if(!file) return;
         const reader = new FileReader();
         reader.onload = function(evt) {
             try {
-                let textContent = evt.target.result;
-                // Limpieza inteligente para textos/archivos de Samsung Notes
-                const firstBracket = textContent.indexOf('[');
-                const lastBracket = textContent.lastIndexOf(']');
-                if(firstBracket !== -1 && lastBracket !== -1) {
-                    textContent = textContent.substring(firstBracket, lastBracket + 1);
-                }
-                const imported = JSON.parse(textContent);
-                if(Array.isArray(imported)) {
-                    data = imported;
-                    localStorage.setItem('mis_canciones', JSON.stringify(data));
-                    draw();
-                    alert("¡Canciones cargadas con éxito! 🎉");
-                } else {
-                    alert("El archivo no contiene una lista válida.");
-                }
+                parseAndSaveJSON(evt.target.result);
             } catch(err) {
-                alert("Error al leer el archivo. Intenta seleccionarlo de nuevo.");
+                alert("Error al leer el archivo. Te recomendamos usar el botón 'Pegar JSON'.");
             }
         };
         reader.readAsText(file);
