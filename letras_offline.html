@@ -47,7 +47,7 @@
             color: #aaa; border: 1px solid #333; padding: 8px 12px; border-radius: 10px; font-size: 12px; cursor: pointer; 
         }
 
-        .container { width: 92%; max-width: 550px; padding: 15px 0 80px 0; z-index: 5; }
+        .container { width: 92%; max-width: 550px; padding: 15px 0 100px 0; z-index: 5; }
 
         /* Panel Admin */
         #admin-panel { 
@@ -118,8 +118,16 @@
         .text-area.active { display: block; }
 
         .btn-save { width: 100%; padding: 16px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 16px; }
-        .backup-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-backup { flex: 1; padding: 10px; background: #1a1d29; border: 1px solid #33384f; color: #ccc; border-radius: 8px; cursor: pointer; font-size: 12px; }
+
+        /* Barra de Copia de Seguridad Siempre Visible */
+        .backup-bar { 
+            margin-top: 30px; padding: 15px; background: rgba(22, 24, 32, 0.9); 
+            border: 1px solid #2a2d3d; border-radius: 16px; text-align: center;
+        }
+        .backup-title { font-size: 13px; color: #aaa; margin-bottom: 10px; font-weight: 600; }
+        .backup-group { display: flex; gap: 10px; }
+        .btn-backup { flex: 1; padding: 12px; background: #1a1d29; border: 1px solid #33384f; color: #fff; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-backup:active { background: var(--blue); }
 
         .empty-state { text-align: center; color: #666; margin-top: 40px; font-style: italic; }
     </style>
@@ -160,16 +168,10 @@
             </select>
         </div>
         <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
-        <textarea id="ln" rows="4" placeholder="🎹 Letra y Notas (Ejemplo: [C]Dios es [G]bueno)..."></textarea>
+        <textarea id="ln" rows="4" placeholder="🎹 Letra y Notas..."></textarea>
         
         <button onclick="save()" class="btn-save">GUARDAR EN EL CELULAR 💾</button>
         <button onclick="resetForm()" style="width:100%; padding:10px; background:transparent; border:none; color:#888; cursor:pointer;">Cancelar</button>
-
-        <div class="backup-group">
-            <button class="btn-backup" onclick="exportData()">📥 Exportar Copia</button>
-            <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar Copia</button>
-            <input type="file" id="import-file" style="display:none" onchange="importData(event)" accept=".json">
-        </div>
     </div>
 
     <!-- Buscador Global -->
@@ -184,6 +186,16 @@
     </div>
 
     <div id="main-list"></div>
+
+    <!-- Gestión de Copias de Seguridad (Siempre visible abajo) -->
+    <div class="backup-bar">
+        <div class="backup-title">📦 Copia de seguridad / Archivos JSON</div>
+        <div class="backup-group">
+            <button class="btn-backup" onclick="exportData()">📥 Guardar Copia</button>
+            <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar Canciones</button>
+            <input type="file" id="import-file" style="display:none" onchange="importData(event)" accept=".json">
+        </div>
+    </div>
 </div>
 
 <script>
@@ -254,12 +266,10 @@
         draw();
     }
 
-    /* --- Motor Transpositor de Notas --- */
     function transposeChord(chord, semitones) {
         return chord.replace(/[A-G][b#]?/g, function(match) {
             let i = scale.indexOf(match);
             if (i === -1) {
-                // Mapeo alternativo de flats/sharps
                 const altMap = { "Db":"C#", "D#":"Eb", "Gb":"F#", "G#":"Ab", "A#":"Bb" };
                 i = scale.indexOf(altMap[match] || match);
             }
@@ -274,12 +284,10 @@
         const notesArea = itemContent.querySelector('.text-area.n');
         let currentText = notesArea.innerText;
         
-        // Transponer texto dentro de corchetes [C] o palabras completas de acordes
         let transposed = currentText.replace(/\[(.*?)\]/g, (m, p1) => `[${transposeChord(p1, semitones)}]`);
         notesArea.innerText = transposed;
     }
 
-    /* --- Auto Scroll --- */
     function toggleScroll(btn) {
         if (scrollInterval) {
             clearInterval(scrollInterval);
@@ -295,7 +303,6 @@
         }
     }
 
-    /* --- Ajuste de Fuente --- */
     function changeFontSize(btn, delta) {
         const itemContent = btn.closest('.item-content');
         const areas = itemContent.querySelectorAll('.text-area');
@@ -408,10 +415,11 @@
             try {
                 const imported = JSON.parse(evt.target.result);
                 if(Array.isArray(imported)) {
+                    // Combinar o reemplazar datos
                     data = imported;
                     localStorage.setItem('mis_canciones', JSON.stringify(data));
                     draw();
-                    alert("¡Copia de seguridad cargada con éxito!");
+                    alert("¡Canciones cargadas con éxito!");
                 }
             } catch(err) {
                 alert("Archivo JSON no válido.");
@@ -424,4 +432,3 @@
 </script>
 </body>
 </html>
-
