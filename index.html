@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Letras PRO 🎵 (TIEMPO REAL)</title>
+    <title>Letras PRO 🎵 (REALTIME DATABASE)</title>
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Fira+Code:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -125,9 +125,9 @@
         .empty-state { text-align: center; color: #666; margin-top: 40px; font-style: italic; }
     </style>
 
-    <!-- Conexión a Firebase SDK -->
+    <!-- Conexión a Realtime Database SDK (v9 Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -164,19 +164,20 @@
 </div>
 
 <script>
-    // ⚙️ CONFIGURACIÓN VINCULADA A TU PROYECTO REAL: canciones-56abc
+    // ⚙️ CONFIGURACIÓN VINCULADA A TU REALTIME DATABASE REAL
     const firebaseConfig = {
-        apiKey: "PEGA_AQUI_TU_API_KEY", // La copias de Firebase > Configuración del proyecto
+        apiKey: "PEGA_AQUI_TU_API_KEY", // Copiala de Firebase > Configuración del proyecto
         authDomain: "canciones-56abc.firebaseapp.com",
+        databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com",
         projectId: "canciones-56abc",
         storageBucket: "canciones-56abc.appspot.com",
         messagingSenderId: "123456789",
-        appId: "PEGA_AQUI_TU_APP_ID"     // La copias de Firebase > Configuración del proyecto
+        appId: "PEGA_AQUI_TU_APP_ID"     // Copiala de Firebase > Configuración del proyecto
     };
 
-    // Inicializar Firebase
+    // Inicializar Firebase Realtime Database
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const db = firebase.database();
 
     let data = [];
     let filterR = '';
@@ -185,16 +186,19 @@
 
     const scale = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
 
-    // 🔄 ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE LA NUBE
-    db.collection("canciones").onSnapshot((snapshot) => {
+    // 🔄 ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE REALTIME DATABASE
+    db.ref("canciones").on("value", (snapshot) => {
         data = [];
-        snapshot.forEach((doc) => {
-            data.push(doc.data());
-        });
+        const res = snapshot.val();
+        if (res) {
+            Object.keys(res).forEach(key => {
+                data.push({ ...res[key], _key: key });
+            });
+        }
         draw();
     }, (error) => {
         console.error("Error al cargar Firebase:", error);
-        document.getElementById('main-list').innerText = "Error de conexión con la base de datos. Asegúrate de haber publicado las Reglas en Firebase.";
+        document.getElementById('main-list').innerText = "Error de conexión con la base de datos.";
     });
 
     function toggleAdmin() {
@@ -229,8 +233,8 @@
             for (const item of itemsToProcess) {
                 if(item.titulo && item.ritmo && item.tonalidad) {
                     if(!item.id) item.id = Date.now() + Math.floor(Math.random() * 1000);
-                    // Guardar en la base de datos de la nube
-                    await db.collection("canciones").doc(String(item.id)).set(item);
+                    // Guardar en el nodo canciones de Realtime Database
+                    await db.ref("canciones/" + item.id).set(item);
                     count++;
                 }
             }
@@ -240,13 +244,13 @@
 
         } catch (e) {
             console.error(e);
-            alert("Error al guardar en la nube. Revisa que configuraste las Reglas en la consola de Firebase.");
+            alert("Error al guardar en la nube. Revisa que el código JSON esté bien formateado.");
         }
     }
 
     async function deleteSong(id) {
         if(confirm("¿Estás seguro de ELIMINAR esta canción para TODOS en tiempo real?")) {
-            await db.collection("canciones").doc(String(id)).delete();
+            await db.ref("canciones/" + id).remove();
         }
     }
 
