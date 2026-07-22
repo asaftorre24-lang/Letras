@@ -187,13 +187,13 @@
 
     <div id="main-list"></div>
 
-    <!-- Gestión de Copias de Seguridad (Siempre visible abajo) -->
+    <!-- Gestión de Copias de Seguridad -->
     <div class="backup-bar">
         <div class="backup-title">📦 Copia de seguridad / Archivos JSON</div>
         <div class="backup-group">
             <button class="btn-backup" onclick="exportData()">📥 Guardar Copia</button>
             <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar Canciones</button>
-            <input type="file" id="import-file" style="display:none" onchange="importData(event)" accept=".json">
+            <input type="file" id="import-file" style="display:none" onchange="importData(event)" accept="*/*">
         </div>
     </div>
 </div>
@@ -413,15 +413,24 @@
         const reader = new FileReader();
         reader.onload = function(evt) {
             try {
-                const imported = JSON.parse(evt.target.result);
+                let textContent = evt.target.result;
+                // Limpieza inteligente para textos/archivos de Samsung Notes
+                const firstBracket = textContent.indexOf('[');
+                const lastBracket = textContent.lastIndexOf(']');
+                if(firstBracket !== -1 && lastBracket !== -1) {
+                    textContent = textContent.substring(firstBracket, lastBracket + 1);
+                }
+                const imported = JSON.parse(textContent);
                 if(Array.isArray(imported)) {
                     data = imported;
                     localStorage.setItem('mis_canciones', JSON.stringify(data));
                     draw();
-                    alert("¡Canciones cargadas con éxito!");
+                    alert("¡Canciones cargadas con éxito! 🎉");
+                } else {
+                    alert("El archivo no contiene una lista válida.");
                 }
             } catch(err) {
-                alert("Archivo JSON no válido.");
+                alert("Error al leer el archivo. Intenta seleccionarlo de nuevo.");
             }
         };
         reader.readAsText(file);
@@ -431,4 +440,3 @@
 </script>
 </body>
 </html>
-
