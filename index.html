@@ -125,7 +125,7 @@
         .empty-state { text-align: center; color: #666; margin-top: 40px; font-style: italic; }
     </style>
 
-    <!-- Conexión a Realtime Database SDK (v9 Compat) -->
+    <!-- Conexión a Firebase SDK (Compat v9) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
@@ -164,15 +164,16 @@
 </div>
 
 <script>
-    // ⚙️ CONFIGURACIÓN VINCULADA A TU REALTIME DATABASE REAL
+    // ⚙️ CONFIGURACIÓN OFICIAL DE TU FIREBASE
     const firebaseConfig = {
-        apiKey: "PEGA_AQUI_TU_API_KEY", // Copiala de Firebase > Configuración del proyecto
+        apiKey: "AIzaSyDuZQRLsYYxCUGwNLb-Wo2QcTZTMWLz1NA",
         authDomain: "canciones-56abc.firebaseapp.com",
         databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com",
         projectId: "canciones-56abc",
-        storageBucket: "canciones-56abc.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "PEGA_AQUI_TU_APP_ID"     // Copiala de Firebase > Configuración del proyecto
+        storageBucket: "canciones-56abc.firebasestorage.app",
+        messagingSenderId: "600232622986",
+        appId: "1:600232622986:web:ce785388e4bc0fef6ee673",
+        measurementId: "G-P2YRC0QG1J"
     };
 
     // Inicializar Firebase Realtime Database
@@ -186,7 +187,7 @@
 
     const scale = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
 
-    // 🔄 ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE REALTIME DATABASE
+    // 🔄 ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE LA NUBE
     db.ref("canciones").on("value", (snapshot) => {
         data = [];
         const res = snapshot.val();
@@ -233,7 +234,7 @@
             for (const item of itemsToProcess) {
                 if(item.titulo && item.ritmo && item.tonalidad) {
                     if(!item.id) item.id = Date.now() + Math.floor(Math.random() * 1000);
-                    // Guardar en el nodo canciones de Realtime Database
+                    // Guardar en la Realtime Database
                     await db.ref("canciones/" + item.id).set(item);
                     count++;
                 }
