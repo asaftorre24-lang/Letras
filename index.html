@@ -3,196 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Letras PRO 🎵</title>
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Letras IPUC">
-    
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png?v=final">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3844/3844720.png?v=final">
-
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
+    <title>Letras PRO 🎵 (OFFLINE)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Fira+Code:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --blue: #4285F4; --green: #34A853; --red: #ea4335; --bg: #000000; --text: #eee; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; background-color: var(--bg);
-            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='60' fill='rgba(66, 133, 244, 0.08)' text-anchor='middle' dominant-baseline='middle'%3E𝄞%3C/text%3E%3C/svg%3E");
-            background-position: center; background-repeat: no-repeat; background-attachment: fixed; 
-            color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        :root { 
+            --blue: #4285F4; 
+            --green: #34A853; 
+            --gold: #f1c40f;
+            --bg: #0d0e12; 
+            --card-bg: #161820;
+            --text: #f0f0f0; 
+            --text-dim: #a0a0a0;
         }
-        header { width: 100%; text-align: center; padding: 25px 0; background: rgba(0,0,0,0.85); position: relative; border-bottom: 1px solid #222; backdrop-filter: blur(10px); z-index: 10; }
-        .logo { font-family: 'Major Mono Display', monospace; font-size: 38px; font-weight: bold; letter-spacing: 3px; background: linear-gradient(to right, var(--blue), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .admin-btn { position: absolute; right: 15px; top: 25px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; padding: 7px 14px; border-radius: 8px; font-size: 11px; cursor: pointer; }
-        .container { width: 92%; max-width: 500px; padding: 20px 0; z-index: 5; }
-        
-        .search-container { position: relative; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; }
-        #main-search { width: 100%; padding: 15px; text-align: center; border-radius: 25px; border: 1px solid #333; background: rgba(21, 21, 21, 0.9); color: white; font-size: 16px; outline: none; box-sizing: border-box; backdrop-filter: blur(5px); }
-        .clear-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #333; color: #aaa; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; z-index: 2; }
-        .clear-btn.visible { display: flex; }
 
-        .div-title { margin: 30px 0 15px; padding: 10px; color: var(--blue); font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(66, 133, 244, 0.2); width: 100%; text-align: center; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg);
+            background-image: linear-gradient(rgba(13, 14, 18, 0.95), rgba(13, 14, 18, 0.95)), url('https://www.transparenttextures.com/patterns/pinstriped-suit.png');
+            background-attachment: fixed;
+            color: var(--text); margin: 0; padding: 0; 
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
 
-        #admin-panel { display: none; border: 2px solid var(--green); border-radius: 20px; padding: 20px; margin-bottom: 25px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); }
-        input, textarea, select { width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; box-sizing: border-box; }
+        .music-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='30' font-family='Arial' font-size='20' fill='white'%3E♩%3C/text%3E%3Ctext x='50' y='80' font-family='Arial' font-size='25' fill='white'%3E♫%3C/text%3E%3Ctext x='80' y='40' font-family='Arial' font-size='18' fill='white'%3E♬%3C/text%3E%3C/svg%3E");
+        }
+
+        header { 
+            width: 100%; text-align: center; padding: 18px 0; 
+            background: rgba(10, 10, 15, 0.85); position: sticky; top: 0;
+            border-bottom: 1px solid #252836; backdrop-filter: blur(12px); z-index: 100; 
+        }
+        .logo { 
+            font-family: 'Major Mono Display', monospace; font-size: 32px; font-weight: bold; 
+            letter-spacing: 2px; background: linear-gradient(to right, var(--blue), var(--green)); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        .admin-btn { 
+            position: absolute; right: 15px; top: 16px; background: rgba(255,255,255,0.05); 
+            color: #aaa; border: 1px solid #333; padding: 8px 12px; border-radius: 10px; font-size: 12px; cursor: pointer; 
+        }
+
+        .container { width: 92%; max-width: 550px; padding: 15px 0 100px 0; z-index: 5; }
+
+        /* Panel Admin */
+        #admin-panel { 
+            display: none; border: 2px solid var(--green); border-radius: 20px; 
+            padding: 20px; margin-bottom: 25px; background: rgba(15,18,25,0.98); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
         
-        .filter-group { display: flex; gap: 15px; margin-bottom: 35px; justify-content: center; }
-        .f-btn { flex: 1; padding: 18px; border-radius: 22px; border: 1px solid #333; background: rgba(40,40,40,0.7); color: white; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; backdrop-filter: blur(5px); }
-        .f-btn.active { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 20px rgba(66, 133, 244, 0.4); }
-        
-        .tono-box { background: rgba(30,30,30,0.8); border-radius: 18px; margin-bottom: 15px; border: 1px solid #222; backdrop-filter: blur(10px); }
-        .tono-title { padding: 20px; color: var(--green); font-weight: bold; display: flex; justify-content: space-between; cursor: pointer; }
-        .cancion-list { display: none; padding: 12px; }
+        input, textarea, select { 
+            width: 100%; margin-bottom: 12px; padding: 14px; border-radius: 12px; 
+            border: 1px solid #2a2d3d; background: #0f1015; color: white; font-size: 15px; box-sizing: border-box; 
+            outline: none; font-family: inherit;
+        }
+        input:focus, textarea:focus { border-color: var(--blue); }
+
+        /* Buscador */
+        .search-box input { 
+            border-color: #2a2d3d; border-radius: 16px; background: rgba(22,24,32,0.8);
+            padding-left: 18px; font-size: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Filtros */
+        .filter-group { display: flex; gap: 12px; margin-bottom: 20px; }
+        .f-btn { 
+            flex: 1; padding: 14px; border-radius: 16px; border: 1px solid #2a2d3d; 
+            background: var(--card-bg); color: #ccc; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; 
+        }
+        .f-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3); }
+
+        /* Tonalidad Box */
+        .tono-box { background: var(--card-bg); border-radius: 16px; margin-bottom: 15px; border: 1px solid #222533; overflow: hidden; }
+        .tono-title { padding: 16px 20px; color: var(--green); font-weight: 700; display: flex; justify-content: space-between; cursor: pointer; user-select: none; }
+        .cancion-list { display: none; padding: 10px 12px 12px 12px; }
         .tono-box.open .cancion-list { display: block; }
+
+        /* Canción Item */
+        .item { background: #1c1f2b; margin-bottom: 10px; border-radius: 12px; border-left: 4px solid var(--blue); position: relative; }
+        .item-head { padding: 16px; cursor: pointer; font-weight: 600; font-size: 16px; padding-right: 90px; }
         
-        .item { background: rgba(45,45,45,0.95); margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--blue); position: relative; }
-        .item-head { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .item-content { display: none; padding: 15px; background: #000; border-top: 1px solid #333; border-radius: 0 0 12px 12px; }
+        .actions-btn { position: absolute; right: 10px; top: 12px; display: flex; gap: 6px; }
+        .btn-action { border: none; color: white; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px; }
+        .btn-edit { background: #2b3040; border: 1px solid #3f465e; }
+        .btn-del { background: #501d1d; }
+
+        .item-content { display: none; padding: 15px; background: #0a0b0e; border-top: 1px solid #222533; border-radius: 0 0 12px 12px; }
         .item.open .item-content { display: block; }
         
-        .del-btn { display: none; background: var(--red); color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: bold; }
-        .clean-section { display: none; background: var(--red); color: white; border: none; border-radius: 5px; padding: 8px 12px; font-size: 12px; cursor: pointer; margin-top: 15px; margin-right: 5px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); }
-        body.admin-mode .del-btn, body.admin-mode .clean-section { display: inline-block; }
+        /* Toolbar del Visor */
+        .visor-tools { 
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; 
+            gap: 10px; background: #14161f; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #222533;
+        }
+        .tool-group { display: flex; align-items: center; gap: 6px; }
+        .tool-btn { 
+            background: #222636; border: 1px solid #33384f; color: #fff; padding: 6px 10px; 
+            border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; 
+        }
+        .tool-btn:active { background: var(--blue); }
 
-        .tabs { display: flex; margin-bottom: 15px; border-radius: 10px; overflow: hidden; background: #222; }
-        .t-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; }
+        .tabs { display: flex; border-radius: 8px; overflow: hidden; background: #1a1d29; margin-bottom: 12px; }
+        .t-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #777; cursor: pointer; font-weight: bold; font-size: 13px; }
         .t-btn.active { background: var(--green); color: black; }
         
-        .text-area { white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 20px; display: none; padding: 10px; color: #fff; line-height: 1.5; }
+        /* Área de Texto Musical */
+        .text-area { 
+            white-space: pre-wrap; font-family: 'Fira Code', monospace; font-size: 17px; 
+            line-height: 1.6; display: none; padding: 8px; color: #fff; overflow-x: auto;
+        }
         .text-area.active { display: block; }
+
+        .btn-save { width: 100%; padding: 16px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 16px; }
+
+        /* Barra de Copia de Seguridad Siempre Visible */
+        .backup-bar { 
+            margin-top: 30px; padding: 15px; background: rgba(22, 24, 32, 0.9); 
+            border: 1px solid #2a2d3d; border-radius: 16px; text-align: center;
+        }
+        .backup-title { font-size: 13px; color: #aaa; margin-bottom: 10px; font-weight: 600; }
+        .backup-group { display: flex; gap: 10px; }
+        .btn-backup { flex: 1; padding: 12px; background: #1a1d29; border: 1px solid #33384f; color: #fff; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-backup:active { background: var(--blue); }
+
+        .empty-state { text-align: center; color: #666; margin-top: 40px; font-style: italic; }
     </style>
 </head>
-<body id="body-app">
+<body>
+
+<div class="music-bg"></div>
 
 <header>
-    <div class="logo" id="main-logo">LETRAS</div>
+    <div class="logo">Letras</div>
     <button class="admin-btn" onclick="checkAdmin()">🔑 ADMIN</button>
 </header>
 
 <div class="container">
-    <div class="search-container">
-        <input type="text" id="main-search" placeholder="🔍 Buscar canción..." oninput="handleSearchInput()">
-        <button id="clear-search" class="clear-btn" onclick="clearSearch()">X</button>
-    </div>
-
+    <!-- Panel Administrador -->
     <div id="admin-panel">
-        <input type="text" id="t" placeholder="🎵 Título de la canción...">
+        <h3 id="panel-title" style="margin-top:0; color:var(--green);">Añadir Canción</h3>
+        <input type="hidden" id="edit-id" value="">
+        <input type="text" id="t" placeholder="🎵 Nombre de la canción...">
         <div style="display:flex; gap:10px;">
             <select id="r">
                 <option value="rapida">🏍️ Rápida</option>
                 <option value="lenta">🐢 Lenta</option>
             </select>
             <select id="ton">
-                <option value="C Mayor">Do (C)</option><option value="D Mayor">Re (D)</option>
-                <option value="E Mayor">Mi (E)</option><option value="F Mayor">Fa (F)</option>
-                <option value="G Mayor">Sol (G)</option><option value="A Mayor">La (A)</option>
-                <option value="B Mayor">Si (B)</option>
-                <option value="Cm Menor">Do m (Cm)</option><option value="Dm Menor">Re m (Dm)</option>
-                <option value="Em Menor">Mi m (Em)</option><option value="Fm Menor">Fa m (Fm)</option>
-                <option value="Gm Menor">Sol m (Gm)</option><option value="Am Menor">La m (Am)</option>
-                <option value="Bm Menor">Si m (Bm)</option>
+                <option value="C">Do Mayor (C)</option><option value="Cm">Do Menor (Cm)</option>
+                <option value="C#">Do# Mayor (C#)</option><option value="C#m">Do# Menor (C#m)</option>
+                <option value="D">Re Mayor (D)</option><option value="Dm">Re Menor (Dm)</option>
+                <option value="Eb">Mi b Mayor (Eb)</option><option value="Ebm">Mi b Menor (Ebm)</option>
+                <option value="E">Mi Mayor (E)</option><option value="Em">Mi Menor (Em)</option>
+                <option value="F">Fa Mayor (F)</option><option value="Fm">Fa Menor (Fm)</option>
+                <option value="F#">Fa# Mayor (F#)</option><option value="F#m">Fa# Menor (F#m)</option>
+                <option value="G">Sol Mayor (G)</option><option value="Gm">Sol Menor (Gm)</option>
+                <option value="Ab">Sol# / La b Mayor</option><option value="Abm">Sol# / La b Menor</option>
+                <option value="A">La Mayor (A)</option><option value="Am">La Menor (Am)</option>
+                <option value="Bb">Si b Mayor (Bb)</option><option value="Bbm">Si b Menor (Bbm)</option>
+                <option value="B">Si Mayor (B)</option><option value="Bm">Si Menor (Bm)</option>
             </select>
         </div>
-        <textarea id="lv" rows="3" placeholder="🎤 Letra Voces..."></textarea>
-        <textarea id="ln" rows="3" placeholder="🎹 Notas / Acordes..."></textarea>
-        <button onclick="save()" style="width:100%; padding:18px; background:var(--green); border:none; border-radius:12px; color:white; font-weight:bold;">💾 GUARDAR / ACTUALIZAR</button>
+        <textarea id="lv" rows="4" placeholder="🎤 Letra Voces..."></textarea>
+        <textarea id="ln" rows="4" placeholder="🎹 Letra y Notas..."></textarea>
+        
+        <button onclick="save()" class="btn-save">GUARDAR EN EL CELULAR 💾</button>
+        <button onclick="resetForm()" style="width:100%; padding:10px; background:transparent; border:none; color:#888; cursor:pointer;">Cancelar</button>
     </div>
 
+    <!-- Buscador Global -->
+    <div class="search-box">
+        <input type="text" id="search" placeholder="🔍 Buscar canción o letra..." oninput="draw()">
+    </div>
+
+    <!-- Filtro de Ritmo -->
     <div class="filter-group">
         <button id="br" class="f-btn" onclick="setR('rapida')">🏍️ Rápidas</button>
         <button id="bl" class="f-btn" onclick="setR('lenta')">🐢 Lentas</button>
     </div>
 
     <div id="main-list"></div>
+
+    <!-- Gestión de Copias de Seguridad (Siempre visible abajo) -->
+    <div class="backup-bar">
+        <div class="backup-title">📦 Copia de seguridad / Archivos JSON</div>
+        <div class="backup-group">
+            <button class="btn-backup" onclick="exportData()">📥 Guardar Copia</button>
+            <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Importar Canciones</button>
+            <input type="file" id="import-file" style="display:none" onchange="importData(event)" accept=".json">
+        </div>
+    </div>
 </div>
 
 <script>
-    const app = firebase.initializeApp({ databaseURL: "https://canciones-56abc-default-rtdb.firebaseio.com/" });
-    const db = firebase.database();
-    let data = [], filterR = '';
+    let data = JSON.parse(localStorage.getItem('mis_canciones')) || [];
+    let filterR = '';
+    let scrollInterval = null;
 
-    function load() {
-        db.ref('canciones').on('value', s => {
-            data = [];
-            s.forEach(c => { data.push({ ...c.val(), key: c.key }); });
+    const scale = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+
+    function save() {
+        const id = document.getElementById('edit-id').value;
+        const t = document.getElementById('t').value.trim();
+        const r = document.getElementById('r').value;
+        const ton = document.getElementById('ton').value;
+        const lv = document.getElementById('lv').value;
+        const ln = document.getElementById('ln').value;
+
+        if(!t) return alert("Escribe un título");
+
+        if(id) {
+            const index = data.findIndex(c => c.id == id);
+            if(index !== -1) {
+                data[index] = { id: Number(id), titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln };
+            }
+        } else {
+            const nueva = { id: Date.now(), titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv, letraNotas: ln };
+            data.push(nueva);
+        }
+
+        localStorage.setItem('mis_canciones', JSON.stringify(data));
+        resetForm();
+        draw();
+    }
+
+    function editSong(id) {
+        const c = data.find(item => item.id === id);
+        if(!c) return;
+        
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('panel-title').innerText = 'Editar Canción';
+        document.getElementById('edit-id').value = c.id;
+        document.getElementById('t').value = c.titulo;
+        document.getElementById('r').value = c.ritmo;
+        document.getElementById('ton').value = c.tonalidad;
+        document.getElementById('lv').value = c.letraVoces || '';
+        document.getElementById('ln').value = c.letraNotas || '';
+    }
+
+    function resetForm() {
+        document.getElementById('edit-id').value = '';
+        document.getElementById('t').value = '';
+        document.getElementById('lv').value = '';
+        document.getElementById('ln').value = '';
+        document.getElementById('panel-title').innerText = 'Añadir Canción';
+        document.getElementById('admin-panel').style.display = 'none';
+    }
+
+    function deleteSong(id) {
+        if(confirm("¿Eliminar esta canción?")) {
+            data = data.filter(c => c.id !== id);
+            localStorage.setItem('mis_canciones', JSON.stringify(data));
             draw();
+        }
+    }
+
+    function setR(r) {
+        filterR = (filterR === r) ? '' : r;
+        draw();
+    }
+
+    function transposeChord(chord, semitones) {
+        return chord.replace(/[A-G][b#]?/g, function(match) {
+            let i = scale.indexOf(match);
+            if (i === -1) {
+                const altMap = { "Db":"C#", "D#":"Eb", "Gb":"F#", "G#":"Ab", "A#":"Bb" };
+                i = scale.indexOf(altMap[match] || match);
+            }
+            if (i === -1) return match;
+            let newIndex = (i + semitones) % 12;
+            return scale[newIndex < 0 ? newIndex + 12 : newIndex];
         });
     }
 
-    function handleSearchInput() {
-        document.getElementById('clear-search').classList.toggle('visible', document.getElementById('main-search').value.length > 0);
-        draw();
+    function changeKey(btn, semitones) {
+        const itemContent = btn.closest('.item-content');
+        const notesArea = itemContent.querySelector('.text-area.n');
+        let currentText = notesArea.innerText;
+        
+        let transposed = currentText.replace(/\[(.*?)\]/g, (m, p1) => `[${transposeChord(p1, semitones)}]`);
+        notesArea.innerText = transposed;
     }
 
-    function clearSearch() {
-        document.getElementById('main-search').value = '';
-        document.getElementById('clear-search').classList.remove('visible');
-        draw();
+    function toggleScroll(btn) {
+        if (scrollInterval) {
+            clearInterval(scrollInterval);
+            scrollInterval = null;
+            btn.innerText = '📜 Scroll: OFF';
+            btn.style.background = '#222636';
+        } else {
+            btn.innerText = '📜 Scroll: ON';
+            btn.style.background = 'var(--green)';
+            scrollInterval = setInterval(() => {
+                window.scrollBy(0, 1);
+            }, 50);
+        }
     }
 
-    function setR(r) { 
-        filterR = (filterR === r) ? '' : r; 
-        document.getElementById('main-logo').innerText = filterR.toUpperCase() || 'LETRAS';
-        draw(); 
+    function changeFontSize(btn, delta) {
+        const itemContent = btn.closest('.item-content');
+        const areas = itemContent.querySelectorAll('.text-area');
+        areas.forEach(a => {
+            let current = parseFloat(window.getComputedStyle(a).fontSize);
+            a.style.fontSize = (current + delta) + 'px';
+        });
     }
 
     function draw() {
-        const list = document.getElementById('main-list'), q = document.getElementById('main-search').value.toLowerCase();
+        const list = document.getElementById('main-list');
+        const query = document.getElementById('search').value.toLowerCase().trim();
         list.innerHTML = '';
+        
         document.getElementById('br').classList.toggle('active', filterR === 'rapida');
         document.getElementById('bl').classList.toggle('active', filterR === 'lenta');
-        if (!filterR && !q) return;
 
-        let filtered = data.filter(c => (!filterR || c.ritmo === filterR) && (!q || c.titulo.toLowerCase().includes(q)));
-        const groups = filtered.reduce((acc, c) => { let t = c.tonalidad || "C Mayor"; acc[t] = acc[t] || []; acc[t].push(c); return acc; }, {});
-
-        const sortedTones = Object.keys(groups).sort();
-        const mayores = sortedTones.filter(t => !t.toLowerCase().includes('menor'));
-        const menores = sortedTones.filter(t => t.toLowerCase().includes('menor'));
-
-        if(mayores.length > 0) {
-            list.innerHTML += '<div class="div-title">☀️ TONOS MAYORES</div>';
-            mayores.forEach(t => renderGroup(t, groups[t], list, q));
-        }
-        if(menores.length > 0) {
-            list.innerHTML += '<div class="div-title">🌑 TONOS MENORES</div>';
-            menores.forEach(t => renderGroup(t, groups[t], list, q));
-        }
-    }
-
-    function renderGroup(ton, songs, list, q) {
-        let cifrado = ton.replace(/menor|mayor/gi, '').trim();
-        const match = cifrado.match(/\(([^)]+)\)/);
-        if(match) cifrado = match[1];
-        let esMenor = ton.toLowerCase().includes('menor');
-        let displayTon = esMenor ? (cifrado.toLowerCase().endsWith('m') ? cifrado : cifrado + 'm') : cifrado;
-
-        const div = document.createElement('div');
-        div.className = 'tono-box' + (q ? ' open' : '');
-        div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${displayTon}</span> <span>${songs.length} ▾</span></div><div class="cancion-list"></div>`;
-        const cList = div.querySelector('.cancion-list');
-        
-        songs.forEach(c => {
-            const item = document.createElement('div');
-            item.className = 'item'; 
-            item.innerHTML = `
-                <div class="item-head" onclick="this.parentElement.classList.toggle('open')">
-                    <span>🎵 ${c.titulo}</span>
-                    <button class="del-btn" onclick="event.stopPropagation(); remove('${c.key}')">🗑️ Borrar</button>
-                </div>
-                <div class="item-content">
-                    <div class="tabs"><button class="t-btn active" onclick="shTab(this,'v')">Voces</button><button class="t-btn" onclick="shTab(this,'n')">Notas</button></div>
-                    <div class="text-area active v">${c.letraVoces || '...'}</div>
-                    <div class="text-area n">${c.letraNotas || '...'}</div>
-                    <button class="clean-section" onclick="clearSec('${c.key}', 'letraVoces')">🧹 Limpiar Voces</button>
-                    <button class="clean-section" onclick="clearSec('${c.key}', 'letraNotas')">🧹 Limpiar Notas</button>
-                </div>`;
-            cList.appendChild(item);
+        let filtered = data.filter(c => {
+            const matchesRitmo = filterR === '' || c.ritmo === filterR;
+            const matchesSearch = query === '' || 
+                c.titulo.toLowerCase().includes(query) || 
+                (c.letraVoces && c.letraVoces.toLowerCase().includes(query)) ||
+                (c.letraNotas && c.letraNotas.toLowerCase().includes(query));
+            return matchesRitmo && matchesSearch;
         });
-        list.appendChild(div);
+
+        if (filtered.length === 0) {
+            list.innerHTML = `<div class="empty-state">${query ? 'No se encontraron resultados.' : 'Selecciona un ritmo o busca una canción...'}</div>`;
+            return;
+        }
+
+        const groups = filtered.reduce((acc, c) => {
+            let t = c.tonalidad || "C";
+            acc[t] = acc[t] || [];
+            acc[t].push(c);
+            return acc;
+        }, {});
+
+        Object.keys(groups).sort().forEach(ton => {
+            const div = document.createElement('div');
+            div.className = 'tono-box' + (query !== '' ? ' open' : '');
+            div.innerHTML = `<div class="tono-title" onclick="this.parentElement.classList.toggle('open')"><span>🎶 Tono: ${ton}</span> <span>${groups[ton].length} ▾</span></div><div class="cancion-list"></div>`;
+            const cList = div.querySelector('.cancion-list');
+            
+            groups[ton].forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerHTML = `
+                    <div class="actions-btn">
+                        <button class="btn-action btn-edit" onclick="editSong(${c.id})">✏️</button>
+                        <button class="btn-action btn-del" onclick="deleteSong(${c.id})">🗑️</button>
+                    </div>
+                    <div class="item-head" onclick="this.parentElement.classList.toggle('open')">🎵 ${c.titulo}</div>
+                    <div class="item-content">
+                        <div class="visor-tools">
+                            <div class="tool-group">
+                                <span style="font-size:11px; color:#aaa;">Tono:</span>
+                                <button class="tool-btn" onclick="changeKey(this, -1)">-1</button>
+                                <button class="tool-btn" onclick="changeKey(this, 1)">+1</button>
+                            </div>
+                            <div class="tool-group">
+                                <span style="font-size:11px; color:#aaa;">Texto:</span>
+                                <button class="tool-btn" onclick="changeFontSize(this, -2)">A-</button>
+                                <button class="tool-btn" onclick="changeFontSize(this, 2)">A+</button>
+                            </div>
+                            <button class="tool-btn" onclick="toggleScroll(this)">📜 Scroll</button>
+                        </div>
+
+                        <div class="tabs">
+                            <button class="t-btn active" onclick="shTab(this,'v')">Voces</button>
+                            <button class="t-btn" onclick="shTab(this,'n')">Notas</button>
+                        </div>
+                        <div class="text-area active v">${c.letraVoces || 'Sin letra.'}</div>
+                        <div class="text-area n">${c.letraNotas || 'Sin notas.'}</div>
+                    </div>`;
+                cList.appendChild(item);
+            });
+            list.appendChild(div);
+        });
     }
 
     function shTab(btn, mode) {
@@ -203,46 +392,43 @@
         p.querySelector('.n').classList.toggle('active', mode === 'n');
     }
 
-    function checkAdmin() { if(prompt("Clave:") === "ipuc") { document.getElementById('admin-panel').style.display = 'block'; document.body.classList.add('admin-mode'); } }
-    
-    function clearSec(key, field) { if(confirm("¿Limpiar sección?")) { let u = {}; u[field] = "..."; db.ref('canciones/'+key).update(u); } }
-
-    function save() {
-        const t = document.getElementById('t').value.trim();
-        const r = document.getElementById('r').value;
-        const ton = document.getElementById('ton').value;
-        const lv = document.getElementById('lv').value.trim();
-        const ln = document.getElementById('ln').value.trim();
-
-        if (!t) return alert("Por favor escribe el título");
-
-        const limpiar = (txt) => txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        const existente = data.find(c => limpiar(c.titulo) === limpiar(t));
-
-        if (existente) {
-            if (confirm(`"${t}" ya existe. ¿Actualizar solo lo nuevo?`)) {
-                const nuevaData = {
-                    titulo: t,
-                    ritmo: r,
-                    tonalidad: ton,
-                    letraVoces: lv !== "" ? lv : (existente.letraVoces || "..."),
-                    letraNotas: ln !== "" ? ln : (existente.letraNotas || "...")
-                };
-                db.ref('canciones/' + existente.key).update(nuevaData).then(() => { alert("Actualizada ✅"); resetAdmin(); });
-            }
-        } else {
-            const cancionData = { titulo: t, ritmo: r, tonalidad: ton, letraVoces: lv || "...", letraNotas: ln || "..." };
-            db.ref('canciones').push(cancionData).then(() => { alert("Guardada ✅"); resetAdmin(); });
+    function checkAdmin() { 
+        if(prompt("Clave:") === "ipuc") {
+            resetForm();
+            document.getElementById('admin-panel').style.display = 'block';
         }
     }
 
-    function resetAdmin() {
-        document.getElementById('t').value = ''; document.getElementById('lv').value = ''; document.getElementById('ln').value = '';
-        document.getElementById('admin-panel').style.display = 'none';
+    function exportData() {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `letras_respaldo_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
     }
 
-    function remove(key) { if(confirm("¿Borrar definitivamente?")) db.ref('canciones/'+key).remove(); }
-    load();
+    function importData(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const imported = JSON.parse(evt.target.result);
+                if(Array.isArray(imported)) {
+                    data = imported;
+                    localStorage.setItem('mis_canciones', JSON.stringify(data));
+                    draw();
+                    alert("¡Canciones cargadas con éxito!");
+                }
+            } catch(err) {
+                alert("Archivo JSON no válido.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    draw();
 </script>
 </body>
 </html>
+
